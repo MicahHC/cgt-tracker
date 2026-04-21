@@ -48,9 +48,9 @@ Deno.serve(async (req: Request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+  const anthropicKey = Deno.env.get("Claude_API_Key") ?? Deno.env.get("ANTHROPIC_API_KEY");
   if (!supabaseUrl || !supabaseKey) return err(500, "Supabase env missing");
-  if (!anthropicKey) return err(500, "ANTHROPIC_API_KEY missing");
+  if (!anthropicKey) return err(500, "Claude_API_Key (or ANTHROPIC_API_KEY) missing");
 
   const supabase = createClient(supabaseUrl, supabaseKey);
   const anthropic = new Anthropic({ apiKey: anthropicKey });
