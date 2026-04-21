@@ -206,7 +206,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
       subscore_regulatory, subscore_commercial_infrastructure, subscore_market_attractiveness,
       subscore_capability_gap_leverage,
       final_commercial_score, commercial_priority_tier, strategic_priority_tier,
-      cgt_companies!inner(id, name)
+      cgt_companies!inner(id, company_name)
     `)
     .in("company_id", company_ids);
   if (error) throw new Error(`loadAssets: ${error.message}`);
@@ -214,7 +214,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
   return (data ?? []).map((row: any) => ({
     id: row.id,
     company_id: row.company_id,
-    company_name: row.cgt_companies.name,
+    company_name: row.cgt_companies.company_name,
     asset_name: row.asset_name,
     indication: row.indication,
     current_phase: row.current_phase,

@@ -150,7 +150,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
       id, company_id, asset_name, indication, current_phase,
       clinical_hold_flag, manufacturing_pathway_status, timeline_months_to_launch, us_path_flag,
       final_commercial_score, commercial_priority_tier, strategic_priority_tier,
-      cgt_companies!inner(id, name)
+      cgt_companies!inner(id, company_name)
     `)
     .in("company_id", company_ids);
   if (error) throw new Error(`loadAssets: ${error.message}`);
@@ -158,7 +158,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
   return (data ?? []).map((r: any) => ({
     id: r.id,
     company_id: r.company_id,
-    company_name: r.cgt_companies.name,
+    company_name: r.cgt_companies.company_name,
     asset_name: r.asset_name,
     indication: r.indication,
     current_phase: r.current_phase,

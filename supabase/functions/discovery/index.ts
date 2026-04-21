@@ -105,10 +105,10 @@ Deno.serve(async (req: Request) => {
 });
 
 async function loadExistingCompanyNames(supabase: SupabaseClient): Promise<Set<string>> {
-  const { data, error } = await supabase.from("cgt_companies").select("name");
+  const { data, error } = await supabase.from("cgt_companies").select("company_name");
   if (error) throw new Error(`loadExistingCompanyNames: ${error.message}`);
   // deno-lint-ignore no-explicit-any
-  return new Set((data ?? []).map((r: any) => String(r.name).trim().toLowerCase()));
+  return new Set((data ?? []).map((r: any) => String(r.company_name).trim().toLowerCase()));
 }
 
 async function discover(
@@ -205,7 +205,7 @@ async function persistCandidate(
   const { data: company, error: cErr } = await supabase
     .from("cgt_companies")
     .insert({
-      name: c.name,
+      company_name: c.name,
       ticker: c.ticker,
       website: c.website,
       status: "candidate",
