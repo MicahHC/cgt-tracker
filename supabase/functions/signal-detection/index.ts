@@ -6,18 +6,8 @@
  * Request:
  *   POST { company_ids: string[], week_label: string, agent_id?: string }
  *
- * Pipeline per asset:
- *   1. Pull current asset + last score_history row
- *   2. Gather fresh source data via existing fetchers (SEC, OpenFDA, PubMed)
- *   3. Ask Claude to extract signals (structured tool_use)
- *   4. Persist every candidate to cgt_signals
- *   5. Re-derive subscores; apply hard caps; compute final scores
- *   6. If material (evaluateMateriality), append to cgt_change_log +
- *      cgt_score_history and update the asset row
- *   7. Update cgt_agent_runs with totals
- *
- * Sources are ranked Tier 1 > Tier 2 > Tier 3; Claude is instructed to
- * flag conflicts and never infer regulatory status.
+ * Column names in this file match the existing cgt_* schema
+ * (see supabase/migrations/20260416175234_create_cgt_tracker_schema.sql).
  */
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -54,16 +44,24 @@ interface AssetWithCompany {
   company_id: string;
   company_name: string;
   asset_name: string;
-  indication: string | null;
-  current_phase: string | null;
-  clinical_hold_flag: boolean;
-  manufacturing_pathway_status: "established" | "in_progress" | "none" | "unresolved_cmc";
-  timeline_months_to_launch: number | null;
-  us_path_flag: boolean;
-  subscore_regulatory: number | null;
-  subscore_commercial_infrastructure: number | null;
-  subscore_market_attractiveness: number | null;
-  subscore_capability_gap_leverage: number | null;
+  lead_indication: string | null;
+  phase_regulatory_status: string | null;
+  // Hard-cap flags (match DB exactly)
+  clinical_hold: boolean;
+  no_manufacturing_pathway: boolean;
+  timeline_over_24_months: boolean;
+  no_us_path: boolean;
+  // Contextual manufacturing / timeline text fields (for agent context, not scoring)
+  manufacturing_status: string | null;
+  manufacturing_pathway: string | null;
+  us_commercialization_window: string | null;
+  likely_us_launch_within_24_months: string | null;
+  // Subscores (DB columns: <metric>_score)
+  regulatory_score: number | null;
+  commercial_infrastructure_score: number | null;
+  market_attractiveness_score: number | null;
+  capability_gap_leverage_score: number | null;
+  // Outputs
   final_commercial_score: number | null;
   commercial_priority_tier: Tier | null;
   strategic_priority_tier: Tier | null;
@@ -77,8 +75,6 @@ interface ExtractedSignal {
   published_date: string | null; // ISO date
   summary: string;
   conflicts_with: string | null;
-  proposed_subscore_changes: Partial<Subscores>;
-  proposed_flag_changes: Partial<HardCapFlags> & { timeline_months_to_launch?: number | null };
   why_it_matters: string;
   confidence: "low" | "medium" | "high";
 }
@@ -89,7 +85,6 @@ interface AgentOutput {
   // if at least one signal is present.
   current_subscores: Subscores | null;
   current_flags: HardCapFlags | null;
-  current_timeline_months: number | null;
   notes: string;
 }
 
@@ -106,7 +101,7 @@ Deno.serve(async (req: Request) => {
     return jsonError(400, "Invalid JSON body");
   }
 
-  const { company_ids, week_label, agent_id } = body;
+  const { company_ids, week_label } = body;
   if (!Array.isArray(company_ids) || company_ids.length === 0) {
     return jsonError(400, "company_ids must be a non-empty array");
   }
@@ -124,7 +119,6 @@ Deno.serve(async (req: Request) => {
   const supabase = createClient(supabaseUrl, supabaseKey);
   const anthropic = new Anthropic({ apiKey: anthropicKey });
 
-  // Open run ledger
   const { data: run, error: runErr } = await supabase
     .from("cgt_agent_runs")
     .insert({
@@ -145,17 +139,15 @@ Deno.serve(async (req: Request) => {
 
     for (const asset of assets) {
       try {
-        const sources = await gatherSources(supabase, asset);
+        const sources = await gatherSources(asset);
         const agentOutput = await extractSignals(anthropic, asset, sources);
 
         totals.signals_found += agentOutput.signals.length;
 
-        // Persist every candidate signal first (audit trail, even if non-material)
         for (const s of agentOutput.signals) {
           await persistSignal(supabase, run.id, asset, s);
         }
 
-        // If agent returned a current read, apply with cap + materiality gate
         if (agentOutput.signals.length > 0 && agentOutput.current_subscores && agentOutput.current_flags) {
           const updated = await applyAndGate(supabase, asset, agentOutput, run.id, week_label);
           if (updated.material) totals.material_signals += 1;
@@ -201,10 +193,12 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
   const { data, error } = await supabase
     .from("cgt_assets")
     .select(`
-      id, company_id, asset_name, indication, current_phase,
-      clinical_hold_flag, manufacturing_pathway_status, timeline_months_to_launch, us_path_flag,
-      subscore_regulatory, subscore_commercial_infrastructure, subscore_market_attractiveness,
-      subscore_capability_gap_leverage,
+      id, company_id, asset_name, lead_indication, phase_regulatory_status,
+      clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path,
+      manufacturing_status, manufacturing_pathway,
+      us_commercialization_window, likely_us_launch_within_24_months,
+      regulatory_score, commercial_infrastructure_score, market_attractiveness_score,
+      capability_gap_leverage_score,
       final_commercial_score, commercial_priority_tier, strategic_priority_tier,
       cgt_companies!inner(id, company_name)
     `)
@@ -216,23 +210,27 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     company_id: row.company_id,
     company_name: row.cgt_companies.company_name,
     asset_name: row.asset_name,
-    indication: row.indication,
-    current_phase: row.current_phase,
-    clinical_hold_flag: row.clinical_hold_flag ?? false,
-    manufacturing_pathway_status: row.manufacturing_pathway_status ?? "in_progress",
-    timeline_months_to_launch: row.timeline_months_to_launch,
-    us_path_flag: row.us_path_flag ?? true,
-    subscore_regulatory: row.subscore_regulatory,
-    subscore_commercial_infrastructure: row.subscore_commercial_infrastructure,
-    subscore_market_attractiveness: row.subscore_market_attractiveness,
-    subscore_capability_gap_leverage: row.subscore_capability_gap_leverage,
+    lead_indication: row.lead_indication,
+    phase_regulatory_status: row.phase_regulatory_status,
+    clinical_hold: row.clinical_hold ?? false,
+    no_manufacturing_pathway: row.no_manufacturing_pathway ?? false,
+    timeline_over_24_months: row.timeline_over_24_months ?? false,
+    no_us_path: row.no_us_path ?? false,
+    manufacturing_status: row.manufacturing_status,
+    manufacturing_pathway: row.manufacturing_pathway,
+    us_commercialization_window: row.us_commercialization_window,
+    likely_us_launch_within_24_months: row.likely_us_launch_within_24_months,
+    regulatory_score: row.regulatory_score,
+    commercial_infrastructure_score: row.commercial_infrastructure_score,
+    market_attractiveness_score: row.market_attractiveness_score,
+    capability_gap_leverage_score: row.capability_gap_leverage_score,
     final_commercial_score: row.final_commercial_score,
     commercial_priority_tier: row.commercial_priority_tier,
     strategic_priority_tier: row.strategic_priority_tier,
   }));
 }
 
-async function gatherSources(supabase: SupabaseClient, asset: AssetWithCompany) {
+async function gatherSources(asset: AssetWithCompany) {
   const functionsBase = `${Deno.env.get("SUPABASE_URL")}/functions/v1`;
   const headers = {
     "Content-Type": "application/json",
@@ -247,7 +245,11 @@ async function gatherSources(supabase: SupabaseClient, asset: AssetWithCompany) 
   ];
 
   const results = await Promise.allSettled(
-    endpoints.map((e) => fetch(e.url, { method: "POST", headers, body }).then((r) => r.json()).then((j) => ({ ...e, data: j })))
+    endpoints.map((e) =>
+      fetch(e.url, { method: "POST", headers, body })
+        .then((r) => r.json())
+        .then((j) => ({ ...e, data: j }))
+    )
   );
   return results
     .filter((r): r is PromiseFulfilledResult<{ name: string; url: string; tier: number; data: unknown }> => r.status === "fulfilled")
@@ -269,9 +271,8 @@ SCORING SUBSCORES (0-5 integers, required if you emit any signal):
   market_attractiveness: 5=high-value/low-barrier, 3=moderate, 1=constrained
   capability_gap_leverage: 5=strong asset + solvable gaps, 0=no leverage/non-viable
 
-HARD-CAP FLAGS (independent of subscores):
-  clinical_hold (bool), manufacturing_pathway_status (established|in_progress|none|unresolved_cmc),
-  timeline_months_to_launch (int), us_path_flag (bool, false = EXCLUDE)
+HARD-CAP FLAGS (booleans):
+  clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path
 
 SOURCE HIERARCHY: Tier 1 = IR, press releases, SEC, FDA, ClinicalTrials.gov (PREFER). Tier 2 = investor decks, conference, publications. Tier 3 = Fierce Biotech, Endpoints, STAT.
 
@@ -280,30 +281,37 @@ RULES:
 - Flag conflicting sources explicitly in conflicts_with.
 - Only surface signals where a Tier-1 or Tier-2 source supports them.
 - Be conservative. If unsure, lower confidence.
-- Return at most one signal per material event per source.
 - If nothing material, return an empty signals array.`;
 
   const user = JSON.stringify({
     asset: {
       company: asset.company_name,
       asset: asset.asset_name,
-      indication: asset.indication,
-      current_phase: asset.current_phase,
+      lead_indication: asset.lead_indication,
+      phase_regulatory_status: asset.phase_regulatory_status,
+      manufacturing: {
+        status: asset.manufacturing_status,
+        pathway: asset.manufacturing_pathway,
+      },
+      timeline: {
+        us_commercialization_window: asset.us_commercialization_window,
+        likely_us_launch_within_24_months: asset.likely_us_launch_within_24_months,
+      },
       current_subscores: {
-        regulatory: asset.subscore_regulatory,
-        commercial_infrastructure: asset.subscore_commercial_infrastructure,
-        market_attractiveness: asset.subscore_market_attractiveness,
-        capability_gap_leverage: asset.subscore_capability_gap_leverage,
+        regulatory: asset.regulatory_score,
+        commercial_infrastructure: asset.commercial_infrastructure_score,
+        market_attractiveness: asset.market_attractiveness_score,
+        capability_gap_leverage: asset.capability_gap_leverage_score,
       },
       current_flags: {
-        clinical_hold: asset.clinical_hold_flag,
-        manufacturing_pathway_status: asset.manufacturing_pathway_status,
-        timeline_months_to_launch: asset.timeline_months_to_launch,
-        us_path_flag: asset.us_path_flag,
+        clinical_hold: asset.clinical_hold,
+        no_manufacturing_pathway: asset.no_manufacturing_pathway,
+        timeline_over_24_months: asset.timeline_over_24_months,
+        no_us_path: asset.no_us_path,
       },
     },
     sources,
-  }).slice(0, 180_000); // keep under token budget; fetchers already cap responses
+  }).slice(0, 180_000);
 
   const tool = {
     name: "emit_signals",
@@ -323,17 +331,30 @@ RULES:
               published_date: { type: ["string", "null"] },
               summary: { type: "string" },
               conflicts_with: { type: ["string", "null"] },
-              proposed_subscore_changes: { type: "object" },
-              proposed_flag_changes: { type: "object" },
               why_it_matters: { type: "string" },
               confidence: { type: "string", enum: ["low", "medium", "high"] },
             },
             required: ["signal_type", "source_url", "source_tier", "source_domain", "summary", "why_it_matters", "confidence"],
           },
         },
-        current_subscores: { type: ["object", "null"] },
-        current_flags: { type: ["object", "null"] },
-        current_timeline_months: { type: ["integer", "null"] },
+        current_subscores: {
+          type: ["object", "null"],
+          properties: {
+            regulatory: { type: "integer", minimum: 0, maximum: 5 },
+            commercial_infrastructure: { type: "integer", minimum: 0, maximum: 5 },
+            market_attractiveness: { type: "integer", minimum: 0, maximum: 5 },
+            capability_gap_leverage: { type: "integer", minimum: 0, maximum: 5 },
+          },
+        },
+        current_flags: {
+          type: ["object", "null"],
+          properties: {
+            clinical_hold: { type: "boolean" },
+            no_manufacturing_pathway: { type: "boolean" },
+            timeline_over_24_months: { type: "boolean" },
+            no_us_path: { type: "boolean" },
+          },
+        },
         notes: { type: "string" },
       },
       required: ["signals", "notes"],
@@ -373,7 +394,6 @@ async function persistSignal(
     published_date: s.published_date,
     raw_summary: s.summary,
     conflicts_with: s.conflicts_with,
-    // materiality is decided after scoring in applyAndGate; default false here
     is_material: false,
     materiality_reasons: [],
   });
@@ -387,20 +407,7 @@ async function applyAndGate(
   weekLabel: string
 ): Promise<{ material: boolean; scoreUpdated: boolean }> {
   const nextSubscores = out.current_subscores as Subscores;
-  const nextFlags: HardCapFlags = {
-    clinical_hold: out.current_flags!.clinical_hold,
-    no_manufacturing_pathway:
-      // map manufacturing_pathway_status to boolean flag for scoring.ts
-      // (source of truth is cgt_assets.manufacturing_pathway_status)
-      false,
-    timeline_over_24_months: (out.current_timeline_months ?? asset.timeline_months_to_launch ?? 0) > 24,
-    no_us_path: !out.current_flags!.us_path_flag,
-  };
-  // derive no_manufacturing_pathway from proposed or existing status
-  const proposedMfg = (out.current_flags as unknown as { manufacturing_pathway_status?: string }).manufacturing_pathway_status;
-  const mfgStatus = proposedMfg ?? asset.manufacturing_pathway_status;
-  nextFlags.no_manufacturing_pathway = mfgStatus === "none" || mfgStatus === "unresolved_cmc";
-
+  const nextFlags: HardCapFlags = out.current_flags!;
   const scored = computeScoring(nextSubscores, nextFlags);
 
   const mat = evaluateMateriality({
@@ -415,50 +422,47 @@ async function applyAndGate(
 
   if (!mat.is_material) return { material: false, scoreUpdated: false };
 
-  // Mark the signals from this run for this asset as material
   await supabase
     .from("cgt_signals")
     .update({ is_material: true, materiality_reasons: mat.reasons })
     .eq("agent_run_id", runId)
     .eq("asset_id", asset.id);
 
-  // Update asset
   await supabase
     .from("cgt_assets")
     .update({
-      subscore_regulatory: nextSubscores.regulatory,
-      subscore_commercial_infrastructure: nextSubscores.commercial_infrastructure,
-      subscore_market_attractiveness: nextSubscores.market_attractiveness,
-      subscore_capability_gap_leverage: nextSubscores.capability_gap_leverage,
-      clinical_hold_flag: nextFlags.clinical_hold,
-      manufacturing_pathway_status: mfgStatus,
-      timeline_months_to_launch: out.current_timeline_months ?? asset.timeline_months_to_launch,
-      us_path_flag: !nextFlags.no_us_path,
-      final_commercial_score: scored.final_commercial_score,
+      regulatory_score: nextSubscores.regulatory,
+      commercial_infrastructure_score: nextSubscores.commercial_infrastructure,
+      market_attractiveness_score: nextSubscores.market_attractiveness,
+      capability_gap_leverage_score: nextSubscores.capability_gap_leverage,
+      clinical_hold: nextFlags.clinical_hold,
+      no_manufacturing_pathway: nextFlags.no_manufacturing_pathway,
+      timeline_over_24_months: nextFlags.timeline_over_24_months,
+      no_us_path: nextFlags.no_us_path,
+      raw_commercial_score: scored.raw_commercial_score,
+      final_commercial_score: scored.final_commercial_score ?? 0,
       strategic_opportunity_score: scored.strategic_opportunity_score,
       commercial_priority_tier: scored.commercial_priority_tier,
       strategic_priority_tier: scored.strategic_priority_tier,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", asset.id);
 
-  // Append to score history
   await supabase.from("cgt_score_history").insert({
-    week: weekLabel,
-    company_id: asset.company_id,
     asset_id: asset.id,
-    subscore_regulatory: nextSubscores.regulatory,
-    subscore_commercial_infrastructure: nextSubscores.commercial_infrastructure,
-    subscore_market_attractiveness: nextSubscores.market_attractiveness,
-    subscore_capability_gap_leverage: nextSubscores.capability_gap_leverage,
+    week_label: weekLabel,
+    regulatory_score: nextSubscores.regulatory,
+    commercial_infrastructure_score: nextSubscores.commercial_infrastructure,
+    market_attractiveness_score: nextSubscores.market_attractiveness,
+    capability_gap_leverage_score: nextSubscores.capability_gap_leverage,
     raw_commercial_score: scored.raw_commercial_score,
-    final_commercial_score: scored.final_commercial_score,
+    final_commercial_score: scored.final_commercial_score ?? 0,
     strategic_opportunity_score: scored.strategic_opportunity_score,
     commercial_priority_tier: scored.commercial_priority_tier,
     strategic_priority_tier: scored.strategic_priority_tier,
-    cap_applied: scored.cap_applied,
   });
 
-  // Append change log rows — one per changed field, per spec.
+  // Change-log: one row per changed field.
   const changes: Array<{ field: string; prev: unknown; next: unknown }> = [];
   if (asset.final_commercial_score !== scored.final_commercial_score)
     changes.push({ field: "final_commercial_score", prev: asset.final_commercial_score, next: scored.final_commercial_score });
@@ -469,23 +473,22 @@ async function applyAndGate(
 
   const primarySignal = out.signals[0];
   for (const ch of changes) {
+    const delta =
+      asset.final_commercial_score !== null && scored.final_commercial_score !== null
+        ? scored.final_commercial_score - asset.final_commercial_score
+        : null;
     await supabase.from("cgt_change_log").insert({
-      run_date: new Date().toISOString(),
+      asset_id: asset.id,
       update_week: weekLabel,
       agent_id: runId,
-      company_id: asset.company_id,
-      asset_id: asset.id,
       change_type: mat.reasons.join(","),
       field_changed: ch.field,
       previous_value: String(ch.prev ?? ""),
       new_value: String(ch.next ?? ""),
       why_it_matters: primarySignal?.why_it_matters ?? mat.reasons.join(", "),
-      score_impact:
-        asset.final_commercial_score !== null && scored.final_commercial_score !== null
-          ? scored.final_commercial_score - asset.final_commercial_score
-          : null,
-      source: primarySignal?.source_url ?? "",
-      confidence: primarySignal?.confidence ?? "medium",
+      score_impact_explanation: delta !== null ? `final_commercial_score delta: ${delta >= 0 ? "+" : ""}${delta}` : "",
+      source_url: primarySignal?.source_url ?? "",
+      confidence_level: primarySignal?.confidence ?? "Medium",
     });
   }
 
