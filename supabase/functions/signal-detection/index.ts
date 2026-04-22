@@ -147,7 +147,10 @@ Deno.serve(async (req: Request) => {
     // 10 would blow past the Supabase Edge Function ~150s timeout
     // (~32s/asset × 10 ≈ 5 min), leaving the run row stuck in "running"
     // even though per-asset writes had committed.
-    const perAssetTimeoutMs = 90_000;
+    // 120s is generous given each upstream fetch is now bounded to 25s
+    // and the Haiku call typically returns in 5-20s. Sits comfortably
+    // under the Supabase Edge Function ~150s wall-time ceiling.
+    const perAssetTimeoutMs = 120_000;
     await Promise.all(
       assets.map((asset) =>
         withTimeout(
@@ -261,12 +264,23 @@ async function gatherSources(asset: AssetWithCompany) {
     { name: "pubmed", url: `${functionsBase}/fetch-pubmed-data`, tier: 2 },
   ];
 
+  // AbortController-backed timeout so a slow upstream (cold SEC EDGAR
+  // cache, PubMed lag, etc.) doesn't stall the whole asset. Whatever
+  // returns in FETCH_TIMEOUT_MS is used; the rest is dropped.
+  const FETCH_TIMEOUT_MS = 25_000;
+
   const results = await Promise.allSettled(
-    endpoints.map((e) =>
-      fetch(e.url, { method: "POST", headers, body })
-        .then((r) => r.json())
-        .then((j) => ({ ...e, data: j }))
-    )
+    endpoints.map(async (e) => {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+      try {
+        const r = await fetch(e.url, { method: "POST", headers, body, signal: ctrl.signal });
+        const j = await r.json();
+        return { ...e, data: j };
+      } finally {
+        clearTimeout(tid);
+      }
+    })
   );
   return results
     .filter((r): r is PromiseFulfilledResult<{ name: string; url: string; tier: number; data: unknown }> => r.status === "fulfilled")
