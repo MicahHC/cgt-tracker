@@ -137,28 +137,39 @@ Deno.serve(async (req: Request) => {
   try {
     const assets = await loadAssets(supabase, company_ids);
 
-    for (const asset of assets) {
-      try {
-        const sources = await gatherSources(asset);
-        const agentOutput = await extractSignals(anthropic, asset, sources);
+    // Process all assets in parallel. Sequential processing of a batch of
+    // 10 would blow past the Supabase Edge Function ~150s timeout
+    // (~32s/asset × 10 ≈ 5 min), leaving the run row stuck in "running"
+    // even though per-asset writes had committed.
+    const perAssetTimeoutMs = 90_000;
+    await Promise.all(
+      assets.map((asset) =>
+        withTimeout(
+          (async () => {
+            const sources = await gatherSources(asset);
+            const agentOutput = await extractSignals(anthropic, asset, sources);
 
-        totals.signals_found += agentOutput.signals.length;
+            totals.signals_found += agentOutput.signals.length;
 
-        for (const s of agentOutput.signals) {
-          await persistSignal(supabase, run.id, asset, s);
-        }
+            for (const s of agentOutput.signals) {
+              await persistSignal(supabase, run.id, asset, s);
+            }
 
-        if (agentOutput.signals.length > 0 && agentOutput.current_subscores && agentOutput.current_flags) {
-          const updated = await applyAndGate(supabase, asset, agentOutput, run.id, week_label);
-          if (updated.material) totals.material_signals += 1;
-          if (updated.scoreUpdated) totals.score_updates += 1;
-        }
-      } catch (err) {
-        const msg = `asset ${asset.id}: ${err instanceof Error ? err.message : String(err)}`;
-        console.error(msg);
-        totals.errors.push(msg);
-      }
-    }
+            if (agentOutput.signals.length > 0 && agentOutput.current_subscores && agentOutput.current_flags) {
+              const updated = await applyAndGate(supabase, asset, agentOutput, run.id, week_label);
+              if (updated.material) totals.material_signals += 1;
+              if (updated.scoreUpdated) totals.score_updates += 1;
+            }
+          })(),
+          perAssetTimeoutMs,
+          `asset ${asset.id} exceeded ${perAssetTimeoutMs}ms`
+        ).catch((err) => {
+          const msg = `asset ${asset.id}: ${err instanceof Error ? err.message : String(err)}`;
+          console.error(msg);
+          totals.errors.push(msg);
+        })
+      )
+    );
 
     const status = totals.errors.length === 0 ? "succeeded" : totals.errors.length < assets.length ? "partial" : "failed";
     await supabase
@@ -502,4 +513,11 @@ function jsonError(status: number, message: string) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout: ${label}`)), ms)),
+  ]);
 }

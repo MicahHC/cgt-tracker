@@ -104,17 +104,25 @@ Deno.serve(async (req: Request) => {
     const assets = await loadAssets(supabase, body.company_ids);
     totals.assets = assets.length;
 
-    for (const asset of assets) {
-      try {
-        const out = await reevaluate(anthropic, asset);
-        const applied = await applyAndPersist(supabase, asset, out, run.id, body.month_label);
-        if (applied) totals.material += 1;
-      } catch (e) {
-        const msg = `asset ${asset.id}: ${e instanceof Error ? e.message : String(e)}`;
-        console.error(msg);
-        totals.errors.push(msg);
-      }
-    }
+    // Parallel per-asset to stay under the Edge Function timeout.
+    const perAssetTimeoutMs = 90_000;
+    await Promise.all(
+      assets.map((asset) =>
+        withTimeout(
+          (async () => {
+            const out = await reevaluate(anthropic, asset);
+            const applied = await applyAndPersist(supabase, asset, out, run.id, body.month_label);
+            if (applied) totals.material += 1;
+          })(),
+          perAssetTimeoutMs,
+          `asset ${asset.id} exceeded ${perAssetTimeoutMs}ms`
+        ).catch((e) => {
+          const msg = `asset ${asset.id}: ${e instanceof Error ? e.message : String(e)}`;
+          console.error(msg);
+          totals.errors.push(msg);
+        })
+      )
+    );
 
     const status = totals.errors.length === 0 ? "succeeded" : totals.errors.length < assets.length ? "partial" : "failed";
     await supabase
@@ -382,4 +390,11 @@ function json(obj: unknown) {
   return new Response(JSON.stringify(obj), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout: ${label}`)), ms)),
+  ]);
 }
