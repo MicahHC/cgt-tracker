@@ -18,7 +18,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const CLAUDE_MODEL = "claude-opus-4-6";
+// Haiku for discovery — cheap, fast, and sufficient for generating a
+// candidate list that will be human-reviewed before promotion.
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+const MAX_RETRIES_ON_429 = 3;
 
 interface DiscoveryRequest {
   week_label: string;
@@ -182,14 +185,16 @@ RULES:
     },
   };
 
-  const resp = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 4096,
-    system,
-    tools: [tool],
-    tool_choice: { type: "tool", name: "emit_candidates" },
-    messages: [{ role: "user", content: user }],
-  });
+  const resp = await callWithRetry(() =>
+    anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4096,
+      system,
+      tools: [tool],
+      tool_choice: { type: "tool", name: "emit_candidates" },
+      messages: [{ role: "user", content: user }],
+    })
+  );
 
   const block = resp.content.find((c) => c.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("Claude did not return tool_use");
@@ -244,4 +249,25 @@ function json(obj: unknown) {
   return new Response(JSON.stringify(obj), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+async function callWithRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= MAX_RETRIES_ON_429; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      // deno-lint-ignore no-explicit-any
+      const status = (e as any)?.status ?? (e as any)?.response?.status;
+      const isRetryable = status === 429 || status === 529 || status === 503;
+      if (!isRetryable || attempt === MAX_RETRIES_ON_429) throw e;
+      // deno-lint-ignore no-explicit-any
+      const hdr = (e as any)?.headers?.["retry-after"] ?? (e as any)?.response?.headers?.get?.("retry-after");
+      const retryAfterMs = hdr ? Math.min(Number(hdr) * 1000, 30_000) : Math.min(2 ** attempt * 1000, 15_000);
+      const jitter = Math.floor(Math.random() * 500);
+      await new Promise((r) => setTimeout(r, retryAfterMs + jitter));
+    }
+  }
+  throw lastErr;
 }

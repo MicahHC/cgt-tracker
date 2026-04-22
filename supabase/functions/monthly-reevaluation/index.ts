@@ -30,6 +30,7 @@ const corsHeaders = {
 
 const MAX_COMPANIES_PER_BATCH = 10;
 const CLAUDE_MODEL = "claude-opus-4-6";
+const MAX_RETRIES_ON_429 = 3;
 
 interface Req {
   company_ids: string[];
@@ -266,14 +267,16 @@ Source hierarchy: Tier 1 (IR, SEC, FDA, ClinicalTrials.gov) > Tier 2 (investor d
     },
   };
 
-  const resp = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 4096,
-    system,
-    tools: [tool],
-    tool_choice: { type: "tool", name: "emit_reevaluation" },
-    messages: [{ role: "user", content: user }],
-  });
+  const resp = await callWithRetry(() =>
+    anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4096,
+      system,
+      tools: [tool],
+      tool_choice: { type: "tool", name: "emit_reevaluation" },
+      messages: [{ role: "user", content: user }],
+    })
+  );
 
   const block = resp.content.find((c) => c.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("Claude did not return tool_use");
@@ -397,4 +400,25 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
     p,
     new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout: ${label}`)), ms)),
   ]);
+}
+
+async function callWithRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= MAX_RETRIES_ON_429; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      // deno-lint-ignore no-explicit-any
+      const status = (e as any)?.status ?? (e as any)?.response?.status;
+      const isRetryable = status === 429 || status === 529 || status === 503;
+      if (!isRetryable || attempt === MAX_RETRIES_ON_429) throw e;
+      // deno-lint-ignore no-explicit-any
+      const hdr = (e as any)?.headers?.["retry-after"] ?? (e as any)?.response?.headers?.get?.("retry-after");
+      const retryAfterMs = hdr ? Math.min(Number(hdr) * 1000, 30_000) : Math.min(2 ** attempt * 1000, 15_000);
+      const jitter = Math.floor(Math.random() * 500);
+      await new Promise((r) => setTimeout(r, retryAfterMs + jitter));
+    }
+  }
+  throw lastErr;
 }
