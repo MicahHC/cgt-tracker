@@ -1,14 +1,18 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {
   Dna, LayoutDashboard, Package, Building2, ClipboardList, LineChart,
-  CalendarClock, Settings, LogOut, ChevronRight, Gauge
+  CalendarClock, Settings, LogOut, ChevronRight, Gauge, Newspaper
 } from 'lucide-react';
+import { fetchLatestBriefMeta, getLastSeenWeek } from '../lib/weeklyBrief';
 
-export type PageKey = 'dashboard' | 'assets' | 'companies' | 'scoring' | 'changelog' | 'scorehistory' | 'catalysts' | 'admin';
+export type PageKey =
+  | 'dashboard' | 'assets' | 'companies' | 'scoring' | 'changelog'
+  | 'scorehistory' | 'catalysts' | 'weeklybrief' | 'admin';
 
 const NAV: { key: PageKey; label: string; icon: typeof Dna }[] = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'weeklybrief', label: 'Weekly Brief', icon: Newspaper },
   { key: 'scoring', label: 'Scoring', icon: Gauge },
   { key: 'assets', label: 'Assets', icon: Package },
   { key: 'companies', label: 'Companies', icon: Building2 },
@@ -30,6 +34,31 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
     : role === 'analyst' ? 'bg-blue-100 text-blue-700'
     : 'bg-slate-100 text-slate-600';
 
+  const [briefBadge, setBriefBadge] = useState<number>(0);
+
+  useEffect(() => {
+    let active = true;
+    async function refresh() {
+      const { latestWeek, changeCount } = await fetchLatestBriefMeta();
+      if (!active) return;
+      const lastSeen = getLastSeenWeek();
+      if (latestWeek && latestWeek !== lastSeen) {
+        setBriefBadge(changeCount || 1);
+      } else {
+        setBriefBadge(0);
+      }
+    }
+    refresh();
+    const onSeen = () => setBriefBadge(0);
+    window.addEventListener('cgt:weekly-brief-seen', onSeen);
+    const interval = setInterval(refresh, 5 * 60 * 1000);
+    return () => {
+      active = false;
+      window.removeEventListener('cgt:weekly-brief-seen', onSeen);
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
@@ -49,6 +78,7 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
           {NAV.map((item) => {
             const Icon = item.icon;
             const active = currentPage === item.key;
+            const showBadge = item.key === 'weeklybrief' && briefBadge > 0;
             return (
               <button
                 key={item.key}
@@ -61,7 +91,15 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
               >
                 <Icon className="w-4 h-4" />
                 <span className="flex-1 text-left">{item.label}</span>
-                {active && <ChevronRight className="w-3.5 h-3.5" />}
+                {showBadge && (
+                  <span
+                    className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-teal-600 text-white text-[10px] font-bold leading-none animate-pulse"
+                    aria-label={`${briefBadge} new updates`}
+                  >
+                    {briefBadge > 99 ? '99+' : briefBadge}
+                  </span>
+                )}
+                {active && !showBadge && <ChevronRight className="w-3.5 h-3.5" />}
               </button>
             );
           })}
