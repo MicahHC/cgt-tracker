@@ -29,7 +29,13 @@ const corsHeaders = {
 };
 
 const MAX_COMPANIES_PER_BATCH = 10;
-const CLAUDE_MODEL = "claude-opus-4-6";
+// Haiku for high-volume structured extraction. Rate limits are ~10x
+// Opus at every tier, and Haiku is more than capable of extracting
+// signals from structured source dumps. Monthly re-evaluation keeps
+// Opus since it re-derives scores from first principles.
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+const MAX_USER_PAYLOAD_CHARS = 40_000;
+const MAX_RETRIES_ON_429 = 3;
 
 // ---------- Types ----------
 
@@ -322,7 +328,7 @@ RULES:
       },
     },
     sources,
-  }).slice(0, 180_000);
+  }).slice(0, MAX_USER_PAYLOAD_CHARS);
 
   const tool = {
     name: "emit_signals",
@@ -372,14 +378,16 @@ RULES:
     },
   };
 
-  const resp = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 4096,
-    system,
-    tools: [tool],
-    tool_choice: { type: "tool", name: "emit_signals" },
-    messages: [{ role: "user", content: user }],
-  });
+  const resp = await callWithRetry(() =>
+    anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4096,
+      system,
+      tools: [tool],
+      tool_choice: { type: "tool", name: "emit_signals" },
+      messages: [{ role: "user", content: user }],
+    })
+  );
 
   const block = resp.content.find((c) => c.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("Claude did not return tool_use");
@@ -520,4 +528,28 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
     p,
     new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout: ${label}`)), ms)),
   ]);
+}
+
+// Retry on transient Anthropic errors (429 rate limit, 529 overloaded).
+// Exponential backoff with jitter. Honors a numeric `retry-after` header
+// if the SDK exposes it. Max 3 retries.
+async function callWithRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= MAX_RETRIES_ON_429; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      // deno-lint-ignore no-explicit-any
+      const status = (err as any)?.status ?? (err as any)?.response?.status;
+      const isRetryable = status === 429 || status === 529 || status === 503;
+      if (!isRetryable || attempt === MAX_RETRIES_ON_429) throw err;
+      // deno-lint-ignore no-explicit-any
+      const hdr = (err as any)?.headers?.["retry-after"] ?? (err as any)?.response?.headers?.get?.("retry-after");
+      const retryAfterMs = hdr ? Math.min(Number(hdr) * 1000, 30_000) : Math.min(2 ** attempt * 1000, 15_000);
+      const jitter = Math.floor(Math.random() * 500);
+      await new Promise((r) => setTimeout(r, retryAfterMs + jitter));
+    }
+  }
+  throw lastErr;
 }
