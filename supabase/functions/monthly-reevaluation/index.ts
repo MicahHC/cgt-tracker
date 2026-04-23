@@ -30,7 +30,7 @@ const corsHeaders = {
 
 const MAX_COMPANIES_PER_BATCH = 10;
 const CLAUDE_MODEL = "claude-opus-4-6";
-const MAX_RETRIES_ON_429 = 3;
+const MAX_RETRIES_ON_429 = 2;
 
 interface Req {
   company_ids: string[];
@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
   if (!anthropicKey) return err(500, "Claude_API_Key (or ANTHROPIC_API_KEY) missing");
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const anthropic = new Anthropic({ apiKey: anthropicKey });
+  const anthropic = new Anthropic({ apiKey: anthropicKey, maxRetries: 0, timeout: 60_000 });
 
   const { data: run, error: runErr } = await supabase
     .from("cgt_agent_runs")
