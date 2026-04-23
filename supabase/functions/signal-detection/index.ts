@@ -35,7 +35,7 @@ const MAX_COMPANIES_PER_BATCH = 10;
 // Opus since it re-derives scores from first principles.
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 const MAX_USER_PAYLOAD_CHARS = 40_000;
-const MAX_RETRIES_ON_429 = 3;
+const MAX_RETRIES_ON_429 = 2;
 
 // ---------- Types ----------
 
@@ -123,7 +123,12 @@ Deno.serve(async (req: Request) => {
   if (!anthropicKey) return jsonError(500, "Claude_API_Key (or ANTHROPIC_API_KEY) not configured");
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const anthropic = new Anthropic({ apiKey: anthropicKey });
+  // maxRetries: 0 — our own callWithRetry handles 429/529/503 with
+  // bounded backoff. The SDK's default maxRetries=2 would stack on top
+  // and push total attempts to 6, easily blowing the per-asset budget.
+  // timeout: 45_000 — cap any single Anthropic request at 45s so the
+  // per-asset ceiling is never dominated by a stuck SDK call.
+  const anthropic = new Anthropic({ apiKey: anthropicKey, maxRetries: 0, timeout: 45_000 });
 
   const { data: run, error: runErr } = await supabase
     .from("cgt_agent_runs")
@@ -155,9 +160,15 @@ Deno.serve(async (req: Request) => {
       assets.map((asset) =>
         withTimeout(
           (async () => {
+            const t0 = Date.now();
             const sources = await gatherSources(asset);
-            const agentOutput = await extractSignals(anthropic, asset, sources);
+            const tSources = Date.now() - t0;
 
+            const t1 = Date.now();
+            const agentOutput = await extractSignals(anthropic, asset, sources);
+            const tAgent = Date.now() - t1;
+
+            const t2 = Date.now();
             totals.signals_found += agentOutput.signals.length;
 
             for (const s of agentOutput.signals) {
@@ -169,6 +180,8 @@ Deno.serve(async (req: Request) => {
               if (updated.material) totals.material_signals += 1;
               if (updated.scoreUpdated) totals.score_updates += 1;
             }
+            const tPersist = Date.now() - t2;
+            console.log(`[${asset.id}] sources=${tSources}ms agent=${tAgent}ms persist=${tPersist}ms total=${Date.now()-t0}ms signals=${agentOutput.signals.length}`);
           })(),
           perAssetTimeoutMs,
           `asset ${asset.id} exceeded ${perAssetTimeoutMs}ms`

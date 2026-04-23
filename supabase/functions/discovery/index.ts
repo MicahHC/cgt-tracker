@@ -21,7 +21,7 @@ const corsHeaders = {
 // Haiku for discovery — cheap, fast, and sufficient for generating a
 // candidate list that will be human-reviewed before promotion.
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
-const MAX_RETRIES_ON_429 = 3;
+const MAX_RETRIES_ON_429 = 2;
 
 interface DiscoveryRequest {
   week_label: string;
@@ -56,7 +56,7 @@ Deno.serve(async (req: Request) => {
   if (!anthropicKey) return err(500, "Claude_API_Key (or ANTHROPIC_API_KEY) missing");
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const anthropic = new Anthropic({ apiKey: anthropicKey });
+  const anthropic = new Anthropic({ apiKey: anthropicKey, maxRetries: 0, timeout: 45_000 });
 
   const { data: run, error: runErr } = await supabase
     .from("cgt_agent_runs")
