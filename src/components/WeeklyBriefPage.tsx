@@ -215,6 +215,55 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </div>
       </div>
 
+      <section className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <header className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-4 h-4 text-teal-600" />
+            <h2 className="font-semibold text-slate-900 text-sm">
+              {criticalChanges.length > 0 ? 'Highlights · Top priority changes' : 'Highlights'}
+            </h2>
+          </div>
+          <div className="text-xs text-slate-500">
+            Showing {Math.min(criticalChanges.length || changes.length, 20)} of {changes.length}
+          </div>
+        </header>
+        {changes.length === 0 ? (
+          <div className="p-10 text-sm text-slate-400 text-center">No changes recorded this week.</div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {(criticalChanges.length > 0 ? criticalChanges : changes).slice(0, 20).map(c => (
+              <div key={c.id} className="px-5 py-3 hover:bg-slate-50">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <button onClick={() => onOpenAsset(c.asset_id)} className="text-sm font-medium text-teal-700 hover:underline">
+                      {c.asset_name || 'Asset'}
+                    </button>
+                    <span className="text-sm text-slate-500"> · {c.company_name} · </span>
+                    <span className="text-sm font-medium text-slate-900">{c.field_changed}</span>
+                    <div className="text-sm mt-1">
+                      <span className="text-slate-500 line-through">{c.previous_value || '—'}</span>{' '}
+                      <span className="text-teal-700">→ {c.new_value || '—'}</span>
+                    </div>
+                    {c.why_it_matters && <div className="text-xs text-slate-600 mt-1">{c.why_it_matters}</div>}
+                  </div>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0 text-xs text-slate-500">
+                    <div>{new Date(c.created_at).toLocaleDateString()}</div>
+                    <div className="flex items-center gap-2">
+                      <ConfidenceBadge level={c.confidence_level} />
+                      {c.source_url && (
+                        <a href={c.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-teal-600 hover:underline">
+                          Source <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <Stat label="Changes logged" value={changes.length} icon={ClipboardList} color="teal" />
         <Stat label="Score updates" value={scores.length} icon={TrendingUp} color="blue" />
@@ -307,52 +356,6 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </section>
       )}
 
-      <section className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <header className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ClipboardList className="w-4 h-4 text-teal-600" />
-            <h2 className="font-semibold text-slate-900 text-sm">Highlights</h2>
-          </div>
-          <div className="text-xs text-slate-500">
-            Showing {Math.min(criticalChanges.length || changes.length, 20)} of {changes.length}
-          </div>
-        </header>
-        {changes.length === 0 ? (
-          <div className="p-10 text-sm text-slate-400 text-center">No changes recorded this week.</div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {(criticalChanges.length > 0 ? criticalChanges : changes).slice(0, 20).map(c => (
-              <div key={c.id} className="px-5 py-3 hover:bg-slate-50">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <button onClick={() => onOpenAsset(c.asset_id)} className="text-sm font-medium text-teal-700 hover:underline">
-                      {c.asset_name || 'Asset'}
-                    </button>
-                    <span className="text-sm text-slate-500"> · {c.company_name} · </span>
-                    <span className="text-sm font-medium text-slate-900">{c.field_changed}</span>
-                    <div className="text-sm mt-1">
-                      <span className="text-slate-500 line-through">{c.previous_value || '—'}</span>{' '}
-                      <span className="text-teal-700">→ {c.new_value || '—'}</span>
-                    </div>
-                    {c.why_it_matters && <div className="text-xs text-slate-600 mt-1">{c.why_it_matters}</div>}
-                  </div>
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0 text-xs text-slate-500">
-                    <div>{new Date(c.created_at).toLocaleDateString()}</div>
-                    <div className="flex items-center gap-2">
-                      <ConfidenceBadge level={c.confidence_level} />
-                      {c.source_url && (
-                        <a href={c.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-teal-600 hover:underline">
-                          Source <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
