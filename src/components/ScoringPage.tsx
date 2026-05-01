@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtCompany, CgtAssetSource } from '../types/database';
 import { ScoreAssetModal } from './ScoreAssetModal';
 import { NewCompanyScoreModal } from './NewCompanyScoreModal';
@@ -32,6 +33,8 @@ export function ScoringPage() {
   }
 
   useEffect(() => { load(); }, []);
+
+  useRealtimeRefresh(['cgt_assets', 'cgt_companies', 'cgt_score_history'], () => load());
 
   async function openScoring(asset: CgtAsset) {
     const { data } = await supabase

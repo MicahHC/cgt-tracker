@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 
 interface Props {
   onOpenAsset: (id: string) => void;
@@ -75,6 +76,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     if (!week) return;
     loadWeek(week);
   }, [week]);
+
+  useRealtimeRefresh(
+    ['cgt_change_log', 'cgt_score_history', 'cgt_agent_runs', 'cgt_assets'],
+    () => { if (week) loadWeek(week); }
+  );
 
   useEffect(() => {
     if (loading) return;

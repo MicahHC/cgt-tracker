@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset } from '../types/database';
 import { SEGMENTS, TIERS } from '../lib/constants';
 import { CalendarClock, Package } from 'lucide-react';
@@ -21,6 +22,8 @@ export function CatalystsPage({ onOpenAsset }: Props) {
   const [tier, setTier] = useState<string>('all');
 
   useEffect(() => { load(); }, []);
+
+  useRealtimeRefresh(['cgt_assets', 'cgt_companies'], () => load());
 
   async function load() {
     setLoading(true);

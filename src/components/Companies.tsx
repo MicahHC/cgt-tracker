@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetSource, CgtCompany } from '../types/database';
 import { Building2, Plus, ExternalLink, Search, ChevronRight, X, Save, Gauge, ArrowUpDown, Filter } from 'lucide-react';
 import { SegmentBadge, TierBadge } from './ui/Badge';
@@ -34,6 +35,8 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
   }
 
   useEffect(() => { load(); }, []);
+
+  useRealtimeRefresh(['cgt_companies', 'cgt_assets'], () => load());
 
   async function load() {
     setLoading(true);

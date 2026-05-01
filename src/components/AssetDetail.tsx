@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetSource, CgtChangeLog, CgtCompany, CgtScoreHistory } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 import { computeAllScores } from '../lib/scoring';
@@ -28,6 +29,11 @@ export function AssetDetail({ assetId, onBack }: Props) {
   const [scoring, setScoring] = useState(false);
 
   useEffect(() => { load(); }, [assetId]);
+
+  useRealtimeRefresh(
+    ['cgt_assets', 'cgt_asset_sources', 'cgt_change_log', 'cgt_score_history', 'cgt_companies'],
+    () => load()
+  );
 
   async function load() {
     setLoading(true);

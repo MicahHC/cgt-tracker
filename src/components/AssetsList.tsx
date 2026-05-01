@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetWithCompany, CgtCompany, Segment, Tier } from '../types/database';
 import { SEGMENTS, TIERS, MANUFACTURING_STATUSES, CONFIDENCE_LEVELS } from '../lib/constants';
 import { TierBadge, SegmentBadge, FlagBadge } from './ui/Badge';
@@ -32,6 +33,8 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
   useEffect(() => {
     load();
   }, []);
+
+  useRealtimeRefresh(['cgt_assets', 'cgt_companies'], () => load());
 
   async function load() {
     setLoading(true);

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtChangeLog } from '../types/database';
 import { Search, ClipboardList, ExternalLink } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
@@ -21,6 +22,8 @@ export function ChangeLogPage({ onOpenAsset }: Props) {
   const [company, setCompany] = useState<string>('all');
 
   useEffect(() => { load(); }, []);
+
+  useRealtimeRefresh(['cgt_change_log', 'cgt_assets'], () => load());
 
   async function load() {
     setLoading(true);

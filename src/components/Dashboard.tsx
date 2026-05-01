@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtCompany } from '../types/database';
 import {
   Package, Target, FlaskConical, ShoppingBag, ShieldAlert, Factory,
@@ -23,6 +24,8 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   useEffect(() => {
     load();
   }, []);
+
+  useRealtimeRefresh(['cgt_assets', 'cgt_companies', 'cgt_change_log', 'cgt_score_history'], () => load());
 
   async function load() {
     const [{ data: assetData }, { data: companyData, count: cCount }, { data: changes }] = await Promise.all([

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtScoreHistory } from '../types/database';
 import { LineChart, TrendingDown, TrendingUp } from 'lucide-react';
 import { TierBadge } from './ui/Badge';
@@ -18,6 +19,8 @@ export function ScoreHistoryPage({ onOpenAsset }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { load(); }, []);
+
+  useRealtimeRefresh(['cgt_score_history', 'cgt_assets'], () => load());
 
   async function load() {
     setLoading(true);
