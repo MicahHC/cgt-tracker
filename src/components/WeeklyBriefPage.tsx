@@ -219,7 +219,16 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     );
   }
 
-  const generatedLabel = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const generatedLabel = (() => {
+    const ts = runs?.latestFinishedAt;
+    if (ts) {
+      return new Date(ts).toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+      });
+    }
+    return 'data not yet generated';
+  })();
 
   return (
     <div ref={rootRef} className="prestige space-y-10" id="weekly-brief-printable">
@@ -271,7 +280,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
 
           <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
-            Generated {generatedLabel}
+            Agent run completed: {generatedLabel}
           </div>
         </div>
       </section>
