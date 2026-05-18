@@ -1,0 +1,51 @@
+name: Deploy Supabase (functions + migrations)
+
+# Auto-deploys Supabase Edge Functions and DB migrations on every push to main
+# that touches supabase/**. Eliminates the need for Bolt to redeploy by hand.
+#
+# Required GitHub repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_ACCESS_TOKEN   Personal access token from https://supabase.com/dashboard/account/tokens
+#   SUPABASE_PROJECT_REF    Your project ref (dbnmnorholzehkppwvap)
+#   SUPABASE_DB_PASSWORD    Database password from Project Settings -> Database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - '.github/workflows/deploy-supabase.yml'
+  workflow_dispatch: {} # manual trigger
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD:  ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF:           ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      - name: Push DB migrations
+        run: supabase db push --include-all
+
+      - name: Deploy Edge Functions
+        run: |
+          set -euo pipefail
+          for fn in signal-detection discovery monthly-reevaluation; do
+            echo "Deploying $fn"
+            supabase functions deploy "$fn" --project-ref "$PROJECT_REF"
+          done
