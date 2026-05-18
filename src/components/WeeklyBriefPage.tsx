@@ -183,8 +183,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return [...scores]
       .filter(s => s.prev_final != null)
       .map(s => ({ ...s, delta: (s.final_commercial_score || 0) - (s.prev_final || 0) }))
+      .filter(s => Math.abs(s.delta) > 0)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
       .slice(0, 8);
+  }, [scores]);
+
+  const flatScoresCount = useMemo(() => {
+    return scores.filter(s => s.prev_final != null && (s.final_commercial_score || 0) - (s.prev_final || 0) === 0).length;
   }, [scores]);
 
   const tierChanges = useMemo(() => {
@@ -357,7 +362,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       </section>
 
       {/* Top movers */}
-      {topMovers.length > 0 && (
+      {(topMovers.length > 0 || flatScoresCount > 0) && (
         <section className="reveal reveal-delay-3">
           <header className="mb-6">
             <span className="prestige-eyebrow prestige-eyebrow-light">
@@ -365,7 +370,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               Movement
             </span>
             <h2 className="prestige-section-title mt-3">Top score movers</h2>
+            {topMovers.length === 0 && flatScoresCount > 0 && (
+              <p className="text-sm text-slate-500 mt-2">
+                {flatScoresCount} {flatScoresCount === 1 ? 'asset was' : 'assets were'} re-evaluated this week but {flatScoresCount === 1 ? 'its' : 'their'} commercial score did not move.
+              </p>
+            )}
           </header>
+          {topMovers.length === 0 ? null : (
           <div className="prestige-card overflow-hidden">
             <div className="divide-y divide-slate-100">
               {topMovers.map(s => (
@@ -392,6 +403,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               ))}
             </div>
           </div>
+          )}
         </section>
       )}
 
