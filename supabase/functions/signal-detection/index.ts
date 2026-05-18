@@ -517,12 +517,27 @@ async function applyAndGate(
   if (asset.strategic_priority_tier !== scored.strategic_priority_tier)
     changes.push({ field: "strategic_priority_tier", prev: asset.strategic_priority_tier, next: scored.strategic_priority_tier });
 
+  const prevFlags: HardCapFlags = {
+    clinical_hold: !!asset.clinical_hold,
+    no_manufacturing_pathway: !!asset.no_manufacturing_pathway,
+    timeline_over_24_months: !!asset.timeline_over_24_months,
+    no_us_path: !!asset.no_us_path,
+  };
+
   const primarySignal = out.signals[0];
   for (const ch of changes) {
     const delta =
       asset.final_commercial_score !== null && scored.final_commercial_score !== null
         ? scored.final_commercial_score - asset.final_commercial_score
         : null;
+    // Tier changes are mechanical (driven by hard-cap flags), not by the signal
+    // narrative. Score-delta changes can legitimately cite the signal that
+    // caused subscore movement.
+    const isTierChange = ch.field === "commercial_priority_tier" || ch.field === "strategic_priority_tier";
+    const why = isTierChange
+      ? tierChangeRationale(ch.field as "commercial_priority_tier" | "strategic_priority_tier",
+          ch.prev as Tier | null, ch.next as Tier, prevFlags, nextFlags)
+      : (primarySignal?.why_it_matters ?? mat.reasons.join(", "));
     await supabase.from("cgt_change_log").insert({
       asset_id: asset.id,
       update_week: weekLabel,
@@ -531,14 +546,57 @@ async function applyAndGate(
       field_changed: ch.field,
       previous_value: String(ch.prev ?? ""),
       new_value: String(ch.next ?? ""),
-      why_it_matters: primarySignal?.why_it_matters ?? mat.reasons.join(", "),
+      why_it_matters: why,
       score_impact_explanation: delta !== null ? `final_commercial_score delta: ${delta >= 0 ? "+" : ""}${delta}` : "",
-      source_url: primarySignal?.source_url ?? "",
+      source_url: isTierChange ? "" : (primarySignal?.source_url ?? ""),
       confidence_level: primarySignal?.confidence ?? "Medium",
     });
   }
 
   return { material: true, scoreUpdated: true };
+}
+
+// ---------- Tier change rationale ----------
+
+function tierChangeRationale(
+  field: "commercial_priority_tier" | "strategic_priority_tier",
+  prevTier: Tier | null,
+  newTier: Tier,
+  prevFlags: HardCapFlags,
+  newFlags: HardCapFlags,
+): string {
+  const kind = field === "commercial_priority_tier" ? "Commercial" : "Strategic";
+
+  if (newTier === "Excluded") {
+    return `${kind} tier set to Excluded — no U.S. commercialization path established for this asset.`;
+  }
+
+  if (newTier === "Tier 1") {
+    const base = `${kind} tier set to Tier 1 — asset has a U.S. path and is projected to commercialize within 24 months.`;
+    if (prevTier && prevFlags.timeline_over_24_months && !newFlags.timeline_over_24_months) {
+      return base + " Timeline estimate was revised this week from >24 months to ≤24 months.";
+    }
+    if (prevTier && prevFlags.no_us_path && !newFlags.no_us_path) {
+      return base + " A U.S. commercialization path was established this week.";
+    }
+    if (!prevTier || prevTier === "Excluded") {
+      return base + " (Initial tier assignment from re-evaluation of the U.S. path and launch timeline.)";
+    }
+    return base + " (Tier rule re-evaluated against current U.S. path and launch timeline; no underlying flag change recorded.)";
+  }
+
+  if (newTier === "Tier 2") {
+    const base = `${kind} tier set to Tier 2 — asset has a U.S. path but is projected to commercialize beyond 24 months.`;
+    if (prevTier && !prevFlags.timeline_over_24_months && newFlags.timeline_over_24_months) {
+      return base + " Timeline estimate was revised this week from ≤24 months to >24 months.";
+    }
+    if (!prevTier || prevTier === "Excluded") {
+      return base + " (Initial tier assignment from re-evaluation of the U.S. path and launch timeline.)";
+    }
+    return base + " (Tier rule re-evaluated against current U.S. path and launch timeline; no underlying flag change recorded.)";
+  }
+
+  return `${kind} tier reassigned to ${newTier}.`;
 }
 
 // ---------- Utils ----------
