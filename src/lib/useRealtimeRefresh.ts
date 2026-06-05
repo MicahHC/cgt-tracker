@@ -9,6 +9,7 @@ type TableName =
   | 'cgt_asset_sources'
   | 'cgt_agent_runs'
   | 'cgt_signals'
+  | 'cgt_abm_weekly_engagement'
   | 'research_jobs';
 
 interface Options {
