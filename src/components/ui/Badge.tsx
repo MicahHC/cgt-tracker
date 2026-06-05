@@ -20,6 +20,7 @@ export function SegmentBadge({ segment }: { segment: string }) {
     'Late Stage': 'bg-teal-50 text-teal-700 border-teal-200',
     'Early Stage': 'bg-sky-50 text-sky-700 border-sky-200',
     'On-Market': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    'ATC': 'bg-violet-50 text-violet-700 border-violet-200',
   };
   return <Badge className={colors[segment] || 'bg-slate-50 text-slate-600 border-slate-200'}>{segment}</Badge>;
 }

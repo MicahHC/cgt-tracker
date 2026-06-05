@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { CgtAbmWeeklyEngagement } from '../types/database';
+import { AbmAudienceSegment, CgtAbmWeeklyEngagement } from '../types/database';
 
 type AbmInsertRow = Omit<CgtAbmWeeklyEngagement, 'id' | 'created_at' | 'uploaded_at' | 'uploaded_by'>;
 
@@ -15,9 +15,31 @@ export function normalizeAccountName(value: string): string {
     .replace(/\s+/g, ' ');
 }
 
-export async function uploadAbmEngagementCsv(file: File, weekLabel: string): Promise<number> {
+export function detectAudienceSegment(fileName: string): AbmAudienceSegment {
+  const lower = fileName.toLowerCase();
+  if (lower.includes('atc')) return 'ATC';
+  if (lower.includes('onmarket') || lower.includes('on_market') || lower.includes('on-market')) return 'On Market';
+  if (lower.includes('earlystage') || lower.includes('early_stage') || lower.includes('early-stage')) return 'Early Stage';
+  if (lower.includes('latestage') || lower.includes('late_stage') || lower.includes('late-stage')) return 'Late Stage';
+  return '';
+}
+
+export async function fetchClientDomains(): Promise<Set<string>> {
+  const { data } = await supabase
+    .from('cgt_abm_client_domains')
+    .select('domain');
+  const set = new Set<string>();
+  for (const row of (data as any[]) || []) {
+    if (row.domain) set.add(row.domain.toLowerCase().trim());
+  }
+  return set;
+}
+
+export async function uploadAbmEngagementCsv(file: File, weekLabel: string, segmentOverride?: AbmAudienceSegment): Promise<number> {
   const text = await file.text();
-  const rows = parseAbmEngagementCsv(text, weekLabel, file.name);
+  const segment = segmentOverride || detectAudienceSegment(file.name);
+  const clientDomains = await fetchClientDomains();
+  const rows = parseAbmEngagementCsv(text, weekLabel, file.name, segment, clientDomains);
   if (rows.length === 0) {
     throw new Error('No ABM account rows found in this CSV.');
   }
@@ -25,7 +47,8 @@ export async function uploadAbmEngagementCsv(file: File, weekLabel: string): Pro
   const { error: deleteError } = await supabase
     .from('cgt_abm_weekly_engagement')
     .delete()
-    .eq('week_label', weekLabel);
+    .eq('week_label', weekLabel)
+    .eq('audience_segment', segment || '');
   if (deleteError) throw new Error(`Could not replace prior ABM upload: ${deleteError.message}`);
 
   const { error: insertError } = await (supabase as any)
@@ -36,7 +59,36 @@ export async function uploadAbmEngagementCsv(file: File, weekLabel: string): Pro
   return rows.length;
 }
 
-export function parseAbmEngagementCsv(text: string, weekLabel: string, fileName: string): AbmInsertRow[] {
+export async function toggleClientStatus(accountId: string, isClient: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('cgt_abm_weekly_engagement')
+    .update({ is_client: isClient })
+    .eq('id', accountId);
+  if (error) throw new Error(`Could not update client status: ${error.message}`);
+}
+
+export async function addClientDomain(domain: string, accountName: string): Promise<void> {
+  const { error } = await (supabase as any)
+    .from('cgt_abm_client_domains')
+    .upsert({ domain: domain.toLowerCase().trim(), account_name: accountName }, { onConflict: 'domain' });
+  if (error) throw new Error(`Could not add client domain: ${error.message}`);
+}
+
+export async function removeClientDomain(domain: string): Promise<void> {
+  const { error } = await supabase
+    .from('cgt_abm_client_domains')
+    .delete()
+    .eq('domain', domain.toLowerCase().trim());
+  if (error) throw new Error(`Could not remove client domain: ${error.message}`);
+}
+
+export function parseAbmEngagementCsv(
+  text: string,
+  weekLabel: string,
+  fileName: string,
+  segment: AbmAudienceSegment = '',
+  clientDomains: Set<string> = new Set()
+): AbmInsertRow[] {
   const matrix = parseCsv(text).filter(row => row.some(cell => cell.trim() !== ''));
   const reportingPeriod = findMeta(matrix, 'Reporting Period');
   const reportGeneratedAt = findMeta(matrix, 'Time of Report');
@@ -44,11 +96,15 @@ export function parseAbmEngagementCsv(text: string, weekLabel: string, fileName:
   if (headerIndex === -1) return [];
 
   const headers = matrix[headerIndex].map(h => h.trim());
+  const domainCol = headers.findIndex(h => h.toLowerCase() === 'domain');
+
   return matrix.slice(headerIndex + 1)
     .filter(row => row[0]?.trim())
     .map(row => toRecord(headers, row))
     .map(record => {
       const accountName = value(record, 'Account');
+      const domain = domainCol >= 0 ? value(record, 'Domain').toLowerCase().trim() : '';
+      const isClient = domain ? clientDomains.has(domain) : false;
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,
@@ -75,6 +131,8 @@ export function parseAbmEngagementCsv(text: string, weekLabel: string, fileName:
         pipeline: money(record, 'Pipeline'),
         new_pipeline: money(record, 'New Pipeline'),
         closed_won_pipeline: money(record, 'Closed Won Pipeline'),
+        audience_segment: segment,
+        is_client: isClient,
       };
     });
 }

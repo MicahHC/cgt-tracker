@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { uploadAbmEngagementCsv, normalizeAccountName } from '../lib/abmEngagement';
-import { CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
+import { uploadAbmEngagementCsv, normalizeAccountName, toggleClientStatus } from '../lib/abmEngagement';
+import { AbmAudienceSegment, CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
 import {
   Newspaper, ArrowUpRight, ArrowDownRight, Minus, ExternalLink,
   ClipboardList, Activity, TrendingUp, AlertCircle, CheckCircle2, CalendarDays,
-  Printer, Sparkles, UploadCloud, Target, Users, DollarSign,
+  Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff,
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
+import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
 
 interface Props {
   onOpenAsset: (id: string) => void;
@@ -87,6 +88,16 @@ function tierColor(tier: Tier | null | undefined) {
   }
 }
 
+function segmentColor(seg: AbmAudienceSegment | string): string {
+  switch (seg) {
+    case 'ATC': return 'bg-violet-50 text-violet-700 border-violet-200';
+    case 'Early Stage': return 'bg-sky-50 text-sky-700 border-sky-200';
+    case 'Late Stage': return 'bg-teal-50 text-teal-700 border-teal-200';
+    case 'On Market': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    default: return 'bg-slate-50 text-slate-600 border-slate-200';
+  }
+}
+
 export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [loading, setLoading] = useState(true);
   const [week, setWeek] = useState<string | null>(null);
@@ -99,6 +110,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [uploadingAbm, setUploadingAbm] = useState(false);
   const [abmUploadMessage, setAbmUploadMessage] = useState<string | null>(null);
   const [abmUploadError, setAbmUploadError] = useState<string | null>(null);
+  const [uploadSegment, setUploadSegment] = useState<AbmAudienceSegment>('');
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -272,15 +284,23 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     setAbmUploadMessage(null);
 
     try {
-      const imported = await uploadAbmEngagementCsv(file, week);
-      const accountCount = Math.max(0, imported - 1); // exclude Total/Average
-      setAbmUploadMessage(`Imported ${accountCount} ABM accounts for ${week}.`);
+      const imported = await uploadAbmEngagementCsv(file, week, uploadSegment || undefined);
+      const accountCount = Math.max(0, imported - 1);
+      const segLabel = uploadSegment || 'auto-detected';
+      setAbmUploadMessage(`Imported ${accountCount} ABM accounts for ${week} (${segLabel}).`);
       await loadWeek(week);
     } catch (err) {
       setAbmUploadError(err instanceof Error ? err.message : String(err));
     } finally {
       setUploadingAbm(false);
     }
+  }
+
+  async function handleToggleClient(account: AbmAccountInsight) {
+    try {
+      await toggleClientStatus(account.id, !account.is_client);
+      if (week) await loadWeek(week);
+    } catch {}
   }
 
   const topMovers = useMemo(() => {
@@ -423,6 +443,16 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </select>
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-end">
+          <select
+            value={uploadSegment}
+            onChange={e => setUploadSegment(e.target.value as AbmAudienceSegment)}
+            className="text-xs font-medium bg-white border border-slate-200 rounded-lg px-2 py-2 text-slate-700 outline-none"
+          >
+            <option value="">Segment: auto-detect</option>
+            {ABM_AUDIENCE_SEGMENTS.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
           <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
             uploadingAbm ? 'bg-slate-100 text-slate-400' : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-100'
           }`}>
@@ -614,7 +644,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                 {topAbmAccounts.length === 0 ? (
                   <div className="px-6 py-8 text-center text-sm text-slate-400">No engaged ABM accounts in this upload.</div>
                 ) : topAbmAccounts.map(account => (
-                  <div key={account.id} className="px-6 py-4 hover:bg-slate-50/60 transition-colors">
+                  <div key={account.id} className={`px-6 py-4 hover:bg-slate-50/60 transition-colors ${account.is_client ? 'bg-amber-50/30' : ''}`}>
                     <div className="flex items-start justify-between gap-5">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -628,12 +658,30 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                           ) : (
                             <div className="text-[15px] font-semibold text-slate-900">{account.account_name}</div>
                           )}
+                          {account.audience_segment && (
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border ${segmentColor(account.audience_segment)}`}>
+                              {account.audience_segment}
+                            </span>
+                          )}
+                          {account.is_client && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 border border-amber-200">
+                              <ShieldOff className="w-3 h-3" />
+                              Client · Suppressed
+                            </span>
+                          )}
                           <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase ${recommendationStyle(account.recommendation.tone)}`}>
                             {account.recommendation.label}
                           </span>
                           <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium">
                             {account.recommendation.fit}
                           </span>
+                          <button
+                            onClick={() => handleToggleClient(account)}
+                            className="no-print text-[10px] text-slate-400 hover:text-amber-700 transition-colors underline"
+                            title={account.is_client ? 'Remove client suppression' : 'Mark as client (suppress spend)'}
+                          >
+                            {account.is_client ? 'unsuppress' : 'mark client'}
+                          </button>
                         </div>
                         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
                           {account.relatedAsset ? (
@@ -672,7 +720,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                       <div className="grid grid-cols-3 gap-4 text-right text-sm flex-shrink-0">
                         <MiniMetric label="Engaged" value={formatNumber(account.accounts_engaged)} />
                         <MiniMetric label="Clicks" value={formatNumber(account.clicks)} />
-                        <MiniMetric label="Spend" value={formatCurrency(account.spend)} />
+                        {account.is_client ? (
+                          <MiniMetric label="Spend" value="Suppressed" muted />
+                        ) : (
+                          <MiniMetric label="Spend" value={formatCurrency(account.spend)} />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -918,11 +970,11 @@ function formatPercent(value: number | null | undefined): string {
   return `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}%`;
 }
 
-function MiniMetric({ label, value }: { label: string; value: string }) {
+function MiniMetric({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
     <div>
       <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{label}</div>
-      <div className="font-mono font-semibold text-slate-800 mt-1">{value}</div>
+      <div className={`font-mono font-semibold mt-1 ${muted ? 'text-slate-400 italic text-xs' : 'text-slate-800'}`}>{value}</div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
-export type Segment = 'Late Stage' | 'Early Stage' | 'On-Market';
+export type Segment = 'Late Stage' | 'Early Stage' | 'On-Market' | 'ATC';
+export type AbmAudienceSegment = 'ATC' | 'Early Stage' | 'Late Stage' | 'On Market' | '';
 export type Tier = 'Tier 1' | 'Tier 2' | 'Watchlist' | 'Deprioritized';
 export type ManufacturingStatus = 'Established' | 'Scaling' | 'Early' | 'Constrained' | 'Critical Gap';
 export type ManufacturingPathway = 'Yes' | 'No' | 'Unclear';
@@ -169,8 +170,18 @@ export interface CgtAbmWeeklyEngagement {
   pipeline: number;
   new_pipeline: number;
   closed_won_pipeline: number;
+  audience_segment: AbmAudienceSegment;
+  is_client: boolean;
   uploaded_at: string;
   uploaded_by: string | null;
+  created_at: string;
+}
+
+export interface CgtAbmClientDomain {
+  id: string;
+  domain: string;
+  account_name: string;
+  notes: string;
   created_at: string;
 }
 
@@ -185,6 +196,7 @@ export type Database = {
       cgt_users: { Row: CgtUser; Insert: Partial<CgtUser>; Update: Partial<CgtUser> };
       cgt_agent_assignments: { Row: CgtAgentAssignment; Insert: Partial<CgtAgentAssignment>; Update: Partial<CgtAgentAssignment> };
       cgt_abm_weekly_engagement: { Row: CgtAbmWeeklyEngagement; Insert: Partial<CgtAbmWeeklyEngagement>; Update: Partial<CgtAbmWeeklyEngagement> };
+      cgt_abm_client_domains: { Row: CgtAbmClientDomain; Insert: Partial<CgtAbmClientDomain>; Update: Partial<CgtAbmClientDomain> };
     };
   };
 };
