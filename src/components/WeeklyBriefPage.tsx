@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
+import { uploadAbmEngagementCsv, normalizeAccountName } from '../lib/abmEngagement';
+import { CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
 import {
   Newspaper, ArrowUpRight, ArrowDownRight, Minus, ExternalLink,
   ClipboardList, Activity, TrendingUp, AlertCircle, CheckCircle2, CalendarDays,
-  Printer, Sparkles,
+  Printer, Sparkles, UploadCloud, Target, Users, DollarSign,
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
@@ -39,6 +40,26 @@ interface RunSummary {
   latestFinishedAt: string | null;
 }
 
+interface AssetContext {
+  id: string;
+  company_id: string;
+  company_name: string;
+  asset_name: string;
+  final_commercial_score: number;
+  strategic_opportunity_score: number;
+  commercial_priority_tier: Tier | null;
+  strategic_priority_tier: Tier | null;
+  key_upcoming_catalyst: string;
+  catalyst_date: string | null;
+}
+
+interface AbmAccountInsight extends CgtAbmWeeklyEngagement {
+  relatedAsset?: AssetContext;
+  relatedChanges: number;
+  relatedScoreUpdates: number;
+  engagementScore: number;
+}
+
 function tierColor(tier: Tier | null | undefined) {
   switch (tier) {
     case 'Tier 1': return 'bg-teal-100 text-teal-800';
@@ -56,6 +77,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [changes, setChanges] = useState<ChangeRow[]>([]);
   const [scores, setScores] = useState<ScoreRow[]>([]);
   const [runs, setRuns] = useState<RunSummary | null>(null);
+  const [abmRows, setAbmRows] = useState<CgtAbmWeeklyEngagement[]>([]);
+  const [assetContext, setAssetContext] = useState<AssetContext[]>([]);
+  const [uploadingAbm, setUploadingAbm] = useState(false);
+  const [abmUploadMessage, setAbmUploadMessage] = useState<string | null>(null);
+  const [abmUploadError, setAbmUploadError] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -78,7 +104,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   }, [week]);
 
   useRealtimeRefresh(
-    ['cgt_change_log', 'cgt_score_history', 'cgt_agent_runs', 'cgt_assets'],
+    ['cgt_change_log', 'cgt_score_history', 'cgt_agent_runs', 'cgt_assets', 'cgt_abm_weekly_engagement'],
     () => { if (week) loadWeek(week); }
   );
 
@@ -115,7 +141,27 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       .eq('week_label', w)
       .order('recorded_at', { ascending: false });
 
-    const [{ data: changeData }, { data: scoreData }] = await Promise.all([changesQ, scoresQ]);
+    const abmQ = supabase
+      .from('cgt_abm_weekly_engagement')
+      .select('*')
+      .eq('week_label', w)
+      .order('accounts_engaged', { ascending: false });
+
+    const assetContextQ = supabase
+      .from('cgt_assets')
+      .select(`
+        id, company_id, asset_name, final_commercial_score, strategic_opportunity_score,
+        commercial_priority_tier, strategic_priority_tier, key_upcoming_catalyst, catalyst_date,
+        cgt_companies!inner(company_name)
+      `)
+      .order('final_commercial_score', { ascending: false });
+
+    const [{ data: changeData }, { data: scoreData }, { data: abmData }, { data: assetData }] = await Promise.all([
+      changesQ,
+      scoresQ,
+      abmQ,
+      assetContextQ,
+    ]);
 
     const mappedChanges: ChangeRow[] = ((changeData as any[]) || []).map(r => ({
       ...r,
@@ -127,6 +173,19 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       ...r,
       asset_name: r.cgt_assets?.asset_name,
       company_name: r.cgt_assets?.cgt_companies?.company_name,
+    }));
+
+    const mappedAssets: AssetContext[] = ((assetData as any[]) || []).map(r => ({
+      id: r.id,
+      company_id: r.company_id,
+      company_name: r.cgt_companies?.company_name || '',
+      asset_name: r.asset_name,
+      final_commercial_score: r.final_commercial_score || 0,
+      strategic_opportunity_score: r.strategic_opportunity_score || 0,
+      commercial_priority_tier: r.commercial_priority_tier,
+      strategic_priority_tier: r.strategic_priority_tier,
+      key_upcoming_catalyst: r.key_upcoming_catalyst || '',
+      catalyst_date: r.catalyst_date,
     }));
 
     const assetIds = Array.from(new Set(mappedScores.map(s => s.asset_id)));
@@ -154,6 +213,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
     setChanges(mappedChanges);
     setScores(mappedScores);
+    setAbmRows(((abmData as CgtAbmWeeklyEngagement[] | null) || []));
+    setAssetContext(mappedAssets);
 
     const { data: runData } = await supabase
       .from('cgt_agent_runs')
@@ -177,6 +238,24 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     markWeeklyBriefSeen(w);
 
     setLoading(false);
+  }
+
+  async function handleAbmUpload(file: File | null) {
+    if (!file || !week) return;
+    setUploadingAbm(true);
+    setAbmUploadError(null);
+    setAbmUploadMessage(null);
+
+    try {
+      const imported = await uploadAbmEngagementCsv(file, week);
+      const accountCount = Math.max(0, imported - 1); // exclude Total/Average
+      setAbmUploadMessage(`Imported ${accountCount} ABM accounts for ${week}.`);
+      await loadWeek(week);
+    } catch (err) {
+      setAbmUploadError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setUploadingAbm(false);
+    }
   }
 
   const topMovers = useMemo(() => {
@@ -204,6 +283,75 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   }, [changes]);
 
   const priorityChanges = criticalChanges.length > 0 ? criticalChanges : changes;
+
+  const abmTotal = useMemo(() => {
+    const total = abmRows.find(r => r.is_total);
+    if (total) return total;
+    const accountRows = abmRows.filter(r => !r.is_total);
+    if (accountRows.length === 0) return null;
+    return accountRows.reduce((acc, row) => ({
+      ...acc,
+      spend: acc.spend + (row.spend || 0),
+      impressions: acc.impressions + (row.impressions || 0),
+      clicks: acc.clicks + (row.clicks || 0),
+      accounts_reached: acc.accounts_reached + (row.accounts_reached || 0),
+      accounts_engaged: acc.accounts_engaged + (row.accounts_engaged || 0),
+      campaigns: Math.max(acc.campaigns || 0, row.campaigns || 0),
+      newly_qualified_accounts: acc.newly_qualified_accounts + (row.newly_qualified_accounts || 0),
+      pipeline: acc.pipeline + (row.pipeline || 0),
+      new_pipeline: acc.new_pipeline + (row.new_pipeline || 0),
+      closed_won_pipeline: acc.closed_won_pipeline + (row.closed_won_pipeline || 0),
+    }), {
+      ...accountRows[0],
+      account_name: 'Total/Average',
+      is_total: true,
+      spend: 0,
+      impressions: 0,
+      clicks: 0,
+      accounts_reached: 0,
+      accounts_engaged: 0,
+      campaigns: 0,
+      newly_qualified_accounts: 0,
+      pipeline: 0,
+      new_pipeline: 0,
+      closed_won_pipeline: 0,
+    });
+  }, [abmRows]);
+
+  const topAbmAccounts = useMemo<AbmAccountInsight[]>(() => {
+    const changesByCompany = new Map<string, number>();
+    const scoresByCompany = new Map<string, number>();
+
+    for (const c of changes) {
+      const key = normalizeAccountName(c.company_name || '');
+      if (key) changesByCompany.set(key, (changesByCompany.get(key) || 0) + 1);
+    }
+
+    for (const s of scores) {
+      const key = normalizeAccountName(s.company_name || '');
+      if (key) scoresByCompany.set(key, (scoresByCompany.get(key) || 0) + 1);
+    }
+
+    return abmRows
+      .filter(r => !r.is_total)
+      .map(row => {
+        const relatedAsset = findRelatedAsset(row, assetContext);
+        const relatedKey = relatedAsset ? normalizeAccountName(relatedAsset.company_name) : row.normalized_account_name;
+        const relatedChanges = changesByCompany.get(relatedKey) || 0;
+        const relatedScoreUpdates = scoresByCompany.get(relatedKey) || 0;
+        const engagementScore =
+          (row.accounts_engaged || 0) * 1000 +
+          (row.clicks || 0) * 120 +
+          (row.pipeline || 0) / 100000 +
+          relatedChanges * 750 +
+          relatedScoreUpdates * 500 +
+          (relatedAsset ? 250 : 0);
+        return { ...row, relatedAsset, relatedChanges, relatedScoreUpdates, engagementScore };
+      })
+      .filter(row => row.accounts_engaged > 0 || row.clicks > 0 || row.pipeline > 0 || row.relatedChanges > 0 || row.relatedScoreUpdates > 0)
+      .sort((a, b) => b.engagementScore - a.engagementScore)
+      .slice(0, 12);
+  }, [abmRows, assetContext, changes, scores]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" /></div>;
@@ -246,14 +394,41 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             ))}
           </select>
         </div>
-        <button
-          onClick={() => window.print()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
-        >
-          <Printer className="w-4 h-4" />
-          Export to PDF
-        </button>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+            uploadingAbm ? 'bg-slate-100 text-slate-400' : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-100'
+          }`}>
+            <UploadCloud className="w-4 h-4" />
+            {uploadingAbm ? 'Uploading ABM…' : 'Upload Friday ABM CSV'}
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              disabled={uploadingAbm}
+              onChange={(event) => {
+                const file = event.target.files?.[0] || null;
+                void handleAbmUpload(file);
+                event.currentTarget.value = '';
+              }}
+            />
+          </label>
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+          >
+            <Printer className="w-4 h-4" />
+            Export to PDF
+          </button>
+        </div>
       </div>
+
+      {(abmUploadMessage || abmUploadError) && (
+        <div className={`no-print rounded-lg border px-4 py-3 text-sm ${
+          abmUploadError ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-teal-50 border-teal-100 text-teal-800'
+        }`}>
+          {abmUploadError || abmUploadMessage}
+        </div>
+      )}
 
       {/* Hero */}
       <section className="reveal prestige-hero px-8 md:px-14 py-14 md:py-20">
@@ -370,9 +545,96 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </div>
       </section>
 
+      {/* ABM account engagement */}
+      <section className="reveal reveal-delay-3">
+        <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
+          <div>
+            <span className="prestige-eyebrow prestige-eyebrow-light">
+              <Target className="w-3 h-3" />
+              ABM Layer
+            </span>
+            <h2 className="prestige-section-title mt-3">Top engaged accounts</h2>
+            <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
+              Friday ABM upload, ranked against this week’s CGT activity so engaged accounts with score movement, material changes, or upcoming catalysts rise to the top.
+            </p>
+          </div>
+          {abmTotal && (
+            <div className="text-xs text-slate-500 text-right">
+              <div className="font-semibold uppercase tracking-wider">Reporting period</div>
+              <div>{abmTotal.reporting_period || '—'}</div>
+            </div>
+          )}
+        </header>
+
+        {!abmTotal ? (
+          <div className="prestige-card p-10 text-center">
+            <Target className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <div className="text-slate-700 font-medium">No ABM upload for {week}</div>
+            <p className="text-sm text-slate-500 mt-1">Upload the Friday Performance Trend Report CSV to add account engagement context to this brief.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Stat label="Accounts engaged" value={abmTotal.accounts_engaged || 0} icon={Users} color="teal" sub={`${abmTotal.accounts_reached || 0} reached`} />
+              <Stat label="ABM clicks" value={abmTotal.clicks || 0} icon={Activity} color="blue" sub={`${formatPercent(abmTotal.ctr)} CTR`} />
+              <Stat label="Campaigns" value={abmTotal.campaigns || 0} icon={ClipboardList} color="amber" sub={`${abmRows.filter(r => !r.is_total).length} accounts in upload`} />
+              <Stat label="Pipeline" value={Math.round((abmTotal.pipeline || 0) / 1000000)} icon={DollarSign} color="slate" sub={`${formatCurrency(abmTotal.pipeline)} total`} />
+            </div>
+
+            <div className="prestige-card overflow-hidden">
+              <div className="divide-y divide-slate-100">
+                {topAbmAccounts.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-sm text-slate-400">No engaged ABM accounts in this upload.</div>
+                ) : topAbmAccounts.map(account => (
+                  <div key={account.id} className="px-6 py-4 hover:bg-slate-50/60 transition-colors">
+                    <div className="flex items-start justify-between gap-5">
+                      <div className="min-w-0 flex-1">
+                        {account.relatedAsset ? (
+                          <button
+                            onClick={() => onOpenAsset(account.relatedAsset!.id)}
+                            className="text-[15px] font-semibold text-slate-900 hover:text-teal-700 transition-colors text-left"
+                          >
+                            {account.account_name}
+                          </button>
+                        ) : (
+                          <div className="text-[15px] font-semibold text-slate-900">{account.account_name}</div>
+                        )}
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                          {account.relatedAsset ? (
+                            <>
+                              <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 font-medium">Matched: {account.relatedAsset.company_name}</span>
+                              <span className={`px-2 py-0.5 rounded-full font-medium ${tierColor(account.relatedAsset.commercial_priority_tier)}`}>
+                                {account.relatedAsset.commercial_priority_tier || 'No tier'}
+                              </span>
+                              <span className="text-slate-500">{account.relatedAsset.asset_name} · score {account.relatedAsset.final_commercial_score}</span>
+                            </>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-medium">No tracker match</span>
+                          )}
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                          <span>{account.relatedChanges} weekly changes</span>
+                          <span>{account.relatedScoreUpdates} score updates</span>
+                          {account.pipeline > 0 && <span>{formatCurrency(account.pipeline)} pipeline</span>}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-right text-sm flex-shrink-0">
+                        <MiniMetric label="Engaged" value={formatNumber(account.accounts_engaged)} />
+                        <MiniMetric label="Clicks" value={formatNumber(account.clicks)} />
+                        <MiniMetric label="Spend" value={formatCurrency(account.spend)} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* Top movers */}
       {(topMovers.length > 0 || flatScoresCount > 0) && (
-        <section className="reveal reveal-delay-3">
+        <section className="reveal reveal-delay-4">
           <header className="mb-6">
             <span className="prestige-eyebrow prestige-eyebrow-light">
               <TrendingUp className="w-3 h-3" />
@@ -461,6 +723,57 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function findRelatedAsset(row: CgtAbmWeeklyEngagement, assets: AssetContext[]): AssetContext | undefined {
+  const account = row.normalized_account_name || normalizeAccountName(row.account_name);
+  if (!account) return undefined;
+
+  const exact = assets.filter(asset => normalizeAccountName(asset.company_name) === account);
+  if (exact.length > 0) return strongestAsset(exact);
+
+  const fuzzy = assets.filter(asset => {
+    const company = normalizeAccountName(asset.company_name);
+    return company.length >= 5 && account.length >= 5 && (company.includes(account) || account.includes(company));
+  });
+  return fuzzy.length > 0 ? strongestAsset(fuzzy) : undefined;
+}
+
+function strongestAsset(assets: AssetContext[]): AssetContext {
+  return [...assets].sort((a, b) =>
+    (b.final_commercial_score || 0) - (a.final_commercial_score || 0) ||
+    (b.strategic_opportunity_score || 0) - (a.strategic_opportunity_score || 0)
+  )[0];
+}
+
+function formatCurrency(value: number | null | undefined): string {
+  const safeValue = value || 0;
+  if (Math.abs(safeValue) >= 1_000_000) {
+    return `$${(safeValue / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 1 })}M`;
+  }
+  return safeValue.toLocaleString(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
+}
+
+function formatNumber(value: number | null | undefined): string {
+  return (value || 0).toLocaleString();
+}
+
+function formatPercent(value: number | null | undefined): string {
+  if (value == null) return '—';
+  return `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}%`;
+}
+
+function MiniMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{label}</div>
+      <div className="font-mono font-semibold text-slate-800 mt-1">{value}</div>
     </div>
   );
 }

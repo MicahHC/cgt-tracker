@@ -142,6 +142,38 @@ export interface CgtAgentAssignment {
   created_at: string;
 }
 
+export interface CgtAbmWeeklyEngagement {
+  id: string;
+  week_label: string;
+  reporting_period: string;
+  report_generated_at: string;
+  source_file_name: string;
+  account_name: string;
+  normalized_account_name: string;
+  is_total: boolean;
+  spend: number;
+  impressions: number;
+  ecpm: number;
+  clicks: number;
+  ctr: number;
+  ecpc: number;
+  viewability: number | null;
+  accounts_reached: number;
+  accounts_engaged: number;
+  account_ctr: number | null;
+  account_vtr: number | null;
+  campaigns: number;
+  cost_per_account_reached: number | null;
+  cost_per_account_engaged: number | null;
+  newly_qualified_accounts: number;
+  pipeline: number;
+  new_pipeline: number;
+  closed_won_pipeline: number;
+  uploaded_at: string;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -152,6 +184,7 @@ export type Database = {
       cgt_score_history: { Row: CgtScoreHistory; Insert: Partial<CgtScoreHistory>; Update: Partial<CgtScoreHistory> };
       cgt_users: { Row: CgtUser; Insert: Partial<CgtUser>; Update: Partial<CgtUser> };
       cgt_agent_assignments: { Row: CgtAgentAssignment; Insert: Partial<CgtAgentAssignment>; Update: Partial<CgtAgentAssignment> };
+      cgt_abm_weekly_engagement: { Row: CgtAbmWeeklyEngagement; Insert: Partial<CgtAbmWeeklyEngagement>; Update: Partial<CgtAbmWeeklyEngagement> };
     };
   };
 };
