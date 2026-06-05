@@ -45,6 +45,12 @@ interface AssetContext {
   company_id: string;
   company_name: string;
   asset_name: string;
+  modality: string;
+  lead_indication: string;
+  target_indication: string;
+  phase_regulatory_status: string;
+  likely_us_launch_within_24_months: string;
+  commercial_buildout_status: string;
   final_commercial_score: number;
   strategic_opportunity_score: number;
   commercial_priority_tier: Tier | null;
@@ -53,11 +59,22 @@ interface AssetContext {
   catalyst_date: string | null;
 }
 
+type AbmRecommendationTone = 'market' | 'add' | 'nurture' | 'research' | 'deprioritize';
+
+interface AbmRecommendation {
+  tone: AbmRecommendationTone;
+  label: string;
+  fit: 'High fit' | 'Possible fit' | 'Unknown fit' | 'Low fit';
+  reason: string;
+  nextStep: string;
+}
+
 interface AbmAccountInsight extends CgtAbmWeeklyEngagement {
   relatedAsset?: AssetContext;
   relatedChanges: number;
   relatedScoreUpdates: number;
   engagementScore: number;
+  recommendation: AbmRecommendation;
 }
 
 function tierColor(tier: Tier | null | undefined) {
@@ -150,7 +167,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     const assetContextQ = supabase
       .from('cgt_assets')
       .select(`
-        id, company_id, asset_name, final_commercial_score, strategic_opportunity_score,
+        id, company_id, asset_name, modality, lead_indication, target_indication,
+        phase_regulatory_status, likely_us_launch_within_24_months, commercial_buildout_status,
+        final_commercial_score, strategic_opportunity_score,
         commercial_priority_tier, strategic_priority_tier, key_upcoming_catalyst, catalyst_date,
         cgt_companies!inner(company_name)
       `)
@@ -180,6 +199,12 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       company_id: r.company_id,
       company_name: r.cgt_companies?.company_name || '',
       asset_name: r.asset_name,
+      modality: r.modality || '',
+      lead_indication: r.lead_indication || '',
+      target_indication: r.target_indication || '',
+      phase_regulatory_status: r.phase_regulatory_status || '',
+      likely_us_launch_within_24_months: r.likely_us_launch_within_24_months || '',
+      commercial_buildout_status: r.commercial_buildout_status || '',
       final_commercial_score: r.final_commercial_score || 0,
       strategic_opportunity_score: r.strategic_opportunity_score || 0,
       commercial_priority_tier: r.commercial_priority_tier,
@@ -339,14 +364,17 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         const relatedKey = relatedAsset ? normalizeAccountName(relatedAsset.company_name) : row.normalized_account_name;
         const relatedChanges = changesByCompany.get(relatedKey) || 0;
         const relatedScoreUpdates = scoresByCompany.get(relatedKey) || 0;
+        const recommendation = buildAbmRecommendation(row, relatedAsset, relatedChanges, relatedScoreUpdates);
         const engagementScore =
           (row.accounts_engaged || 0) * 1000 +
           (row.clicks || 0) * 120 +
           (row.pipeline || 0) / 100000 +
           relatedChanges * 750 +
           relatedScoreUpdates * 500 +
+          (recommendation.tone === 'market' ? 600 : 0) +
+          (recommendation.tone === 'add' ? 500 : 0) +
           (relatedAsset ? 250 : 0);
-        return { ...row, relatedAsset, relatedChanges, relatedScoreUpdates, engagementScore };
+        return { ...row, relatedAsset, relatedChanges, relatedScoreUpdates, engagementScore, recommendation };
       })
       .filter(row => row.accounts_engaged > 0 || row.clicks > 0 || row.pipeline > 0 || row.relatedChanges > 0 || row.relatedScoreUpdates > 0)
       .sort((a, b) => b.engagementScore - a.engagementScore)
@@ -555,7 +583,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             </span>
             <h2 className="prestige-section-title mt-3">Top engaged accounts</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-              Friday ABM upload, ranked against this week’s CGT activity so engaged accounts with score movement, material changes, or upcoming catalysts rise to the top.
+              Friday ABM upload, translated into account-level actions: who to market to, who needs tracker research, and which engaged accounts are not yet a clear CGT fit.
             </p>
           </div>
           {abmTotal && (
@@ -589,16 +617,24 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                   <div key={account.id} className="px-6 py-4 hover:bg-slate-50/60 transition-colors">
                     <div className="flex items-start justify-between gap-5">
                       <div className="min-w-0 flex-1">
-                        {account.relatedAsset ? (
-                          <button
-                            onClick={() => onOpenAsset(account.relatedAsset!.id)}
-                            className="text-[15px] font-semibold text-slate-900 hover:text-teal-700 transition-colors text-left"
-                          >
-                            {account.account_name}
-                          </button>
-                        ) : (
-                          <div className="text-[15px] font-semibold text-slate-900">{account.account_name}</div>
-                        )}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {account.relatedAsset ? (
+                            <button
+                              onClick={() => onOpenAsset(account.relatedAsset!.id)}
+                              className="text-[15px] font-semibold text-slate-900 hover:text-teal-700 transition-colors text-left"
+                            >
+                              {account.account_name}
+                            </button>
+                          ) : (
+                            <div className="text-[15px] font-semibold text-slate-900">{account.account_name}</div>
+                          )}
+                          <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase ${recommendationStyle(account.recommendation.tone)}`}>
+                            {account.recommendation.label}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium">
+                            {account.recommendation.fit}
+                          </span>
+                        </div>
                         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
                           {account.relatedAsset ? (
                             <>
@@ -606,11 +642,26 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                               <span className={`px-2 py-0.5 rounded-full font-medium ${tierColor(account.relatedAsset.commercial_priority_tier)}`}>
                                 {account.relatedAsset.commercial_priority_tier || 'No tier'}
                               </span>
-                              <span className="text-slate-500">{account.relatedAsset.asset_name} · score {account.relatedAsset.final_commercial_score}</span>
+                              <span className="text-slate-500">
+                                {account.relatedAsset.asset_name}
+                                {account.relatedAsset.modality ? ` · ${account.relatedAsset.modality}` : ''}
+                                {account.relatedAsset.lead_indication ? ` · ${account.relatedAsset.lead_indication}` : ''}
+                                {` · score ${account.relatedAsset.final_commercial_score}`}
+                              </span>
                             </>
                           ) : (
                             <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-medium">No tracker match</span>
                           )}
+                        </div>
+                        <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+                          <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                            <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Why</div>
+                            <div className="text-sm text-slate-700 mt-1 leading-relaxed">{account.recommendation.reason}</div>
+                          </div>
+                          <div className="rounded-lg bg-teal-50/60 border border-teal-100 px-3 py-2">
+                            <div className="text-[10px] font-semibold uppercase tracking-widest text-teal-700">Recommended next step</div>
+                            <div className="text-sm text-teal-900 mt-1 leading-relaxed">{account.recommendation.nextStep}</div>
+                          </div>
                         </div>
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                           <span>{account.relatedChanges} weekly changes</span>
@@ -746,6 +797,104 @@ function strongestAsset(assets: AssetContext[]): AssetContext {
     (b.final_commercial_score || 0) - (a.final_commercial_score || 0) ||
     (b.strategic_opportunity_score || 0) - (a.strategic_opportunity_score || 0)
   )[0];
+}
+
+function buildAbmRecommendation(
+  row: CgtAbmWeeklyEngagement,
+  asset: AssetContext | undefined,
+  relatedChanges: number,
+  relatedScoreUpdates: number
+): AbmRecommendation {
+  const hasEngagement = row.accounts_engaged > 0 || row.clicks > 0;
+  const hasPipeline = row.pipeline > 0 || row.new_pipeline > 0 || row.closed_won_pipeline > 0;
+
+  if (!asset) {
+    if (hasEngagement || hasPipeline) {
+      return {
+        tone: 'add',
+        label: 'Add / research',
+        fit: 'Unknown fit',
+        reason: `${row.account_name} is engaged in ABM but is not currently matched to a CGT tracker company. Treat this as a database gap until we verify whether they have a relevant cell or gene therapy asset.`,
+        nextStep: 'Create a candidate tracker entry, verify CGT pipeline/therapy and U.S. commercialization path from primary sources, then decide whether to assign it to weekly monitoring.',
+      };
+    }
+
+    return {
+      tone: 'research',
+      label: 'Research fit',
+      fit: 'Unknown fit',
+      reason: `${row.account_name} is present in the ABM report but has no tracker match and no clear engagement spike.`,
+      nextStep: 'Do a lightweight fit check before adding. If no CGT asset or commercialization relevance is found, keep it out of the tracker.',
+    };
+  }
+
+  const therapy = describeTherapy(asset);
+  const timely = asset.commercial_priority_tier === 'Tier 1' || /yes/i.test(asset.likely_us_launch_within_24_months || '');
+  const meaningfulMovement = relatedChanges > 0 || relatedScoreUpdates > 0;
+  const strongScore = (asset.final_commercial_score || 0) >= 50 || asset.commercial_priority_tier === 'Tier 2';
+
+  if (hasEngagement && (timely || meaningfulMovement)) {
+    return {
+      tone: 'market',
+      label: 'Market now',
+      fit: 'High fit',
+      reason: `${row.account_name} is engaging and maps to ${therapy}. ${timely ? 'The asset is inside/near the 24-month commercialization window.' : 'This week’s tracker activity gives the outreach a timely hook.'}`,
+      nextStep: 'Start/refresh ABM outreach this week. Anchor messaging to commercialization readiness, launch support, manufacturing access, and the latest tracker signal.',
+    };
+  }
+
+  if (hasEngagement && strongScore) {
+    return {
+      tone: 'nurture',
+      label: 'Nurture',
+      fit: 'Possible fit',
+      reason: `${row.account_name} is engaged and has a tracked CGT therapy (${therapy}), but there is no urgent weekly catalyst or Tier 1 commercialization trigger.`,
+      nextStep: 'Keep in the ABM nurture lane. Use education-oriented content and watch for regulatory, manufacturing, or commercial hiring signals before escalating.',
+    };
+  }
+
+  if (hasEngagement) {
+    return {
+      tone: 'research',
+      label: 'Qualify',
+      fit: 'Possible fit',
+      reason: `${row.account_name} is engaged and matched to ${therapy}, but the current score/tier does not yet justify aggressive commercialization messaging.`,
+      nextStep: 'Have research validate launch timing, manufacturing pathway, and U.S. commercial path before moving this account into active campaign focus.',
+    };
+  }
+
+  return {
+    tone: 'deprioritize',
+    label: 'Do not prioritize',
+    fit: 'Low fit',
+    reason: `${row.account_name} has a tracker match (${therapy}) but no meaningful ABM engagement in this upload.`,
+    nextStep: 'Do not spend active ABM effort this week. Keep monitoring in the CGT tracker and re-rank if engagement or material signals appear.',
+  };
+}
+
+function describeTherapy(asset: AssetContext): string {
+  const parts = [
+    asset.asset_name,
+    asset.modality,
+    asset.lead_indication || asset.target_indication,
+    asset.phase_regulatory_status,
+  ].filter(Boolean);
+  return parts.join(' / ');
+}
+
+function recommendationStyle(tone: AbmRecommendationTone): string {
+  switch (tone) {
+    case 'market':
+      return 'bg-emerald-100 text-emerald-800';
+    case 'add':
+      return 'bg-violet-100 text-violet-800';
+    case 'nurture':
+      return 'bg-blue-100 text-blue-800';
+    case 'research':
+      return 'bg-amber-100 text-amber-800';
+    case 'deprioritize':
+      return 'bg-slate-100 text-slate-600';
+  }
 }
 
 function formatCurrency(value: number | null | undefined): string {
