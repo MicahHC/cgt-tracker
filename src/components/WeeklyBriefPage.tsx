@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { uploadAbmEngagementCsv, normalizeAccountName, toggleClientStatus } from '../lib/abmEngagement';
-import { AbmAudienceSegment, CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
+import { AbmAudienceSegment, CgtAbmAudienceMember, CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHistory, Tier } from '../types/database';
 import {
   Newspaper, ArrowUpRight, ArrowDownRight, Minus, ExternalLink,
   ClipboardList, Activity, TrendingUp, AlertCircle, CheckCircle2, CalendarDays,
@@ -111,7 +111,20 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [abmUploadMessage, setAbmUploadMessage] = useState<string | null>(null);
   const [abmUploadError, setAbmUploadError] = useState<string | null>(null);
   const [uploadSegment, setUploadSegment] = useState<AbmAudienceSegment>('');
+  const [audienceMembers, setAudienceMembers] = useState<CgtAbmAudienceMember[]>([]);
+  const [audienceSegmentFilter, setAudienceSegmentFilter] = useState<AbmAudienceSegment | 'all'>('all');
   const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('cgt_abm_audience_members')
+        .select('*')
+        .order('audience_segment')
+        .order('account_name');
+      setAudienceMembers((data as CgtAbmAudienceMember[]) || []);
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -736,41 +749,77 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       </section>
 
       {/* ABM Audience Segments breakdown */}
-      {abmRows.filter(r => !r.is_total).length > 0 && (
+      {audienceMembers.length > 0 && (
         <section className="reveal reveal-delay-3">
           <header className="mb-6">
             <span className="prestige-eyebrow prestige-eyebrow-light">
               <Layers className="w-3 h-3" />
               Segments
             </span>
-            <h2 className="prestige-section-title mt-3">Audience segment breakdown</h2>
+            <h2 className="prestige-section-title mt-3">Audience segment lists</h2>
             <p className="text-sm text-slate-500 mt-2">
-              All ABM accounts organized by segment. Client accounts are suppressed from marketing spend but engagement is still tracked.
+              Target account lists organized by segment. {audienceMembers.length} accounts across all segments.
             </p>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {(['ATC', 'Early Stage', 'Late Stage', 'On Market'] as AbmAudienceSegment[]).map(seg => {
-              const segAccounts = abmRows.filter(r => !r.is_total && r.audience_segment === seg);
-              const clientCount = segAccounts.filter(r => r.is_client).length;
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {(['all', 'ATC', 'Early Stage', 'Late Stage', 'On Market'] as const).map(seg => {
+              const count = seg === 'all' ? audienceMembers.length : audienceMembers.filter(m => m.audience_segment === seg).length;
+              const isActive = audienceSegmentFilter === seg;
               return (
-                <div key={seg} className={`rounded-xl border p-4 ${segmentColor(seg)}`}>
-                  <div className="text-xs font-bold uppercase tracking-widest">{seg}</div>
-                  <div className="text-2xl font-bold mt-1">{segAccounts.length}</div>
-                  <div className="text-xs mt-1 opacity-75">
-                    {clientCount > 0 ? `${clientCount} client${clientCount > 1 ? 's' : ''} suppressed` : 'No clients'}
-                  </div>
-                </div>
+                <button
+                  key={seg}
+                  onClick={() => setAudienceSegmentFilter(seg)}
+                  className={`rounded-xl border p-4 text-left transition-all ${
+                    isActive
+                      ? 'ring-2 ring-teal-500 border-teal-300 bg-teal-50'
+                      : 'hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="text-xs font-bold uppercase tracking-widest text-slate-600">{seg === 'all' ? 'All' : seg}</div>
+                  <div className="text-2xl font-bold mt-1 text-slate-900">{count}</div>
+                </button>
               );
             })}
           </div>
 
-          {/* Client-suppressed accounts */}
+          <div className="prestige-card overflow-hidden">
+            <div className="px-6 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                {audienceSegmentFilter === 'all' ? 'All accounts' : audienceSegmentFilter} ({
+                  audienceSegmentFilter === 'all'
+                    ? audienceMembers.length
+                    : audienceMembers.filter(m => m.audience_segment === audienceSegmentFilter).length
+                })
+              </span>
+              <span className="text-xs text-slate-400">Domain / Country</span>
+            </div>
+            <div className="divide-y divide-slate-50 max-h-[480px] overflow-y-auto">
+              {audienceMembers
+                .filter(m => audienceSegmentFilter === 'all' || m.audience_segment === audienceSegmentFilter)
+                .map(member => (
+                  <div key={member.id} className="px-6 py-2.5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-medium text-slate-900 truncate">{member.account_name}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 ${segmentColor(member.audience_segment)}`}>
+                        {member.audience_segment}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-slate-400 flex-shrink-0">
+                      <span className="font-mono">{member.domain}</span>
+                      {member.country && <span>{member.country}</span>}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Client-suppressed accounts from engagement data */}
           {(() => {
             const clientAccounts = abmRows.filter(r => !r.is_total && r.is_client);
             if (clientAccounts.length === 0) return null;
             return (
-              <div className="prestige-card overflow-hidden">
+              <div className="prestige-card overflow-hidden mt-6">
                 <div className="px-6 py-4 bg-amber-50 border-b border-amber-100">
                   <div className="flex items-center gap-2">
                     <ShieldOff className="w-4 h-4 text-amber-700" />
