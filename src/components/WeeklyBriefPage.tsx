@@ -5,7 +5,7 @@ import { AbmAudienceSegment, CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHisto
 import {
   Newspaper, ArrowUpRight, ArrowDownRight, Minus, ExternalLink,
   ClipboardList, Activity, TrendingUp, AlertCircle, CheckCircle2, CalendarDays,
-  Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff,
+  Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff, Layers,
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
@@ -296,7 +296,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     }
   }
 
-  async function handleToggleClient(account: AbmAccountInsight) {
+  async function handleToggleClient(account: { id: string; is_client: boolean }) {
     try {
       await toggleClientStatus(account.id, !account.is_client);
       if (week) await loadWeek(week);
@@ -734,6 +734,82 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
         )}
       </section>
+
+      {/* ABM Audience Segments breakdown */}
+      {abmRows.filter(r => !r.is_total).length > 0 && (
+        <section className="reveal reveal-delay-3">
+          <header className="mb-6">
+            <span className="prestige-eyebrow prestige-eyebrow-light">
+              <Layers className="w-3 h-3" />
+              Segments
+            </span>
+            <h2 className="prestige-section-title mt-3">Audience segment breakdown</h2>
+            <p className="text-sm text-slate-500 mt-2">
+              All ABM accounts organized by segment. Client accounts are suppressed from marketing spend but engagement is still tracked.
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {(['ATC', 'Early Stage', 'Late Stage', 'On Market'] as AbmAudienceSegment[]).map(seg => {
+              const segAccounts = abmRows.filter(r => !r.is_total && r.audience_segment === seg);
+              const clientCount = segAccounts.filter(r => r.is_client).length;
+              return (
+                <div key={seg} className={`rounded-xl border p-4 ${segmentColor(seg)}`}>
+                  <div className="text-xs font-bold uppercase tracking-widest">{seg}</div>
+                  <div className="text-2xl font-bold mt-1">{segAccounts.length}</div>
+                  <div className="text-xs mt-1 opacity-75">
+                    {clientCount > 0 ? `${clientCount} client${clientCount > 1 ? 's' : ''} suppressed` : 'No clients'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Client-suppressed accounts */}
+          {(() => {
+            const clientAccounts = abmRows.filter(r => !r.is_total && r.is_client);
+            if (clientAccounts.length === 0) return null;
+            return (
+              <div className="prestige-card overflow-hidden">
+                <div className="px-6 py-4 bg-amber-50 border-b border-amber-100">
+                  <div className="flex items-center gap-2">
+                    <ShieldOff className="w-4 h-4 text-amber-700" />
+                    <span className="text-sm font-semibold text-amber-900">
+                      Client accounts suppressed from marketing ({clientAccounts.length})
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-700 mt-1">These companies are existing clients. Spend is suppressed but engagement is still tracked.</p>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  {clientAccounts.map(account => (
+                    <div key={account.id} className="px-6 py-3 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm font-medium text-slate-900 truncate">{account.account_name}</span>
+                        {account.audience_segment && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 ${segmentColor(account.audience_segment)}`}>
+                            {account.audience_segment}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-slate-500 flex-shrink-0">
+                        <span>{account.accounts_engaged} engaged</span>
+                        <span>{account.clicks} clicks</span>
+                        <span className="text-amber-600 font-medium italic">spend hidden</span>
+                        <button
+                          onClick={() => handleToggleClient(account)}
+                          className="no-print text-[10px] text-slate-400 hover:text-amber-700 underline"
+                        >
+                          unsuppress
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+      )}
 
       {/* Top movers */}
       {(topMovers.length > 0 || flatScoresCount > 0) && (
