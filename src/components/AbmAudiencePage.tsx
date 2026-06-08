@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { normalizeAccountName, toggleClientStatus } from '../lib/abmEngagement';
-import { AbmAudienceSegment, CgtAbmWeeklyEngagement } from '../types/database';
-import { Layers, ShieldOff, Users, Search, ShieldCheck } from 'lucide-react';
+import { normalizeAccountName, addClientDomain, removeClientDomain } from '../lib/abmEngagement';
+import { AbmAudienceSegment } from '../types/database';
+import { Layers, ShieldOff, Users, Search, ShieldCheck, Building2 } from 'lucide-react';
 
 type AudienceMember = {
-  id: string;
+  key: string;
   account_name: string;
-  audience_segment: AbmAudienceSegment;
+  segments: Set<AbmAudienceSegment>;
+  asset_count: number;
   is_client: boolean;
-  week_label: string;
   totalClicks: number;
   totalEngaged: number;
-  appearances: number;
 };
 
 const SEGMENTS: AbmAudienceSegment[] = ['ATC', 'Early Stage', 'Late Stage', 'On Market'];
@@ -27,7 +26,7 @@ function segmentColor(seg: AbmAudienceSegment): string {
   }
 }
 
-function segmentAccent(seg: AbmAudienceSegment | 'all'): string {
+function segmentRingAccent(seg: AbmAudienceSegment | 'all'): string {
   switch (seg) {
     case 'ATC': return 'ring-rose-300 border-rose-200 bg-rose-50/60';
     case 'Early Stage': return 'ring-sky-300 border-sky-200 bg-sky-50/60';
@@ -37,55 +36,80 @@ function segmentAccent(seg: AbmAudienceSegment | 'all'): string {
   }
 }
 
+function normalizeAssetSegment(value: string | null | undefined): AbmAudienceSegment {
+  if (!value) return '';
+  const v = value.toLowerCase().trim();
+  if (v === 'atc') return 'ATC';
+  if (v === 'early stage') return 'Early Stage';
+  if (v === 'late stage') return 'Late Stage';
+  if (v === 'on-market' || v === 'on market') return 'On Market';
+  return '';
+}
+
 export function AbmAudiencePage() {
   const [members, setMembers] = useState<AudienceMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<AbmAudienceSegment | 'all'>('all');
   const [search, setSearch] = useState('');
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
-    const { data } = await supabase
-      .from('cgt_abm_weekly_engagement')
-      .select('id, account_name, audience_segment, is_client, week_label, clicks, accounts_engaged, is_total')
-      .eq('is_total', false)
-      .order('account_name');
-    const rows = (data as Array<CgtAbmWeeklyEngagement & { id: string }>) || [];
+
+    const [assetsRes, clientsRes, engagementRes] = await Promise.all([
+      supabase
+        .from('cgt_assets')
+        .select('segment, company:cgt_companies(company_name)'),
+      supabase
+        .from('cgt_abm_client_domains')
+        .select('domain'),
+      supabase
+        .from('cgt_abm_weekly_engagement')
+        .select('account_name, clicks, accounts_engaged, is_total')
+        .eq('is_total', false),
+    ]);
+
+    const assets = (assetsRes.data as any[]) || [];
+    const clientNames = new Set<string>(((clientsRes.data as any[]) || []).map(r => (r.domain || '').toLowerCase().trim()));
+    const engagement = (engagementRes.data as any[]) || [];
+
+    const engagementByKey = new Map<string, { clicks: number; engaged: number }>();
+    for (const e of engagement) {
+      const key = normalizeAccountName(e.account_name || '');
+      if (!key) continue;
+      const existing = engagementByKey.get(key) || { clicks: 0, engaged: 0 };
+      existing.clicks += e.clicks || 0;
+      existing.engaged += e.accounts_engaged || 0;
+      engagementByKey.set(key, existing);
+    }
 
     const map = new Map<string, AudienceMember>();
-    for (const r of rows) {
-      const key = normalizeAccountName(r.account_name || '');
+    for (const a of assets) {
+      const companyName: string | undefined = a.company?.company_name;
+      if (!companyName) continue;
+      const seg = normalizeAssetSegment(a.segment);
+      if (!seg) continue;
+      const key = normalizeAccountName(companyName);
       if (!key) continue;
       const existing = map.get(key);
       if (existing) {
-        existing.totalClicks += r.clicks || 0;
-        existing.totalEngaged += r.accounts_engaged || 0;
-        existing.appearances += 1;
-        if (r.is_client) existing.is_client = true;
-        if (r.audience_segment && !existing.audience_segment) {
-          existing.audience_segment = r.audience_segment as AbmAudienceSegment;
-        }
+        existing.segments.add(seg);
+        existing.asset_count += 1;
       } else {
+        const eng = engagementByKey.get(key);
         map.set(key, {
-          id: r.id,
-          account_name: r.account_name,
-          audience_segment: (r.audience_segment || '') as AbmAudienceSegment,
-          is_client: !!r.is_client,
-          week_label: r.week_label,
-          totalClicks: r.clicks || 0,
-          totalEngaged: r.accounts_engaged || 0,
-          appearances: 1,
+          key,
+          account_name: companyName,
+          segments: new Set<AbmAudienceSegment>([seg]),
+          asset_count: 1,
+          is_client: clientNames.has(key),
+          totalClicks: eng?.clicks || 0,
+          totalEngaged: eng?.engaged || 0,
         });
       }
     }
 
-    const list = Array.from(map.values()).sort((a, b) => {
-      if (a.audience_segment !== b.audience_segment) {
-        return (a.audience_segment || 'zzz').localeCompare(b.audience_segment || 'zzz');
-      }
-      return a.account_name.localeCompare(b.account_name);
-    });
+    const list = Array.from(map.values()).sort((a, b) => a.account_name.localeCompare(b.account_name));
     setMembers(list);
     setLoading(false);
   }
@@ -95,8 +119,9 @@ export function AbmAudiencePage() {
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: members.length };
     for (const seg of SEGMENTS) c[seg] = 0;
-    c[''] = 0;
-    for (const m of members) c[m.audience_segment || ''] = (c[m.audience_segment || ''] || 0) + 1;
+    for (const m of members) {
+      for (const seg of m.segments) c[seg] = (c[seg] || 0) + 1;
+    }
     return c;
   }, [members]);
 
@@ -105,19 +130,23 @@ export function AbmAudiencePage() {
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return members.filter(m => {
-      if (filter !== 'all' && m.audience_segment !== filter) return false;
+      if (filter !== 'all' && !m.segments.has(filter)) return false;
       if (q && !m.account_name.toLowerCase().includes(q)) return false;
       return true;
     });
   }, [members, filter, search]);
 
   async function handleToggleClient(member: AudienceMember) {
-    setBusyId(member.id);
+    setBusyKey(member.key);
     try {
-      await toggleClientStatus(member as unknown as CgtAbmWeeklyEngagement, !member.is_client);
-      await load();
+      if (member.is_client) {
+        await removeClientDomain(member.key);
+      } else {
+        await addClientDomain(member.key, member.account_name);
+      }
+      setMembers(prev => prev.map(m => m.key === member.key ? { ...m, is_client: !m.is_client } : m));
     } finally {
-      setBusyId(null);
+      setBusyKey(null);
     }
   }
 
@@ -130,18 +159,17 @@ export function AbmAudiencePage() {
         </span>
         <h1 className="prestige-section-title mt-3">Target audience lists</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-3xl">
-          The full target account universe organized by funnel segment. Client accounts are flagged and suppressed
-          from marketing spend, but engagement signal is still collected. Lists are derived from your weekly engagement
-          uploads in the Weekly Brief module.
+          Every company in the CGT universe organized by where their assets sit in the funnel. Companies with assets
+          in multiple stages appear in every relevant segment. Client accounts are flagged and suppressed from spend
+          while engagement is still tracked.
         </p>
       </header>
 
-      {/* Summary tiles */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <button
           onClick={() => setFilter('all')}
           className={`rounded-xl border p-4 text-left transition-all ${
-            filter === 'all' ? `ring-2 ${segmentAccent('all')}` : 'bg-white hover:border-slate-300'
+            filter === 'all' ? `ring-2 ${segmentRingAccent('all')}` : 'bg-white hover:border-slate-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -156,7 +184,7 @@ export function AbmAudiencePage() {
             key={seg}
             onClick={() => setFilter(seg)}
             className={`rounded-xl border p-4 text-left transition-all ${
-              filter === seg ? `ring-2 ${segmentAccent(seg)}` : 'bg-white hover:border-slate-300'
+              filter === seg ? `ring-2 ${segmentRingAccent(seg)}` : 'bg-white hover:border-slate-300'
             }`}
           >
             <div className="text-xs font-bold uppercase tracking-widest text-slate-600">{seg}</div>
@@ -174,7 +202,6 @@ export function AbmAudiencePage() {
         </div>
       </div>
 
-      {/* Search */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -190,7 +217,6 @@ export function AbmAudiencePage() {
         </span>
       </div>
 
-      {/* List */}
       <div className="prestige-card overflow-hidden">
         <div className="px-6 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
@@ -205,28 +231,31 @@ export function AbmAudiencePage() {
           {!loading && visible.length === 0 && (
             <div className="px-6 py-12 text-center">
               <p className="text-sm text-slate-500">No accounts match your filters.</p>
-              <p className="text-xs text-slate-400 mt-2">
-                Upload a CSV via the Weekly Brief page and select a segment ({filter === 'all' ? 'ATC, Early Stage, Late Stage, or On Market' : filter}) to populate this list.
-              </p>
             </div>
           )}
           {!loading && visible.map(member => (
-            <div key={member.id} className="px-6 py-3 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+            <div key={member.key} className="px-6 py-3 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
               <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                 <span className="text-sm font-medium text-slate-900 truncate">{member.account_name}</span>
-                {member.audience_segment ? (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 ${segmentColor(member.audience_segment)}`}>
-                    {member.audience_segment}
-                  </span>
-                ) : (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 bg-slate-50 text-slate-500 border-slate-200">
-                    Unsegmented
-                  </span>
-                )}
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {Array.from(member.segments).sort().map(seg => (
+                    <span key={seg} className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border ${segmentColor(seg)}`}>
+                      {seg}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-400 ml-1">{member.asset_count} {member.asset_count === 1 ? 'asset' : 'assets'}</span>
               </div>
               <div className="flex items-center gap-4 text-xs flex-shrink-0">
-                <span className="text-slate-500 tabular-nums">{member.totalClicks} clicks</span>
-                <span className="text-slate-400 tabular-nums">{member.totalEngaged} engaged</span>
+                {member.is_client ? (
+                  <span className="text-amber-700 italic">— suppressed —</span>
+                ) : (
+                  <>
+                    <span className="text-slate-500 tabular-nums">{member.totalClicks} clicks</span>
+                    <span className="text-slate-400 tabular-nums">{member.totalEngaged} engaged</span>
+                  </>
+                )}
                 {member.is_client ? (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 border border-amber-200">
                     <ShieldOff className="w-3 h-3" />
@@ -239,7 +268,7 @@ export function AbmAudiencePage() {
                   </span>
                 )}
                 <button
-                  disabled={busyId === member.id}
+                  disabled={busyKey === member.key}
                   onClick={() => handleToggleClient(member)}
                   className="text-[10px] text-slate-400 hover:text-teal-700 underline disabled:opacity-40"
                 >
