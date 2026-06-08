@@ -2,17 +2,18 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {
   Dna, LayoutDashboard, Package, Building2, ClipboardList, LineChart,
-  CalendarClock, Settings, LogOut, ChevronRight, Gauge, Newspaper
+  CalendarClock, Settings, LogOut, ChevronRight, Gauge, Newspaper, Layers
 } from 'lucide-react';
 import { fetchLatestBriefMeta, getLastSeenWeek } from '../lib/weeklyBrief';
 
 export type PageKey =
   | 'dashboard' | 'assets' | 'companies' | 'scoring' | 'changelog'
-  | 'scorehistory' | 'catalysts' | 'weeklybrief' | 'admin';
+  | 'scorehistory' | 'catalysts' | 'weeklybrief' | 'abmaudience' | 'admin';
 
 const NAV: { key: PageKey; label: string; icon: typeof Dna }[] = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'weeklybrief', label: 'Weekly Brief', icon: Newspaper },
+  { key: 'abmaudience', label: 'ABM Audience', icon: Layers },
   { key: 'scoring', label: 'Scoring', icon: Gauge },
   { key: 'assets', label: 'Assets', icon: Package },
   { key: 'companies', label: 'Companies', icon: Building2 },

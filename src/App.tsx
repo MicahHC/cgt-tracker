@@ -10,6 +10,7 @@ import { ChangeLogPage } from './components/ChangeLogPage';
 import { ScoreHistoryPage } from './components/ScoreHistoryPage';
 import { CatalystsPage } from './components/CatalystsPage';
 import { WeeklyBriefPage } from './components/WeeklyBriefPage';
+import { AbmAudiencePage } from './components/AbmAudiencePage';
 import { AdminPage } from './components/AdminPage';
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
       case 'scorehistory': return <ScoreHistoryPage onOpenAsset={openAsset} />;
       case 'catalysts': return <CatalystsPage onOpenAsset={openAsset} />;
       case 'weeklybrief': return <WeeklyBriefPage onOpenAsset={openAsset} />;
+      case 'abmaudience': return <AbmAudiencePage />;
       case 'admin': return <AdminPage />;
       default: return <Dashboard onNavigate={navigate} onOpenAsset={openAsset} />;
     }
