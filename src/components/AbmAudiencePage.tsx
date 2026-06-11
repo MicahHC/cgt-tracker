@@ -64,18 +64,23 @@ export function AbmAudiencePage() {
     return [...ordered, ...extras];
   }, [members]);
 
+  const clientCount = useMemo(() => members.filter(m => m.is_client).length, [members]);
+
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: members.length };
     for (const m of members) c[m.audience_segment] = (c[m.audience_segment] || 0) + 1;
+    c['Closed Won'] = clientCount;
     return c;
-  }, [members]);
-
-  const clientCount = useMemo(() => members.filter(m => m.is_client).length, [members]);
+  }, [members, clientCount]);
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return members.filter(m => {
-      if (filter !== 'all' && m.audience_segment !== filter) return false;
+      if (filter === 'Closed Won') {
+        if (!m.is_client) return false;
+      } else if (filter !== 'all' && m.audience_segment !== filter) {
+        return false;
+      }
       if (q && !m.account_name.toLowerCase().includes(q) && !m.domain.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -105,8 +110,8 @@ export function AbmAudiencePage() {
         </span>
         <h1 className="prestige-section-title mt-3">Target audience lists</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-3xl">
-          The full target account universe organized by funnel segment. Client (Closed Won) accounts are flagged and
-          suppressed from spend while engagement is still tracked.
+          The full target account universe organized by funnel segment. Accounts flagged as clients move into
+          Closed Won and are suppressed from spend while engagement is still tracked.
         </p>
       </header>
 
@@ -137,14 +142,6 @@ export function AbmAudiencePage() {
             <div className="text-xs text-slate-400 mt-0.5">accounts</div>
           </button>
         ))}
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-center gap-2">
-            <ShieldOff className="w-3.5 h-3.5 text-amber-700" />
-            <div className="text-xs font-bold uppercase tracking-widest text-amber-800">Clients</div>
-          </div>
-          <div className="text-3xl font-bold mt-1 text-amber-900">{clientCount}</div>
-          <div className="text-xs text-amber-700 mt-0.5">spend suppressed</div>
-        </div>
       </div>
 
       <div className="flex items-center gap-3">
@@ -177,7 +174,7 @@ export function AbmAudiencePage() {
             <div className="px-6 py-12 text-center">
               <p className="text-sm text-slate-500">No accounts in this segment yet.</p>
               {filter === 'Closed Won' && (
-                <p className="text-xs text-slate-400 mt-2">Mark accounts as clients to populate Closed Won, or upload a Closed Won list.</p>
+                <p className="text-xs text-slate-400 mt-2">No clients flagged yet. Use "mark client" on any account to move it into Closed Won.</p>
               )}
             </div>
           )}
