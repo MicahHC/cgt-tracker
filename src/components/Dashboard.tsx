@@ -4,7 +4,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtCompany } from '../types/database';
 import {
   Package, Target, FlaskConical, ShoppingBag, ShieldAlert,
-  CalendarClock, Activity, ArrowUpRight, Layers, Stethoscope, Award, Briefcase
+  CalendarClock, Activity, ArrowUpRight
 } from 'lucide-react';
 import { TierBadge, SegmentBadge } from './ui/Badge';
 import { PageKey } from './Layout';
@@ -19,7 +19,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const [companies, setCompanies] = useState<CgtCompany[]>([]);
   const [companyCount, setCompanyCount] = useState(0);
   const [recentChanges, setRecentChanges] = useState<Array<{ id: string; asset_id: string; field_changed: string; why_it_matters: string; created_at: string; asset_name?: string }>>([]);
-  const [audienceCounts, setAudienceCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   useRealtimeRefresh(['cgt_assets', 'cgt_companies', 'cgt_change_log', 'cgt_score_history'], () => load());
 
   async function load() {
-    const [{ data: assetData }, { data: companyData, count: cCount }, { data: changes }, { data: audienceData }] = await Promise.all([
+    const [{ data: assetData }, { data: companyData, count: cCount }, { data: changes }] = await Promise.all([
       supabase.from('cgt_assets').select('*'),
       supabase.from('cgt_companies').select('*', { count: 'exact' }),
       supabase
@@ -37,7 +36,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
         .select('id, asset_id, field_changed, why_it_matters, created_at, cgt_assets(asset_name)')
         .order('created_at', { ascending: false })
         .limit(8),
-      supabase.from('cgt_abm_audience_members').select('audience_segment, is_client'),
     ]);
     setAssets((assetData as CgtAsset[]) || []);
     setCompanies((companyData as CgtCompany[]) || []);
@@ -46,12 +44,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
       ...c,
       asset_name: c.cgt_assets?.asset_name,
     })));
-    const ac: Record<string, number> = {};
-    for (const row of (audienceData as Array<{ audience_segment: string; is_client: boolean }>) || []) {
-      if (row.audience_segment) ac[row.audience_segment] = (ac[row.audience_segment] || 0) + 1;
-      if (row.is_client) ac['Closed Won'] = (ac['Closed Won'] || 0) + 1;
-    }
-    setAudienceCounts(ac);
     setLoading(false);
   }
 
@@ -121,27 +113,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
         <Kpi label="Strategic Tier 1" value={tier1Strategic} icon={Activity} color="teal" />
         <Kpi label="Risk flags" value={clinicalHolds + noMfg} icon={ShieldAlert} color="red" sub={`${clinicalHolds} hold / ${noMfg} no mfg`} />
       </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-teal-600" />
-            ABM audience reach
-          </h2>
-          <button onClick={() => onNavigate('abmaudience')} className="text-xs text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1">
-            View audience lists <ArrowUpRight className="w-3 h-3" />
-          </button>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-          <Kpi label="ATC" value={audienceCounts['ATC'] || 0} icon={Stethoscope} color="red" onClick={() => onNavigate('abmaudience')} sub="target accounts" />
-          <Kpi label="Early Stage" value={audienceCounts['Early Stage'] || 0} icon={FlaskConical} color="sky" onClick={() => onNavigate('abmaudience')} sub="target accounts" />
-          <Kpi label="Late Stage" value={audienceCounts['Late Stage'] || 0} icon={Target} color="emerald" onClick={() => onNavigate('abmaudience')} sub="target accounts" />
-          <Kpi label="On Market" value={audienceCounts['On Market'] || 0} icon={ShoppingBag} color="blue" onClick={() => onNavigate('abmaudience')} sub="target accounts" />
-          <Kpi label="Closed Won" value={audienceCounts['Closed Won'] || 0} icon={Award} color="teal" onClick={() => onNavigate('abmaudience')} sub="clients (suppressed)" />
-          <Kpi label="Consultants" value={audienceCounts['Consultants'] || 0} icon={Briefcase} color="slate" onClick={() => onNavigate('abmaudience')} sub="partner accounts" />
-        </div>
-      </div>
-
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
