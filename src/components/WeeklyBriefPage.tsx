@@ -5,13 +5,14 @@ import { AbmAudienceSegment, CgtAbmWeeklyEngagement, CgtChangeLog, CgtScoreHisto
 import {
   Newspaper, ArrowUpRight, ArrowDownRight, Minus, ExternalLink,
   ClipboardList, Activity, TrendingUp, AlertCircle, CheckCircle2, CalendarDays,
-  Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff, Layers,
+  Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff,
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
 import { formatTrackerWeekLabel } from '../lib/weekLabels';
+import { AbmEngagementBrief } from './AbmEngagementBrief';
 
 interface Props {
   onOpenAsset: (id: string) => void;
@@ -112,36 +113,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [abmUploadMessage, setAbmUploadMessage] = useState<string | null>(null);
   const [abmUploadError, setAbmUploadError] = useState<string | null>(null);
   const [uploadSegment, setUploadSegment] = useState<AbmAudienceSegment>('');
-  const [audienceMembers, setAudienceMembers] = useState<{ id: string; account_name: string; audience_segment: AbmAudienceSegment; is_client: boolean; week_label: string }[]>([]);
-  const [audienceSegmentFilter, setAudienceSegmentFilter] = useState<AbmAudienceSegment | 'all'>('all');
   const rootRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from('cgt_abm_weekly_engagement')
-        .select('id, account_name, audience_segment, is_client, week_label, is_total')
-        .eq('is_total', false)
-        .order('audience_segment')
-        .order('account_name');
-      const rows = (data as any[]) || [];
-      const seen = new Set<string>();
-      const unique: { id: string; account_name: string; audience_segment: AbmAudienceSegment; is_client: boolean; week_label: string }[] = [];
-      for (const r of rows) {
-        const key = normalizeAccountName(r.account_name || '');
-        if (!key || seen.has(key)) continue;
-        seen.add(key);
-        unique.push({
-          id: r.id,
-          account_name: r.account_name,
-          audience_segment: (r.audience_segment || '') as AbmAudienceSegment,
-          is_client: !!r.is_client,
-          week_label: r.week_label,
-        });
-      }
-      setAudienceMembers(unique);
-    })();
-  }, [week]);
 
   useEffect(() => {
     (async () => {
@@ -768,128 +740,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         )}
       </section>
 
-      {/* ABM Audience Segments breakdown */}
-      {audienceMembers.length > 0 && (
-        <section className="reveal reveal-delay-3">
-          <header className="mb-6">
-            <span className="prestige-eyebrow prestige-eyebrow-light">
-              <Layers className="w-3 h-3" />
-              Segments
-            </span>
-            <h2 className="prestige-section-title mt-3">Audience segment lists</h2>
-            <p className="text-sm text-slate-500 mt-2">
-              Target account lists organized by segment. {audienceMembers.length} accounts across all segments.
-            </p>
-          </header>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {(['all', 'ATC', 'Early Stage', 'Late Stage', 'On Market'] as const).map(seg => {
-              const count = seg === 'all' ? audienceMembers.length : audienceMembers.filter(m => m.audience_segment === seg).length;
-              const isActive = audienceSegmentFilter === seg;
-              return (
-                <button
-                  key={seg}
-                  onClick={() => setAudienceSegmentFilter(seg)}
-                  className={`rounded-xl border p-4 text-left transition-all ${
-                    isActive
-                      ? 'ring-2 ring-teal-500 border-teal-300 bg-teal-50'
-                      : 'hover:border-slate-300 bg-white'
-                  }`}
-                >
-                  <div className="text-xs font-bold uppercase tracking-widest text-slate-600">{seg === 'all' ? 'All' : seg}</div>
-                  <div className="text-2xl font-bold mt-1 text-slate-900">{count}</div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="prestige-card overflow-hidden">
-            <div className="px-6 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-                {audienceSegmentFilter === 'all' ? 'All accounts' : audienceSegmentFilter} ({
-                  audienceSegmentFilter === 'all'
-                    ? audienceMembers.length
-                    : audienceMembers.filter(m => m.audience_segment === audienceSegmentFilter).length
-                })
-              </span>
-              <span className="text-xs text-slate-400">Status</span>
-            </div>
-            <div className="divide-y divide-slate-50 max-h-[480px] overflow-y-auto">
-              {audienceMembers
-                .filter(m => audienceSegmentFilter === 'all' || m.audience_segment === audienceSegmentFilter)
-                .map(member => (
-                  <div key={member.id} className="px-6 py-2.5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-sm font-medium text-slate-900 truncate">{member.account_name}</span>
-                      {member.audience_segment && (
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 ${segmentColor(member.audience_segment)}`}>
-                          {member.audience_segment}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs flex-shrink-0">
-                      {member.is_client ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 border border-amber-200">
-                          <ShieldOff className="w-3 h-3" />
-                          Client - Suppressed
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wide">Active target</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              {audienceMembers.filter(m => audienceSegmentFilter === 'all' || m.audience_segment === audienceSegmentFilter).length === 0 && (
-                <div className="px-6 py-10 text-center text-sm text-slate-400">No accounts in this segment yet. Upload a CSV with this segment selected.</div>
-              )}
-            </div>
-          </div>
-
-          {/* Client-suppressed accounts from engagement data */}
-          {(() => {
-            const clientAccounts = abmRows.filter(r => !r.is_total && r.is_client);
-            if (clientAccounts.length === 0) return null;
-            return (
-              <div className="prestige-card overflow-hidden mt-6">
-                <div className="px-6 py-4 bg-amber-50 border-b border-amber-100">
-                  <div className="flex items-center gap-2">
-                    <ShieldOff className="w-4 h-4 text-amber-700" />
-                    <span className="text-sm font-semibold text-amber-900">
-                      Client accounts suppressed from marketing ({clientAccounts.length})
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-700 mt-1">These companies are existing clients. Spend is suppressed but engagement is still tracked.</p>
-                </div>
-                <div className="divide-y divide-slate-100">
-                  {clientAccounts.map(account => (
-                    <div key={account.id} className="px-6 py-3 flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm font-medium text-slate-900 truncate">{account.account_name}</span>
-                        {account.audience_segment && (
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border flex-shrink-0 ${segmentColor(account.audience_segment)}`}>
-                            {account.audience_segment}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-slate-500 flex-shrink-0">
-                        <span>{account.accounts_engaged} engaged</span>
-                        <span>{account.clicks} clicks</span>
-                        <span className="text-amber-600 font-medium italic">spend hidden</span>
-                        <button
-                          onClick={() => handleToggleClient(account)}
-                          className="no-print text-[10px] text-slate-400 hover:text-amber-700 underline"
-                        >
-                          unsuppress
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-        </section>
-      )}
+      {/* ABM engagement brief — client-facing, authoritative segment numbers */}
+      <AbmEngagementBrief />
 
       {/* Top movers */}
       {(topMovers.length > 0 || flatScoresCount > 0) && (
