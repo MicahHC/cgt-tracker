@@ -55,6 +55,14 @@ interface AccuracyFlag {
   detail: string;
 }
 
+interface RecommendedAction {
+  priority: number;
+  account: string;
+  action: string;
+  why: string;
+  next_step: string;
+}
+
 interface BriefContent {
   headline?: string;
   overlap_note?: string;
@@ -63,6 +71,7 @@ interface BriefContent {
   sources_note?: string;
   key_takeaways?: string[];
   accuracy_flags?: AccuracyFlag[];
+  recommended_actions?: RecommendedAction[];
 }
 
 interface BriefRow {
@@ -174,6 +183,36 @@ const FALLBACK_BRIEF: BriefRow = {
       'Treat Gilead as monitoring behavior. It is engaged, but the pattern looks like press-release watching rather than buying exploration.',
       'Use the CGT Report and InspiroCare Patient Services as conversion paths from category research into branded consideration.',
       'Smaller, true pipeline-window Late-Stage biotechs are reached by campaigns but are not yet showing on-site engagement.',
+    ],
+    recommended_actions: [
+      {
+        priority: 1,
+        account: 'Amgen',
+        action: 'Route to sales / BD first',
+        why: 'One uninterrupted 9-page crawl with zero bounce is the clearest buying-signal behavior in the report.',
+        next_step: 'Follow up with CGT commercialization, distribution, and patient-services messaging tied to the pages viewed.',
+      },
+      {
+        priority: 2,
+        account: 'Gilead Sciences',
+        action: 'Monitor and map contacts',
+        why: 'High event/session volume appears concentrated on press-release monitoring, which signals attention but not necessarily active buying.',
+        next_step: 'Identify repeat visitors or known contacts, then use a softer update-oriented touch rather than a hard sales push.',
+      },
+      {
+        priority: 3,
+        account: 'Legend Biotech',
+        action: 'Qualify as a pipeline-window target',
+        why: 'Late-Stage-only account with a small but real engaged visit and direct CGT relevance.',
+        next_step: 'Check current tracker fit, therapy timing, and U.S. commercialization needs before moving into active outreach.',
+      },
+      {
+        priority: 4,
+        account: 'On-Market-only biotechs',
+        action: 'Do not over-prioritize yet',
+        why: 'Sarepta, BioMarin, Krystal, Vericel, CSL, Abeona, and peers are being reached but did not show site activity this window.',
+        next_step: 'Keep campaigns running, but wait for website or content engagement before escalating.',
+      },
     ],
     accuracy_flags: [
       { label: 'UCLA segment hygiene', detail: 'UCLA is sitting in the Late-Stage biopharma audience but is an academic center, not a sponsor. Clean this up before external use.' },
@@ -325,6 +364,33 @@ export function AbmEngagementBrief() {
         </div>
       )}
 
+      {c.recommended_actions && c.recommended_actions.length > 0 && (
+        <div className="prestige-card p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="w-4 h-4 text-teal-600" />
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600">Recommended next actions</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...c.recommended_actions].sort((a, b) => a.priority - b.priority).map(action => (
+              <div key={`${action.priority}-${action.account}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-bold text-slate-900">{action.account}</div>
+                    <div className="text-xs font-semibold uppercase tracking-widest text-teal-700 mt-1">{action.action}</div>
+                  </div>
+                  <span className="rounded-full bg-white border border-slate-200 px-2 py-0.5 text-xs font-bold text-slate-500">#{action.priority}</span>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed mt-3">{action.why}</p>
+                <div className="rounded-lg bg-white border border-slate-200 px-3 py-2 mt-3">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Next step</div>
+                  <p className="text-sm text-slate-800 leading-relaxed mt-1">{action.next_step}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {c.key_takeaways && c.key_takeaways.length > 0 && (
         <div className="prestige-card p-6">
           <div className="flex items-center gap-2 mb-3">
@@ -407,6 +473,12 @@ function enrichBrief(row: BriefRow | null): BriefRow {
     content: {
       ...FALLBACK_BRIEF.content,
       ...row.content,
+      recommended_actions: row.content.recommended_actions?.length
+        ? row.content.recommended_actions
+        : FALLBACK_BRIEF.content.recommended_actions,
+      key_takeaways: row.content.key_takeaways?.length
+        ? row.content.key_takeaways
+        : FALLBACK_BRIEF.content.key_takeaways,
       segments: row.content.segments.map(seg => {
         const fallback = fallbackBySegment.get(seg.name);
         if (!fallback) return seg;
