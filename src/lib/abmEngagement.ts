@@ -93,7 +93,13 @@ export function parseAbmEngagementCsv(
   const reportingPeriod = findMeta(matrix, 'Reporting Period');
   const reportGeneratedAt = findMeta(matrix, 'Time of Report');
   const headerIndex = matrix.findIndex(row => row[0]?.trim() === HEADER_ACCOUNT);
-  if (headerIndex === -1) return [];
+  if (headerIndex === -1) {
+    const weeklyTrendIndex = matrix.findIndex(row => row[0]?.trim().toLowerCase() === 'week');
+    if (weeklyTrendIndex >= 0) {
+      throw new Error('This Performance Trend Report is grouped by Week, so it has campaign totals but no account names. Re-export from 6sense with Group By = Account_name to populate Top engaged accounts. The audience engagement intelligence brief still appears above this upload section.');
+    }
+    return [];
+  }
 
   const headers = matrix[headerIndex].map(h => h.trim());
   const domainCol = headers.findIndex(h => h.toLowerCase() === 'domain');

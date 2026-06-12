@@ -608,17 +608,20 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </div>
       </section>
 
+      {/* ABM engagement brief — client-facing, authoritative segment numbers */}
+      <AbmEngagementBrief />
+
       {/* ABM account engagement */}
       <section className="reveal reveal-delay-3">
         <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
           <div>
             <span className="prestige-eyebrow prestige-eyebrow-light">
               <Target className="w-3 h-3" />
-              ABM Layer
+              Account-Level Upload
             </span>
-            <h2 className="prestige-section-title mt-3">Top engaged accounts</h2>
+            <h2 className="prestige-section-title mt-3">Top engaged accounts from CSV</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-              Friday ABM upload, translated into account-level actions: who to market to, who needs tracker research, and which engaged accounts are not yet a clear CGT fit.
+              Optional Friday account-level upload, translated into actions: who to market to, who needs tracker research, and which engaged accounts are not yet a clear CGT fit.
             </p>
           </div>
           {abmTotal && (
@@ -630,10 +633,12 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </header>
 
         {!abmTotal ? (
-          <div className="prestige-card p-10 text-center">
+          <div className="prestige-card p-8">
             <Target className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <div className="text-slate-700 font-medium">No ABM upload for {weekDisplay}</div>
-            <p className="text-sm text-slate-500 mt-1">Upload the Friday Performance Trend Report CSV to add account engagement context to this brief.</p>
+            <div className="text-slate-700 font-medium text-center">No account-level CSV loaded for {weekDisplay}</div>
+            <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto text-center leading-relaxed">
+              The organized ABM engagement intelligence report is shown above. This section only populates when the uploaded 6sense Performance Trend Report is grouped by <span className="font-semibold text-slate-700">Account</span>. A report grouped by Week has campaign totals, but no account names to rank.
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -739,9 +744,6 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
         )}
       </section>
-
-      {/* ABM engagement brief — client-facing, authoritative segment numbers */}
-      <AbmEngagementBrief />
 
       {/* Top movers */}
       {(topMovers.length > 0 || flatScoresCount > 0) && (
