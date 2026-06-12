@@ -239,8 +239,7 @@ function accent(name: string) {
 }
 
 export function AbmEngagementBrief() {
-  const [brief, setBrief] = useState<BriefRow | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [brief, setBrief] = useState<BriefRow>(FALLBACK_BRIEF);
 
   useEffect(() => {
     (async () => {
@@ -253,17 +252,8 @@ export function AbmEngagementBrief() {
         .maybeSingle();
       if (error) console.warn('Could not load ABM engagement brief; using bundled latest report.', error.message);
       setBrief(enrichBrief(data as BriefRow | null));
-      setLoading(false);
     })();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="prestige-card p-10 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600" />
-      </div>
-    );
-  }
 
   const c = brief.content;
   const metrics = buildHeroMetrics(c);
