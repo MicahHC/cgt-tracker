@@ -72,6 +72,122 @@ interface BriefRow {
   content: BriefContent;
 }
 
+const FALLBACK_BRIEF: BriefRow = {
+  period_label: '2026-06 · Last 30 Days',
+  view_window: 'Last 30 Days',
+  generated_at: '2026-06-12T15:56:10.094325+00:00',
+  content: {
+    headline: 'Site engagement is real but concentrated in the mega-caps that already know McKesson. They are either monitoring (Gilead, on press releases) or running one serious diligence crawl (Amgen). The true pipeline-window Late-Stage biotechs are being reached by campaigns but are not yet showing up on-site.',
+    overlap_note: 'On-Market and Late-Stage overlap. Five accounts (Novartis, Johnson & Johnson, Gilead Sciences, Genentech, Amgen) sit in both segment lists. Every On-Market account currently active on the site is one of those five, so the On-Market on-site cohort is fully contained inside the Late-Stage cohort. They are reported in both places because that is how 6sense counts them, but they are the same five companies.',
+    segments: [
+      {
+        name: 'On-Market',
+        segment_size: 19,
+        on_site: 5,
+        on_site_pct: 26,
+        on_site_accounts: ['Novartis', 'Johnson & Johnson', 'Gilead Sciences', 'Genentech', 'Amgen'],
+        shared_note: 'All five are mega-caps that also live in Late-Stage. None of the On-Market-only accounts (Sarepta, BioMarin, Krystal, Vericel, CSL, Abeona, and others) have shown site activity.',
+        account_behaviors: [
+          { account: 'Gilead Sciences', summary: '42 events across 16 sessions, mostly single-page. Highest total volume and the most persistent returner.', signal: 'Monitoring behavior; likely press-release tracking.' },
+          { account: 'Novartis', summary: '12 events across 4 sessions and 3 pages. Moderate depth and recurring visits.', signal: 'Most balanced On-Market engagement profile.' },
+          { account: 'Amgen', summary: '24 events in one session across 9 pages with zero bounce.', signal: 'Deepest individual visit in the dataset.' },
+          { account: 'Johnson & Johnson / Genentech', summary: 'Short, shallow visits with high bounce.', signal: 'Present, but not yet exploring.' },
+        ],
+        top_pages: [
+          { page: 'Homepage', accounts: 5, events: 31, sessions: 10 },
+          { page: 'Kite CAR-T Distribution Partnership press release', accounts: 2, events: 7, sessions: 4 },
+          { page: 'About Us / Our Team', accounts: 2, events: 3, sessions: 2 },
+          { page: 'InspiroCare Patient Services', accounts: 1, events: 6, sessions: 1 },
+          { page: 'Press Releases index', accounts: 1, events: 28, sessions: 13 },
+        ],
+        page_note: 'The homepage is the common entry point. The 28-event burst on the press-release index is one account returning thirteen times, consistent with the Gilead monitoring pattern.',
+        campaigns: [
+          { name: 'Awareness_OnMarket_0626', reach_pct: 100 },
+          { name: 'Consideration: Specialty Pharmacy Article 1 · Lead Gen · Image V2', reach_pct: 84 },
+          { name: 'Awareness_LateStage_0626', reach_pct: 78 },
+          { name: 'Awareness: CGT Report Animation · Video', reach_pct: 57 },
+          { name: 'Consideration: Specialty Pharmacy Article 1 · Lead Gen · Image', reach_pct: 57 },
+        ],
+        bombora: [
+          { topic: 'Drug Development', score: 6 },
+          { topic: 'Clinical Trials', score: 5 },
+          { topic: 'Cold Chain', score: 3 },
+          { topic: 'Biologics Drug Development', score: 3 },
+          { topic: 'Pharmaceutical Distribution', score: 2 },
+          { topic: 'Patient Services', score: 1 },
+          { topic: 'Cell Therapy Manufacturing', score: 1 },
+        ],
+        keyword_note: 'The On-Market keyword panel was not in the source export, so no search terms are available for this segment.',
+      },
+      {
+        name: 'Late-Stage',
+        segment_size: 68,
+        on_site: 8,
+        on_site_pct: 12,
+        on_site_accounts: ['Novartis', 'Johnson & Johnson', 'Gilead Sciences', 'Genentech', 'Amgen', 'AbbVie', 'Legend Biotech', 'University of California Los Angeles'],
+        shared_note: 'Five accounts are shared with On-Market; three are Late-Stage-only: AbbVie, Legend Biotech, and UCLA.',
+        channel_mix: 'Website 8 · 6sense Media Campaigns 65 · B2B Network 34 · External 0',
+        account_behaviors: [
+          { account: 'Amgen', summary: '24 events in a single session across 9 pages, zero bounce. One person did a thorough end-to-end crawl of the site in one sitting.', signal: 'Strongest individual buying-signal session in the dataset.' },
+          { account: 'Gilead Sciences', summary: '42 events across 16 sessions, 81% bounce, returns repeatedly, mostly the press-release page.', signal: 'Monitoring behavior. High volume, low depth.' },
+          { account: 'Novartis', summary: '12 events, 4 sessions, 3 pages, returns once.', signal: 'Moderate and recurring.' },
+          { account: 'Legend Biotech', summary: '4 events, 1 session, 2 pages, zero bounce.', signal: 'Small but genuine engaged visit, not a bounce.' },
+          { account: 'J&J, Genentech, AbbVie, UCLA', summary: '2 to 7 events each, mostly single-page bounces.', signal: 'Light engagement.' },
+        ],
+        top_pages: [
+          { page: 'Homepage', accounts: 6, events: 33 },
+          { page: 'CGT Report', accounts: 3, events: 4 },
+          { page: 'InspiroCare Patient Services', accounts: 2, events: 8 },
+          { page: 'Kite CAR-T partnership press release', accounts: 2, events: 7 },
+          { page: 'About Us / Our Team', accounts: 2, events: 3 },
+          { page: 'Press Releases index', accounts: 1, events: 28 },
+        ],
+        page_note: 'The CGT Report is the gateway asset doing its job, and it only surfaces in Late-Stage, not On-Market.',
+        campaigns: [
+          { name: 'Awareness_LateStage_0626', reach_pct: 95 },
+          { name: 'Consideration: Specialty Pharmacy Article 1 · Lead Gen · Image V2', reach_pct: 64 },
+          { name: 'Consideration: Specialty Pharmacy Article 1 · Lead Gen · Image', reach_pct: 55 },
+          { name: 'Awareness: CGT Report Animation · Video', reach_pct: 52 },
+          { name: 'Awareness: Awareness Videos · Video', reach_pct: 50 },
+        ],
+        bombora: [
+          { topic: 'Drug Development', score: 9 },
+          { topic: 'Clinical Trials', score: 8 },
+          { topic: 'Cell Therapy Manufacturing', score: 6 },
+          { topic: 'Cold Chain', score: 5 },
+          { topic: 'Patient Services', score: 4 },
+          { topic: 'Biologics Drug Development', score: 4 },
+          { topic: 'Pharmaceutical Distribution', score: 3 },
+        ],
+        keywords: [
+          { term: 'Cell gene therapy', score: 26 },
+          { term: 'biotechnology therapeutics', score: 11 },
+          { term: 'cell and gene therapy', score: 9 },
+          { term: 'cgt commercialization', score: 5 },
+          { term: 'InspiroGene (branded)', score: 1 },
+        ],
+        keyword_note: 'Generic, category-level terms dominate. Only one branded search across the segment: demand is category-level, not brand-level.',
+      },
+    ],
+    key_takeaways: [
+      'Route Amgen first. Its single deep crawl is the clearest buying signal in the dataset.',
+      'Treat Gilead as monitoring behavior. It is engaged, but the pattern looks like press-release watching rather than buying exploration.',
+      'Use the CGT Report and InspiroCare Patient Services as conversion paths from category research into branded consideration.',
+      'Smaller, true pipeline-window Late-Stage biotechs are reached by campaigns but are not yet showing on-site engagement.',
+    ],
+    accuracy_flags: [
+      { label: 'UCLA segment hygiene', detail: 'UCLA is sitting in the Late-Stage biopharma audience but is an academic center, not a sponsor. Clean this up before external use.' },
+      { label: 'Category-to-brand gap', detail: 'Only one branded search across the Late-Stage segment. Frame this as category demand, not brand demand.' },
+      { label: 'Overlap double count', detail: 'On-Market and Late-Stage site numbers overlap. Combined totals need a footnote.' },
+    ],
+    sources_note: 'Site traffic splits between google.com and direct inspirogene.com, with Google the top UTM source ahead of LinkedIn and 6sense.',
+    methodology_notes: [
+      'All figures are Last 30 Days.',
+      'Page-level and account-level exports are separate cuts, so page-to-account joins are only certain where the math forces it. Inferences are flagged.',
+    ],
+  },
+};
+
 const SEGMENT_ACCENT: Record<string, { bar: string; chip: string; ring: string }> = {
   'On-Market': { bar: 'bg-emerald-500', chip: 'bg-emerald-50 text-emerald-700 border-emerald-200', ring: 'text-emerald-600' },
   'Late-Stage': { bar: 'bg-teal-500', chip: 'bg-teal-50 text-teal-700 border-teal-200', ring: 'text-teal-600' },
@@ -89,14 +205,15 @@ export function AbmEngagementBrief() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('cgt_abm_engagement_brief')
         .select('period_label, view_window, generated_at, content')
         .eq('is_published', true)
         .order('generated_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      setBrief((data as BriefRow | null) ?? null);
+      if (error) console.warn('Could not load ABM engagement brief; using bundled latest report.', error.message);
+      setBrief(enrichBrief(data as BriefRow | null));
       setLoading(false);
     })();
   }, []);
@@ -109,32 +226,24 @@ export function AbmEngagementBrief() {
     );
   }
 
-  if (!brief || !brief.content?.segments?.length) {
-    return (
-      <div className="prestige-card p-10 text-center">
-        <Target className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-        <div className="text-slate-700 font-medium">No engagement brief published yet</div>
-        <p className="text-sm text-slate-500 mt-1">The latest 6sense ABM report will appear here once it is loaded.</p>
-      </div>
-    );
-  }
-
   const c = brief.content;
+  const metrics = buildHeroMetrics(c);
+  const spotlights = collectSpotlights(c);
   const generated = new Date(brief.generated_at).toLocaleDateString(undefined, {
     year: 'numeric', month: 'long', day: 'numeric',
   });
 
   return (
-    <section className="reveal reveal-delay-3 space-y-6">
+    <section className="reveal reveal-delay-3 space-y-7">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <span className="prestige-eyebrow prestige-eyebrow-light">
             <Target className="w-3 h-3" />
-            ABM Engagement
+            Audience Engagement Intelligence
           </span>
-          <h2 className="prestige-section-title mt-3">Account engagement brief</h2>
+          <h2 className="prestige-section-title mt-3">Who is engaging, and with what</h2>
           <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-            How our target audiences are engaging across the site, campaigns, and intent data.
+            Organized readout of On-Market and Late-Stage biopharma engagement across the site, campaigns, keyword research, and Bombora surge.
           </p>
         </div>
         <div className="text-xs text-slate-500 text-right">
@@ -143,14 +252,40 @@ export function AbmEngagementBrief() {
         </div>
       </header>
 
-      {c.headline && (
-        <div className="prestige-card p-6 border-l-4 border-l-teal-500">
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-            <p className="text-[15px] text-slate-800 leading-relaxed">{c.headline}</p>
+      <div className="rounded-[28px] bg-slate-950 text-white overflow-hidden relative">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(20,184,166,0.22),transparent_34%),radial-gradient(circle_at_10%_90%,rgba(249,115,22,0.18),transparent_28%)]" />
+        <div className="relative p-8 md:p-10">
+          <div className="text-xs font-bold tracking-[0.24em] uppercase text-teal-200">Prepared for the InspiroGene marketing team</div>
+          <div className="mt-5 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 items-end">
+            <div>
+              <h3 className="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white">The 30-day picture</h3>
+              {c.headline && <p className="text-sm md:text-base text-white/70 leading-relaxed mt-4 max-w-3xl">{c.headline}</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {metrics.map(metric => (
+                <div key={metric.label} className="rounded-2xl bg-white/8 border border-white/10 px-4 py-3">
+                  <div className="text-3xl font-black tracking-tight text-white">{metric.value}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-white/50 mt-1">{metric.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="prestige-card p-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="w-4 h-4 text-teal-600" />
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600">Scope and read</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {c.segments?.map(seg => (
+            <StatBox key={seg.name} label={`${seg.name} accounts`} value={seg.segment_size} accent={accent(seg.name).ring} />
+          ))}
+          <StatBox label="Shared accounts" value={countSharedAccounts(c)} accent="text-amber-600" />
+          <StatBox label="Unique on-site accounts" value={metrics[0]?.value || 0} accent="text-teal-600" />
+        </div>
+      </div>
 
       {c.overlap_note && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
@@ -169,6 +304,26 @@ export function AbmEngagementBrief() {
           <SegmentCard key={seg.name} seg={seg} />
         ))}
       </div>
+
+      {spotlights.length > 0 && (
+        <div className="rounded-[24px] bg-slate-950 text-white overflow-hidden">
+          <div className="p-6 md:p-8">
+            <div className="flex items-center gap-2 mb-5">
+              <Users className="w-4 h-4 text-teal-300" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-white/70">Account spotlights</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {spotlights.slice(0, 6).map((b, i) => (
+                <div key={`${b.account}-${i}`} className="rounded-2xl bg-white/[0.06] border border-white/10 p-4">
+                  <div className="text-lg font-bold text-white">{b.account}</div>
+                  <p className="text-sm text-white/65 mt-1 leading-relaxed">{b.summary}</p>
+                  <p className="text-sm font-semibold text-teal-200 mt-3">{b.signal}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {c.key_takeaways && c.key_takeaways.length > 0 && (
         <div className="prestige-card p-6">
@@ -214,6 +369,85 @@ export function AbmEngagementBrief() {
       )}
     </section>
   );
+}
+
+function buildHeroMetrics(content: BriefContent): { label: string; value: number | string }[] {
+  const allAccounts = new Set<string>();
+  let peakEvents = 0;
+  let topKeyword = 0;
+  let brandedSearches = 0;
+
+  for (const seg of content.segments || []) {
+    for (const account of seg.on_site_accounts || []) allAccounts.add(account);
+    for (const behavior of seg.account_behaviors || []) {
+      const match = behavior.summary.match(/(\d+)\s+events?/i);
+      if (match) peakEvents = Math.max(peakEvents, Number(match[1]));
+    }
+    for (const keyword of seg.keywords || []) {
+      topKeyword = Math.max(topKeyword, keyword.score);
+      if (/inspirogene|branded/i.test(keyword.term)) brandedSearches += keyword.score;
+    }
+  }
+
+  return [
+    { label: 'Accounts on site', value: allAccounts.size },
+    { label: 'Peak site events', value: peakEvents || '—' },
+    { label: 'Top keyword volume', value: topKeyword || '—' },
+    { label: 'Branded searches', value: brandedSearches || 0 },
+  ];
+}
+
+function enrichBrief(row: BriefRow | null): BriefRow {
+  if (!row?.content?.segments?.length) return FALLBACK_BRIEF;
+
+  const fallbackBySegment = new Map((FALLBACK_BRIEF.content.segments || []).map(seg => [seg.name, seg]));
+  return {
+    ...FALLBACK_BRIEF,
+    ...row,
+    content: {
+      ...FALLBACK_BRIEF.content,
+      ...row.content,
+      segments: row.content.segments.map(seg => {
+        const fallback = fallbackBySegment.get(seg.name);
+        if (!fallback) return seg;
+        return {
+          ...fallback,
+          ...seg,
+          account_behaviors: seg.account_behaviors?.length ? seg.account_behaviors : fallback.account_behaviors,
+          top_pages: seg.top_pages?.length ? seg.top_pages : fallback.top_pages,
+          campaigns: seg.campaigns?.length ? seg.campaigns : fallback.campaigns,
+          bombora: seg.bombora?.length ? seg.bombora : fallback.bombora,
+          keywords: seg.keywords?.length ? seg.keywords : fallback.keywords,
+          keyword_note: seg.keyword_note || fallback.keyword_note,
+          page_note: seg.page_note || fallback.page_note,
+        };
+      }),
+    },
+  };
+}
+
+function collectSpotlights(content: BriefContent): AccountBehavior[] {
+  const seen = new Set<string>();
+  const rows: AccountBehavior[] = [];
+  for (const seg of content.segments || []) {
+    for (const behavior of seg.account_behaviors || []) {
+      const key = behavior.account.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rows.push(behavior);
+    }
+  }
+  return rows;
+}
+
+function countSharedAccounts(content: BriefContent): number {
+  const counts = new Map<string, number>();
+  for (const seg of content.segments || []) {
+    for (const account of seg.on_site_accounts || []) {
+      counts.set(account, (counts.get(account) || 0) + 1);
+    }
+  }
+  return Array.from(counts.values()).filter(count => count > 1).length;
 }
 
 function SegmentCard({ seg }: { seg: Segment }) {
