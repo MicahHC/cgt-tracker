@@ -24,22 +24,34 @@ export function detectAudienceSegment(fileName: string): AbmAudienceSegment {
   return '';
 }
 
-export async function fetchClientDomains(): Promise<Set<string>> {
+interface ClientSuppressionList {
+  domains: Set<string>;
+  accountNames: Set<string>;
+}
+
+export async function fetchClientSuppressionList(): Promise<ClientSuppressionList> {
   const { data } = await supabase
     .from('cgt_abm_client_domains')
-    .select('domain');
-  const set = new Set<string>();
+    .select('domain, account_name');
+  const domains = new Set<string>();
+  const accountNames = new Set<string>();
   for (const row of (data as any[]) || []) {
-    if (row.domain) set.add(row.domain.toLowerCase().trim());
+    if (row.domain) domains.add(row.domain.toLowerCase().trim());
+    if (row.account_name) accountNames.add(normalizeAccountName(row.account_name));
   }
-  return set;
+  return { domains, accountNames };
+}
+
+/** @deprecated Use fetchClientSuppressionList instead */
+export async function fetchClientDomains(): Promise<Set<string>> {
+  return (await fetchClientSuppressionList()).domains;
 }
 
 export async function uploadAbmEngagementCsv(file: File, weekLabel: string, segmentOverride?: AbmAudienceSegment): Promise<number> {
   const text = await file.text();
   const segment = segmentOverride || detectAudienceSegment(file.name);
-  const clientDomains = await fetchClientDomains();
-  const rows = parseAbmEngagementCsv(text, weekLabel, file.name, segment, clientDomains);
+  const suppression = await fetchClientSuppressionList();
+  const rows = parseAbmEngagementCsv(text, weekLabel, file.name, segment, suppression);
   if (rows.length === 0) {
     throw new Error('No ABM account rows found in this CSV.');
   }
@@ -87,7 +99,7 @@ export function parseAbmEngagementCsv(
   weekLabel: string,
   fileName: string,
   segment: AbmAudienceSegment = '',
-  clientDomains: Set<string> = new Set()
+  suppression: ClientSuppressionList | Set<string> = new Set()
 ): AbmInsertRow[] {
   const matrix = parseCsv(text).filter(row => row.some(cell => cell.trim() !== ''));
   const reportingPeriod = findMeta(matrix, 'Reporting Period');
@@ -104,13 +116,17 @@ export function parseAbmEngagementCsv(
   const headers = matrix[headerIndex].map(h => h.trim());
   const domainCol = headers.findIndex(h => h.toLowerCase() === 'domain');
 
+  const clientDomains = suppression instanceof Set ? suppression : suppression.domains;
+  const clientAccountNames = suppression instanceof Set ? new Set<string>() : suppression.accountNames;
+
   return matrix.slice(headerIndex + 1)
     .filter(row => row[0]?.trim())
     .map(row => toRecord(headers, row))
     .map(record => {
       const accountName = value(record, 'Account');
       const domain = domainCol >= 0 ? value(record, 'Domain').toLowerCase().trim() : '';
-      const isClient = domain ? clientDomains.has(domain) : false;
+      const isClient = (domain ? clientDomains.has(domain) : false)
+        || clientAccountNames.has(normalizeAccountName(accountName));
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,
