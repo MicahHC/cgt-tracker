@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import {
-  Target, Users, Layers, AlertTriangle, Flame, Search as SearchIcon,
-  FileText, Megaphone, Building2, Sparkles, Link2,
-} from 'lucide-react';
+import { Target } from 'lucide-react';
 import { isClosedWonAccount, mentionsClosedWonAccount } from '../lib/abmSuppression';
 
 interface PageHit {
@@ -257,201 +254,52 @@ export function AbmEngagementBrief() {
   }, []);
 
   const c = brief.content;
-  const metrics = buildHeroMetrics(c);
-  const spotlights = collectSpotlights(c);
-  const generated = new Date(brief.generated_at).toLocaleDateString(undefined, {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
+  const segments = (c.segments ?? []).filter(seg => (seg.account_behaviors?.length ?? 0) > 0);
+  if (segments.length === 0) return null;
 
   return (
-    <section className="reveal reveal-delay-3 space-y-7">
-      <header className="flex items-end justify-between gap-4 flex-wrap">
+    <section className="reveal reveal-delay-3">
+      <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
         <div>
           <span className="prestige-eyebrow prestige-eyebrow-light">
             <Target className="w-3 h-3" />
-            Audience Engagement Intelligence
+            ABM
           </span>
-          <h2 className="prestige-section-title mt-3">Who is engaging, and with what</h2>
-          <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-            Organized readout of On-Market and Late-Stage biopharma engagement across the site, campaigns, keyword research, and Bombora surge.
-          </p>
+          <h2 className="prestige-section-title mt-3">Account engagement detail</h2>
         </div>
-        <div className="text-xs text-slate-500 text-right">
-          <div className="font-semibold uppercase tracking-wider">{brief.view_window}</div>
-          <div>{generated}</div>
-        </div>
+        <div className="text-xs text-slate-400">{brief.period_label}</div>
       </header>
 
-      <div className="rounded-[28px] bg-slate-950 text-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(20,184,166,0.22),transparent_34%),radial-gradient(circle_at_10%_90%,rgba(249,115,22,0.18),transparent_28%)]" />
-        <div className="relative p-8 md:p-10">
-          <div className="text-xs font-bold tracking-[0.24em] uppercase text-teal-200">Prepared for the InspiroGene marketing team</div>
-          <div className="mt-5 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 items-end">
-            <div>
-              <h3 className="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white">The 30-day picture</h3>
-              {c.headline && <p className="text-sm md:text-base text-white/70 leading-relaxed mt-4 max-w-3xl">{c.headline}</p>}
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {metrics.map(metric => (
-                <div key={metric.label} className="rounded-2xl bg-white/8 border border-white/10 px-4 py-3">
-                  <div className="text-3xl font-black tracking-tight text-white">{metric.value}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-white/50 mt-1">{metric.label}</div>
+      <div className="prestige-card overflow-hidden">
+        <div className="divide-y divide-slate-100">
+          {segments.map(seg => {
+            const a = accent(seg.name);
+            return (
+              <div key={seg.name}>
+                <div className="px-6 py-2.5 bg-slate-50/80 flex items-center justify-between">
+                  <span className={`text-[11px] font-bold uppercase tracking-widest ${a.ring}`}>{seg.name}</span>
+                  <span className="text-xs text-slate-400">{seg.on_site} of {seg.segment_size} on-site · {seg.on_site_pct}%</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="prestige-card p-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-teal-600" />
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600">Scope and read</h3>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {c.segments?.map(seg => (
-            <StatBox key={seg.name} label={`${seg.name} accounts`} value={seg.segment_size} accent={accent(seg.name).ring} />
-          ))}
-          <StatBox label="Shared accounts" value={countSharedAccounts(c)} accent="text-amber-600" />
-          <StatBox label="Unique on-site accounts" value={metrics[0]?.value || 0} accent="text-teal-600" />
-        </div>
-      </div>
-
-      {c.overlap_note && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
-          <div className="flex items-start gap-2.5">
-            <Link2 className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-amber-800">Read this first · segment overlap</div>
-              <p className="text-sm text-amber-900 mt-1 leading-relaxed">{c.overlap_note}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {c.segments!.map(seg => (
-          <SegmentCard key={seg.name} seg={seg} />
-        ))}
-      </div>
-
-      {spotlights.length > 0 && (
-        <div className="rounded-[24px] bg-slate-950 text-white overflow-hidden">
-          <div className="p-6 md:p-8">
-            <div className="flex items-center gap-2 mb-5">
-              <Users className="w-4 h-4 text-teal-300" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-white/70">Account spotlights</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {spotlights.slice(0, 6).map((b, i) => (
-                <div key={`${b.account}-${i}`} className="rounded-2xl bg-white/[0.06] border border-white/10 p-4">
-                  <div className="text-lg font-bold text-white">{b.account}</div>
-                  <p className="text-sm text-white/65 mt-1 leading-relaxed">{b.summary}</p>
-                  <p className="text-sm font-semibold text-teal-200 mt-3">{b.signal}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {c.recommended_actions && c.recommended_actions.length > 0 && (
-        <div className="prestige-card p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4 text-teal-600" />
-            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600">Recommended next actions</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[...c.recommended_actions].sort((a, b) => a.priority - b.priority).map(action => (
-              <div key={`${action.priority}-${action.account}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-bold text-slate-900">{action.account}</div>
-                    <div className="text-xs font-semibold uppercase tracking-widest text-teal-700 mt-1">{action.action}</div>
+                {(seg.account_behaviors ?? []).map((b, i) => (
+                  <div key={i} className="px-6 py-4 flex items-start justify-between gap-6 hover:bg-slate-50/60 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[15px] font-semibold text-slate-900">{b.account}</div>
+                      <div className="text-sm text-slate-600 mt-1 leading-relaxed">{b.summary}</div>
+                    </div>
+                    <div className="text-xs text-slate-500 text-right max-w-xs flex-shrink-0 leading-relaxed">{b.signal}</div>
                   </div>
-                  <span className="rounded-full bg-white border border-slate-200 px-2 py-0.5 text-xs font-bold text-slate-500">#{action.priority}</span>
-                </div>
-                <p className="text-sm text-slate-700 leading-relaxed mt-3">{action.why}</p>
-                <div className="rounded-lg bg-white border border-slate-200 px-3 py-2 mt-3">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Next step</div>
-                  <p className="text-sm text-slate-800 leading-relaxed mt-1">{action.next_step}</p>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
-      {c.key_takeaways && c.key_takeaways.length > 0 && (
-        <div className="prestige-card p-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-teal-600" />
-            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600">What it means</h3>
-          </div>
-          <ul className="space-y-2.5">
-            {c.key_takeaways.map((t, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0" />
-                {t}
-              </li>
-            ))}
-          </ul>
-          {c.sources_note && (
-            <p className="text-xs text-slate-500 mt-4 pt-4 border-t border-slate-100">{c.sources_note}</p>
-          )}
-        </div>
-      )}
-
-      {c.accuracy_flags && c.accuracy_flags.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-slate-500" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-600">Accuracy flags before this goes external</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {c.accuracy_flags.map((f, i) => (
-              <div key={i} className="rounded-lg bg-white border border-slate-200 p-3">
-                <div className="text-sm font-semibold text-slate-800">{f.label}</div>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{f.detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {c.methodology_notes && c.methodology_notes.length > 0 && (
-        <p className="text-xs text-slate-400 leading-relaxed">
-          {c.methodology_notes.join(' ')}
-        </p>
+      {(c.methodology_notes?.length ?? 0) > 0 && (
+        <p className="text-xs text-slate-400 leading-relaxed mt-3">{c.methodology_notes!.join(' ')}</p>
       )}
     </section>
   );
-}
-
-function buildHeroMetrics(content: BriefContent): { label: string; value: number | string }[] {
-  const allAccounts = new Set<string>();
-  let peakEvents = 0;
-  let topKeyword = 0;
-  let brandedSearches = 0;
-
-  for (const seg of content.segments || []) {
-    for (const account of seg.on_site_accounts || []) allAccounts.add(account);
-    for (const behavior of seg.account_behaviors || []) {
-      const match = behavior.summary.match(/(\d+)\s+events?/i);
-      if (match) peakEvents = Math.max(peakEvents, Number(match[1]));
-    }
-    for (const keyword of seg.keywords || []) {
-      topKeyword = Math.max(topKeyword, keyword.score);
-      if (/inspirogene|branded/i.test(keyword.term)) brandedSearches += keyword.score;
-    }
-  }
-
-  return [
-    { label: 'Accounts on site', value: allAccounts.size },
-    { label: 'Peak site events', value: peakEvents || '—' },
-    { label: 'Top keyword volume', value: topKeyword || '—' },
-    { label: 'Branded searches', value: brandedSearches || 0 },
-  ];
 }
 
 function enrichBrief(row: BriefRow | null): BriefRow {
@@ -524,175 +372,4 @@ function stripSuppressedSentences(value?: string): string | undefined {
     .filter(sentence => sentence && !mentionsClosedWonAccount(sentence))
     .join(' ')
     .trim() || undefined;
-}
-
-function collectSpotlights(content: BriefContent): AccountBehavior[] {
-  const seen = new Set<string>();
-  const rows: AccountBehavior[] = [];
-  for (const seg of content.segments || []) {
-    for (const behavior of seg.account_behaviors || []) {
-      const key = behavior.account.toLowerCase();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      rows.push(behavior);
-    }
-  }
-  return rows;
-}
-
-function countSharedAccounts(content: BriefContent): number {
-  const counts = new Map<string, number>();
-  for (const seg of content.segments || []) {
-    for (const account of seg.on_site_accounts || []) {
-      counts.set(account, (counts.get(account) || 0) + 1);
-    }
-  }
-  return Array.from(counts.values()).filter(count => count > 1).length;
-}
-
-function SegmentCard({ seg }: { seg: Segment }) {
-  const a = accent(seg.name);
-  return (
-    <div className="prestige-card overflow-hidden flex flex-col">
-      <div className={`h-1 w-full ${a.bar}`} />
-      <div className="p-6 space-y-5 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <Layers className={`w-4 h-4 ${a.ring}`} />
-              <h3 className="text-lg font-bold text-slate-900">{seg.name}</h3>
-            </div>
-            {seg.channel_mix && <p className="text-xs text-slate-500 mt-1">{seg.channel_mix}</p>}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3">
-          <StatBox label="In segment" value={seg.segment_size} />
-          <StatBox label="On the site" value={seg.on_site} accent={a.ring} />
-          <StatBox label="On-site rate" value={`${seg.on_site_pct}%`} />
-        </div>
-
-        {seg.on_site_accounts?.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">On the site</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {seg.on_site_accounts.map(name => (
-                <span key={name} className={`px-2 py-0.5 rounded-full text-xs font-medium border ${a.chip}`}>{name}</span>
-              ))}
-            </div>
-            {seg.shared_note && <p className="text-xs text-slate-500 mt-2 leading-relaxed">{seg.shared_note}</p>}
-          </div>
-        )}
-
-        {seg.account_behaviors && seg.account_behaviors.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Users className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Account behavior</span>
-            </div>
-            <div className="space-y-2">
-              {seg.account_behaviors.map((b, i) => (
-                <div key={i} className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
-                  <div className="text-sm font-semibold text-slate-800">{b.account}</div>
-                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{b.summary}</p>
-                  <p className="text-xs font-medium text-teal-700 mt-1">{b.signal}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {seg.top_pages && seg.top_pages.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <FileText className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Top pages</span>
-            </div>
-            <div className="space-y-1">
-              {seg.top_pages.map((p, i) => (
-                <div key={i} className="flex items-center justify-between gap-3 text-sm py-1 border-b border-slate-50 last:border-0">
-                  <span className="text-slate-700 truncate">{p.page}</span>
-                  <span className="text-xs text-slate-500 flex-shrink-0 font-mono">
-                    {p.accounts} acct · {p.events} ev{p.sessions ? ` · ${p.sessions} sess` : ''}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {seg.page_note && <p className="text-xs text-slate-500 mt-2 leading-relaxed">{seg.page_note}</p>}
-          </div>
-        )}
-
-        {seg.campaigns && seg.campaigns.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Megaphone className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Campaign reach</span>
-            </div>
-            <div className="space-y-2">
-              {seg.campaigns.map((cp, i) => (
-                <div key={i}>
-                  <div className="flex items-center justify-between gap-3 text-xs">
-                    <span className="text-slate-600 truncate">{cp.name}</span>
-                    <span className="font-semibold text-slate-800 flex-shrink-0">{cp.reach_pct}%</span>
-                  </div>
-                  <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className={`h-full ${a.bar}`} style={{ width: `${Math.min(100, cp.reach_pct)}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {seg.keywords && seg.keywords.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <SearchIcon className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">What they search</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {seg.keywords.map((k, i) => (
-                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-700">
-                  {k.term} <span className="text-slate-400">·{k.score}</span>
-                </span>
-              ))}
-            </div>
-            {seg.keyword_note && <p className="text-xs text-slate-500 mt-2 leading-relaxed">{seg.keyword_note}</p>}
-          </div>
-        )}
-
-        {(!seg.keywords || seg.keywords.length === 0) && seg.keyword_note && (
-          <p className="text-xs text-slate-400 italic leading-relaxed">{seg.keyword_note}</p>
-        )}
-
-        {seg.bombora && seg.bombora.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Flame className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Intent surge (Bombora)</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {seg.bombora.map((t, i) => (
-                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-orange-50 text-orange-700 border border-orange-100">
-                  {t.topic} <span className="text-orange-400">·{t.score}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function StatBox({ label, value, accent: accentColor }: { label: string; value: number | string; accent?: string }) {
-  return (
-    <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2.5 text-center">
-      <div className={`text-2xl font-bold ${accentColor || 'text-slate-900'}`}>{value}</div>
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mt-0.5">{label}</div>
-    </div>
-  );
 }
