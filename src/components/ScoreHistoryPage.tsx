@@ -4,6 +4,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtScoreHistory } from '../types/database';
 import { LineChart, TrendingDown, TrendingUp } from 'lucide-react';
 import { TierBadge } from './ui/Badge';
+import { formatTrackerWeekLabel } from '../lib/weekLabels';
 
 interface Row extends CgtScoreHistory {
   asset_name?: string;
@@ -80,7 +81,10 @@ export function ScoreHistoryPage({ onOpenAsset }: Props) {
                   const delta = prior ? r.final_commercial_score - prior.final_commercial_score : 0;
                   return (
                     <tr key={r.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => onOpenAsset(r.asset_id)}>
-                      <td className="px-4 py-3 text-slate-600 text-xs">{new Date(r.recorded_at).toLocaleString()}<div className="text-[11px] text-slate-400">{r.week_label}</div></td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        {new Date(r.recorded_at).toLocaleString()}
+                        <div className="text-[11px] text-slate-400">{formatTrackerWeekLabel(r.week_label)}</div>
+                      </td>
                       <td className="px-4 py-3 font-medium text-slate-900">{r.asset_name}</td>
                       <td className="px-4 py-3 text-slate-600">{r.company_name}</td>
                       <td className="px-4 py-3 text-center">

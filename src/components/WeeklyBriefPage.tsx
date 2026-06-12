@@ -11,6 +11,7 @@ import { ConfidenceBadge } from './ui/Badge';
 import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
+import { formatTrackerWeekLabel } from '../lib/weekLabels';
 
 interface Props {
   onOpenAsset: (id: string) => void;
@@ -308,6 +309,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
   async function handleAbmUpload(file: File | null) {
     if (!file || !week) return;
+    const weekDisplay = formatTrackerWeekLabel(week);
     setUploadingAbm(true);
     setAbmUploadError(null);
     setAbmUploadMessage(null);
@@ -316,7 +318,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       const imported = await uploadAbmEngagementCsv(file, week, uploadSegment || undefined);
       const accountCount = Math.max(0, imported - 1);
       const segLabel = uploadSegment || 'auto-detected';
-      setAbmUploadMessage(`Imported ${accountCount} ABM accounts for ${week} (${segLabel}).`);
+      setAbmUploadMessage(`Imported ${accountCount} ABM accounts for ${weekDisplay} (${segLabel}).`);
       await loadWeek(week);
     } catch (err) {
       setAbmUploadError(err instanceof Error ? err.message : String(err));
@@ -454,6 +456,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     }
     return 'data not yet generated';
   })();
+  const weekDisplay = formatTrackerWeekLabel(week);
 
   return (
     <div ref={rootRef} className="prestige space-y-10" id="weekly-brief-printable">
@@ -465,9 +468,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             value={week}
             onChange={e => setWeek(e.target.value)}
             className="text-sm font-medium text-slate-900 bg-transparent outline-none"
+            aria-label="Weekly brief reporting period"
           >
             {availableWeeks.map(w => (
-              <option key={w} value={w}>{w}</option>
+              <option key={w} value={w}>{formatTrackerWeekLabel(w)}</option>
             ))}
           </select>
         </div>
@@ -522,7 +526,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         <div className="max-w-4xl mx-auto text-center">
           <span className="prestige-eyebrow">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 prestige-dot" />
-            Weekly Brief · {week}
+            Weekly Brief · {weekDisplay}
           </span>
           <h1 className="prestige-headline mt-6">
             The week in <span className="prestige-gradient-text">cell &amp; gene therapy</span>
@@ -542,7 +546,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
 
           <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
-            Agent run completed: {generatedLabel}
+            Agent run completed: {generatedLabel} · Tracker code {week}
           </div>
         </div>
       </section>
@@ -656,7 +660,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         {!abmTotal ? (
           <div className="prestige-card p-10 text-center">
             <Target className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <div className="text-slate-700 font-medium">No ABM upload for {week}</div>
+            <div className="text-slate-700 font-medium">No ABM upload for {weekDisplay}</div>
             <p className="text-sm text-slate-500 mt-1">Upload the Friday Performance Trend Report CSV to add account engagement context to this brief.</p>
           </div>
         ) : (

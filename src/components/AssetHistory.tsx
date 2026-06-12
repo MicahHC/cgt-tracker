@@ -1,5 +1,6 @@
 import { CgtChangeLog, CgtScoreHistory } from '../types/database';
 import { LineChart, ClipboardList } from 'lucide-react';
+import { formatTrackerWeekLabel } from '../lib/weekLabels';
 
 interface Props {
   changes: CgtChangeLog[];
@@ -22,7 +23,9 @@ export function AssetHistory({ changes, history }: Props) {
               {history.map(h => (
                 <div key={h.id} className="flex items-center justify-between text-xs border-b border-slate-100 pb-1.5">
                   <div className="text-slate-600">
-                    <span className="font-medium text-slate-900">{h.week_label || new Date(h.recorded_at).toLocaleDateString()}</span>
+                    <span className="font-medium text-slate-900">
+                      {h.week_label ? formatTrackerWeekLabel(h.week_label) : new Date(h.recorded_at).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-slate-600">Com: <span className="font-semibold text-slate-900">{h.final_commercial_score}</span></span>
