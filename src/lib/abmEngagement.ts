@@ -1,7 +1,12 @@
 import { supabase } from './supabase';
 import { AbmAudienceSegment, CgtAbmWeeklyEngagement } from '../types/database';
+import { isClosedWonAccount, normalizeSuppressionKey } from './abmSuppression';
 
 type AbmInsertRow = Omit<CgtAbmWeeklyEngagement, 'id' | 'created_at' | 'uploaded_at' | 'uploaded_by'>;
+type ClientSuppression = {
+  domains: Set<string>;
+  accountNames: Set<string>;
+};
 
 const HEADER_ACCOUNT = 'Account';
 
@@ -24,22 +29,28 @@ export function detectAudienceSegment(fileName: string): AbmAudienceSegment {
   return '';
 }
 
-export async function fetchClientDomains(): Promise<Set<string>> {
+export async function fetchClientSuppressions(): Promise<ClientSuppression> {
   const { data } = await supabase
     .from('cgt_abm_client_domains')
-    .select('domain');
-  const set = new Set<string>();
+    .select('domain, account_name');
+  const domains = new Set<string>();
+  const accountNames = new Set<string>();
   for (const row of (data as any[]) || []) {
-    if (row.domain) set.add(row.domain.toLowerCase().trim());
+    if (row.domain) domains.add(row.domain.toLowerCase().trim());
+    if (row.account_name) accountNames.add(normalizeSuppressionKey(row.account_name));
   }
-  return set;
+  return { domains, accountNames };
+}
+
+export async function fetchClientDomains(): Promise<Set<string>> {
+  return (await fetchClientSuppressions()).domains;
 }
 
 export async function uploadAbmEngagementCsv(file: File, weekLabel: string, segmentOverride?: AbmAudienceSegment): Promise<number> {
   const text = await file.text();
   const segment = segmentOverride || detectAudienceSegment(file.name);
-  const clientDomains = await fetchClientDomains();
-  const rows = parseAbmEngagementCsv(text, weekLabel, file.name, segment, clientDomains);
+  const clientSuppressions = await fetchClientSuppressions();
+  const rows = parseAbmEngagementCsv(text, weekLabel, file.name, segment, clientSuppressions);
   if (rows.length === 0) {
     throw new Error('No ABM account rows found in this CSV.');
   }
@@ -87,7 +98,7 @@ export function parseAbmEngagementCsv(
   weekLabel: string,
   fileName: string,
   segment: AbmAudienceSegment = '',
-  clientDomains: Set<string> = new Set()
+  clientSuppressions: ClientSuppression = { domains: new Set(), accountNames: new Set() }
 ): AbmInsertRow[] {
   const matrix = parseCsv(text).filter(row => row.some(cell => cell.trim() !== ''));
   const reportingPeriod = findMeta(matrix, 'Reporting Period');
@@ -110,7 +121,11 @@ export function parseAbmEngagementCsv(
     .map(record => {
       const accountName = value(record, 'Account');
       const domain = domainCol >= 0 ? value(record, 'Domain').toLowerCase().trim() : '';
-      const isClient = domain ? clientDomains.has(domain) : false;
+      const accountKey = normalizeSuppressionKey(accountName);
+      const isClient =
+        isClosedWonAccount(accountName, domain) ||
+        (domain ? clientSuppressions.domains.has(domain) : false) ||
+        (accountKey ? clientSuppressions.accountNames.has(accountKey) : false);
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,

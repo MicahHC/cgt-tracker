@@ -4,6 +4,7 @@ import {
   Target, Users, Layers, AlertTriangle, Flame, Search as SearchIcon,
   FileText, Megaphone, Building2, Sparkles, Link2,
 } from 'lucide-react';
+import { isClosedWonAccount, mentionsClosedWonAccount } from '../lib/abmSuppression';
 
 interface PageHit {
   page: string;
@@ -464,38 +465,75 @@ function buildHeroMetrics(content: BriefContent): { label: string; value: number
 }
 
 function enrichBrief(row: BriefRow | null): BriefRow {
-  if (!row?.content?.segments?.length) return FALLBACK_BRIEF;
+  if (!row?.content?.segments?.length) {
+    return { ...FALLBACK_BRIEF, content: suppressClosedWonBriefContent(FALLBACK_BRIEF.content) };
+  }
 
   const fallbackBySegment = new Map((FALLBACK_BRIEF.content.segments || []).map(seg => [seg.name, seg]));
+  const content: BriefContent = {
+    ...FALLBACK_BRIEF.content,
+    ...row.content,
+    recommended_actions: row.content.recommended_actions?.length
+      ? row.content.recommended_actions
+      : FALLBACK_BRIEF.content.recommended_actions,
+    key_takeaways: row.content.key_takeaways?.length
+      ? row.content.key_takeaways
+      : FALLBACK_BRIEF.content.key_takeaways,
+    segments: row.content.segments.map(seg => {
+      const fallback = fallbackBySegment.get(seg.name);
+      if (!fallback) return seg;
+      return {
+        ...fallback,
+        ...seg,
+        account_behaviors: seg.account_behaviors?.length ? seg.account_behaviors : fallback.account_behaviors,
+        top_pages: seg.top_pages?.length ? seg.top_pages : fallback.top_pages,
+        campaigns: seg.campaigns?.length ? seg.campaigns : fallback.campaigns,
+        bombora: seg.bombora?.length ? seg.bombora : fallback.bombora,
+        keywords: seg.keywords?.length ? seg.keywords : fallback.keywords,
+        keyword_note: seg.keyword_note || fallback.keyword_note,
+        page_note: seg.page_note || fallback.page_note,
+      };
+    }),
+  };
+
   return {
     ...FALLBACK_BRIEF,
     ...row,
-    content: {
-      ...FALLBACK_BRIEF.content,
-      ...row.content,
-      recommended_actions: row.content.recommended_actions?.length
-        ? row.content.recommended_actions
-        : FALLBACK_BRIEF.content.recommended_actions,
-      key_takeaways: row.content.key_takeaways?.length
-        ? row.content.key_takeaways
-        : FALLBACK_BRIEF.content.key_takeaways,
-      segments: row.content.segments.map(seg => {
-        const fallback = fallbackBySegment.get(seg.name);
-        if (!fallback) return seg;
-        return {
-          ...fallback,
-          ...seg,
-          account_behaviors: seg.account_behaviors?.length ? seg.account_behaviors : fallback.account_behaviors,
-          top_pages: seg.top_pages?.length ? seg.top_pages : fallback.top_pages,
-          campaigns: seg.campaigns?.length ? seg.campaigns : fallback.campaigns,
-          bombora: seg.bombora?.length ? seg.bombora : fallback.bombora,
-          keywords: seg.keywords?.length ? seg.keywords : fallback.keywords,
-          keyword_note: seg.keyword_note || fallback.keyword_note,
-          page_note: seg.page_note || fallback.page_note,
-        };
-      }),
-    },
+    content: suppressClosedWonBriefContent(content),
   };
+}
+
+function suppressClosedWonBriefContent(content: BriefContent): BriefContent {
+  const suppressionNote = 'Closed Won/client accounts are suppressed from active ABM recommendations and account-level reporting.';
+  const overlap = [stripSuppressedSentences(content.overlap_note), suppressionNote].filter(Boolean).join(' ');
+
+  return {
+    ...content,
+    headline: stripSuppressedSentences(content.headline) || 'Site engagement is real, but Closed Won/client accounts are suppressed from active ABM recommendations. Remaining engagement is ranked for fit, timing, and next-step actionability.',
+    overlap_note: overlap,
+    key_takeaways: content.key_takeaways?.filter(t => !mentionsClosedWonAccount(t)),
+    recommended_actions: content.recommended_actions
+      ?.filter(action => !isClosedWonAccount(action.account) && !mentionsClosedWonAccount(`${action.account} ${action.why} ${action.next_step}`))
+      .map((action, index) => ({ ...action, priority: index + 1 })),
+    accuracy_flags: content.accuracy_flags?.filter(flag => !mentionsClosedWonAccount(`${flag.label} ${flag.detail}`)),
+    segments: content.segments?.map(seg => ({
+      ...seg,
+      on_site_accounts: seg.on_site_accounts?.filter(account => !isClosedWonAccount(account)) || [],
+      shared_note: stripSuppressedSentences(seg.shared_note),
+      page_note: stripSuppressedSentences(seg.page_note),
+      account_behaviors: seg.account_behaviors?.filter(behavior => !isClosedWonAccount(behavior.account)),
+    })),
+  };
+}
+
+function stripSuppressedSentences(value?: string): string | undefined {
+  if (!value) return value;
+  const sentences = value.match(/[^.!?]+[.!?]?/g) || [value];
+  return sentences
+    .map(sentence => sentence.trim())
+    .filter(sentence => sentence && !mentionsClosedWonAccount(sentence))
+    .join(' ')
+    .trim() || undefined;
 }
 
 function collectSpotlights(content: BriefContent): AccountBehavior[] {

@@ -13,6 +13,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
 import { formatTrackerWeekLabel } from '../lib/weekLabels';
 import { AbmEngagementBrief } from './AbmEngagementBrief';
+import { isSuppressedAbmRow } from '../lib/abmSuppression';
 
 interface Props {
   onOpenAsset: (id: string) => void;
@@ -331,13 +332,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   }, [changes]);
 
   const priorityChanges = criticalChanges.length > 0 ? criticalChanges : changes;
+  const activeAbmRows = useMemo(() => abmRows.filter(row => !isSuppressedAbmRow(row)), [abmRows]);
+  const suppressedAbmCount = abmRows.filter(row => !row.is_total && isSuppressedAbmRow(row)).length;
 
   const abmTotal = useMemo(() => {
-    const total = abmRows.find(r => r.is_total);
-    if (total) return total;
-    const accountRows = abmRows.filter(r => !r.is_total);
+    const accountRows = activeAbmRows.filter(r => !r.is_total);
     if (accountRows.length === 0) return null;
-    return accountRows.reduce((acc, row) => ({
+    const total = accountRows.reduce((acc, row) => ({
       ...acc,
       spend: acc.spend + (row.spend || 0),
       impressions: acc.impressions + (row.impressions || 0),
@@ -364,7 +365,12 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       new_pipeline: 0,
       closed_won_pipeline: 0,
     });
-  }, [abmRows]);
+    return {
+      ...total,
+      ctr: total.impressions > 0 ? (total.clicks / total.impressions) * 100 : 0,
+      account_ctr: total.accounts_reached > 0 ? (total.accounts_engaged / total.accounts_reached) * 100 : 0,
+    };
+  }, [activeAbmRows]);
 
   const topAbmAccounts = useMemo<AbmAccountInsight[]>(() => {
     const changesByCompany = new Map<string, number>();
@@ -380,7 +386,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       if (key) scoresByCompany.set(key, (scoresByCompany.get(key) || 0) + 1);
     }
 
-    return abmRows
+    return activeAbmRows
       .filter(r => !r.is_total)
       .map(row => {
         const relatedAsset = findRelatedAsset(row, assetContext);
@@ -402,7 +408,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       .filter(row => row.accounts_engaged > 0 || row.clicks > 0 || row.pipeline > 0 || row.relatedChanges > 0 || row.relatedScoreUpdates > 0)
       .sort((a, b) => b.engagementScore - a.engagementScore)
       .slice(0, 12);
-  }, [abmRows, assetContext, changes, scores]);
+  }, [activeAbmRows, assetContext, changes, scores]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" /></div>;
@@ -621,8 +627,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             </span>
             <h2 className="prestige-section-title mt-3">Top engaged accounts from CSV</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-              Optional Friday account-level upload, translated into actions: who to market to, who needs tracker research, and which engaged accounts are not yet a clear CGT fit.
+              Optional Friday account-level upload, translated into actions. Closed Won/client accounts are suppressed from this reporting view.
             </p>
+            {suppressedAbmCount > 0 && (
+              <p className="text-xs text-amber-700 mt-2">
+                {suppressedAbmCount} Closed Won/client {suppressedAbmCount === 1 ? 'account is' : 'accounts are'} suppressed from the totals and ranking below.
+              </p>
+            )}
           </div>
           {abmTotal && (
             <div className="text-xs text-slate-500 text-right">
@@ -645,7 +656,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Stat label="Accounts engaged" value={abmTotal.accounts_engaged || 0} icon={Users} color="teal" sub={`${abmTotal.accounts_reached || 0} reached`} />
               <Stat label="ABM clicks" value={abmTotal.clicks || 0} icon={Activity} color="blue" sub={`${formatPercent(abmTotal.ctr)} CTR`} />
-              <Stat label="Campaigns" value={abmTotal.campaigns || 0} icon={ClipboardList} color="amber" sub={`${abmRows.filter(r => !r.is_total).length} accounts in upload`} />
+              <Stat label="Campaigns" value={abmTotal.campaigns || 0} icon={ClipboardList} color="amber" sub={`${activeAbmRows.filter(r => !r.is_total).length} active accounts`} />
               <Stat label="Pipeline" value={Math.round((abmTotal.pipeline || 0) / 1000000)} icon={DollarSign} color="slate" sub={`${formatCurrency(abmTotal.pipeline)} total`} />
             </div>
 
