@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { AbmAudienceSegment, CgtAbmWeeklyEngagement } from '../types/database';
+import { isClosedWonAccount, normalizeSuppressionKey } from './abmSuppression';
 
 type AbmInsertRow = Omit<CgtAbmWeeklyEngagement, 'id' | 'created_at' | 'uploaded_at' | 'uploaded_by'>;
 
@@ -37,7 +38,7 @@ export async function fetchClientSuppressionList(): Promise<ClientSuppressionLis
   const accountNames = new Set<string>();
   for (const row of (data as any[]) || []) {
     if (row.domain) domains.add(row.domain.toLowerCase().trim());
-    if (row.account_name) accountNames.add(normalizeAccountName(row.account_name));
+    if (row.account_name) accountNames.add(normalizeSuppressionKey(row.account_name));
   }
   return { domains, accountNames };
 }
@@ -125,8 +126,11 @@ export function parseAbmEngagementCsv(
     .map(record => {
       const accountName = value(record, 'Account');
       const domain = domainCol >= 0 ? value(record, 'Domain').toLowerCase().trim() : '';
-      const isClient = (domain ? clientDomains.has(domain) : false)
-        || clientAccountNames.has(normalizeAccountName(accountName));
+      const accountKey = normalizeSuppressionKey(accountName);
+      const isClient =
+        isClosedWonAccount(accountName, domain) ||
+        (domain ? clientDomains.has(domain) : false) ||
+        (accountKey ? clientAccountNames.has(accountKey) : false);
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,
