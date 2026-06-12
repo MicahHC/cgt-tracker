@@ -21,3 +21,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Bolt/macOS sometimes creates duplicate image exports with unstable filenames.
+# They are not used by the app and can make Bolt's git sync fail when locked.
+public/image copy*.png
