@@ -4,7 +4,7 @@ import {
   Dna, LayoutDashboard, Package, Building2, ClipboardList, LineChart,
   CalendarClock, Settings, LogOut, ChevronRight, Gauge, Newspaper, Layers
 } from 'lucide-react';
-import { fetchLatestBriefMeta, getLastSeenWeek } from '../lib/weeklyBrief';
+import { fetchLatestBriefMeta, getLastSeenBriefSignature } from '../lib/weeklyBrief';
 
 export type PageKey =
   | 'dashboard' | 'assets' | 'companies' | 'scoring' | 'changelog'
@@ -40,11 +40,11 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
   useEffect(() => {
     let active = true;
     async function refresh() {
-      const { latestWeek, changeCount } = await fetchLatestBriefMeta();
+      const { latestWeek, changeCount, scoreCount, signature } = await fetchLatestBriefMeta();
       if (!active) return;
-      const lastSeen = getLastSeenWeek();
-      if (latestWeek && latestWeek !== lastSeen) {
-        setBriefBadge(changeCount || 1);
+      const lastSeen = getLastSeenBriefSignature();
+      if (latestWeek && signature && signature !== lastSeen) {
+        setBriefBadge(changeCount + scoreCount || 1);
       } else {
         setBriefBadge(0);
       }

@@ -9,7 +9,7 @@ import {
   Printer, Sparkles, UploadCloud, Target, Users, DollarSign, ShieldOff,
 } from 'lucide-react';
 import { ConfidenceBadge } from './ui/Badge';
-import { markWeeklyBriefSeen } from '../lib/weeklyBrief';
+import { briefSignature, markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
 import { formatTrackerWeekLabel } from '../lib/weekLabels';
@@ -125,12 +125,33 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('cgt_change_log')
-        .select('update_week')
-        .not('update_week', 'is', null)
-        .order('update_week', { ascending: false });
-      const weeks = Array.from(new Set(((data as any[]) || []).map(r => r.update_week as string)));
+      const [{ data: changeWeeks }, { data: scoreWeeks }] = await Promise.all([
+        supabase
+          .from('cgt_change_log')
+          .select('update_week, created_at')
+          .not('update_week', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(250),
+        supabase
+          .from('cgt_score_history')
+          .select('week_label, recorded_at')
+          .not('week_label', 'is', null)
+          .order('recorded_at', { ascending: false })
+          .limit(250),
+      ]);
+
+      const latestByWeek = new Map<string, number>();
+      for (const row of (changeWeeks as any[]) || []) {
+        if (!row.update_week) continue;
+        latestByWeek.set(row.update_week, Math.max(latestByWeek.get(row.update_week) || 0, Date.parse(row.created_at || '') || 0));
+      }
+      for (const row of (scoreWeeks as any[]) || []) {
+        if (!row.week_label) continue;
+        latestByWeek.set(row.week_label, Math.max(latestByWeek.get(row.week_label) || 0, Date.parse(row.recorded_at || '') || 0));
+      }
+      const weeks = Array.from(latestByWeek.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([label]) => label);
       setAvailableWeeks(weeks);
       if (weeks.length > 0) setWeek(weeks[0]);
       else setLoading(false);
@@ -292,7 +313,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     };
     setRuns(summary);
 
-    markWeeklyBriefSeen(w);
+    const latestDataAt = [
+      ...mappedChanges.map(c => c.created_at),
+      ...mappedScores.map(s => s.recorded_at),
+    ].filter(Boolean).sort().slice(-1)[0] || null;
+    markWeeklyBriefSeen(w, briefSignature(w, latestDataAt, mappedChanges.length, mappedScores.length));
 
     setLoading(false);
   }
@@ -458,6 +483,16 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
       });
     }
+    const latestDataAt = [
+      ...changes.map(c => c.created_at),
+      ...scores.map(s => s.recorded_at),
+    ].filter(Boolean).sort().slice(-1)[0] || null;
+    if (latestDataAt) {
+      return new Date(latestDataAt).toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+      });
+    }
     return 'data not yet generated';
   })();
   const weekDisplay = formatTrackerWeekLabel(week);
@@ -556,7 +591,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
 
           <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
-            Agent run completed: {generatedLabel} · Tracker code {week}
+            Latest data update: {generatedLabel} · Tracker code {week}
           </div>
         </div>
       </section>
