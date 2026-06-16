@@ -561,12 +561,24 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-6 md:gap-10 flex-wrap">
-            <HeroMetric value={changes.length} label="Changes logged" />
-            <div className="prestige-divider-vert hidden md:block" />
-            <HeroMetric value={scores.length} label="Score updates" />
-            <div className="prestige-divider-vert hidden md:block" />
-            <HeroMetric value={runs?.materialSignals ?? 0} label="Material signals" sub={runs ? `${runs.signalsFound} total` : undefined} />
-            <div className="prestige-divider-vert hidden md:block" />
+            {changes.length > 0 && (
+              <>
+                <HeroMetric value={changes.length} label="Changes logged" />
+                <div className="prestige-divider-vert hidden md:block" />
+              </>
+            )}
+            {scores.length > 0 && (
+              <>
+                <HeroMetric value={scores.length} label="Score updates" />
+                <div className="prestige-divider-vert hidden md:block" />
+              </>
+            )}
+            {(runs?.materialSignals ?? 0) > 0 && (
+              <>
+                <HeroMetric value={runs?.materialSignals ?? 0} label="Material signals" sub={runs ? `${runs.signalsFound} total` : undefined} />
+                <div className="prestige-divider-vert hidden md:block" />
+              </>
+            )}
             <HeroMetric value={briefData.brief?.content?.segments?.reduce((a, s) => a + s.on_site, 0) ?? 0} label="Accounts on site" sub={briefData.brief ? briefData.brief.view_window : undefined} />
           </div>
 
@@ -576,7 +588,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </div>
       </section>
 
-      {/* Highlights · Top Priority Changes */}
+      {/* ABM Audience Engagement Intelligence */}
+      {briefData.brief && (
+        <EngagementBriefSection brief={briefData.brief} spotlights={briefData.spotlights} />
+      )}
+
+      {/* Highlights · Top Priority Changes — only if there's data */}
+      {changes.length > 0 && (
       <section className="reveal reveal-delay-1">
         <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
           <div>
@@ -594,9 +612,6 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
         </header>
 
-        {changes.length === 0 ? (
-          <div className="prestige-card p-12 text-center text-sm text-slate-400">No changes recorded this week.</div>
-        ) : (
           <div className="prestige-card overflow-hidden">
             <div className="divide-y divide-slate-100">
               {priorityChanges.slice(0, 20).map(c => (
@@ -632,10 +647,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               ))}
             </div>
           </div>
-        )}
       </section>
+      )}
 
-      {/* Metrics Grid */}
+      {/* Metrics Grid — only show when there's market data */}
+      {(changes.length > 0 || scores.length > 0 || (runs?.total ?? 0) > 0) && (
       <section className="reveal reveal-delay-2">
         <header className="mb-6">
           <span className="prestige-eyebrow prestige-eyebrow-light">Summary</span>
@@ -660,13 +676,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           />
         </div>
       </section>
-
-      {/* ABM Audience Engagement Intelligence */}
-      {briefData.brief && (
-        <EngagementBriefSection brief={briefData.brief} spotlights={briefData.spotlights} />
       )}
 
-      {/* ABM account engagement */}
+      {/* ABM account engagement — only show when CSV data exists */}
+      {abmTotal && (
       <section className="reveal reveal-delay-3">
         <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
           <div>
@@ -676,7 +689,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             </span>
             <h2 className="prestige-section-title mt-3">Top engaged accounts from CSV</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-              Optional Friday account-level upload, translated into actions. Closed Won/client accounts are suppressed from this reporting view.
+              Friday account-level upload, translated into actions. Closed Won/client accounts are suppressed from this reporting view.
             </p>
             {suppressedAbmCount > 0 && (
               <p className="text-xs text-amber-700 mt-2">
@@ -684,23 +697,12 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               </p>
             )}
           </div>
-          {abmTotal && (
-            <div className="text-xs text-slate-500 text-right">
-              <div className="font-semibold uppercase tracking-wider">Reporting period</div>
-              <div>{abmTotal.reporting_period || '—'}</div>
-            </div>
-          )}
+          <div className="text-xs text-slate-500 text-right">
+            <div className="font-semibold uppercase tracking-wider">Reporting period</div>
+            <div>{abmTotal.reporting_period || '—'}</div>
+          </div>
         </header>
 
-        {!abmTotal ? (
-          <div className="prestige-card p-8">
-            <Target className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <div className="text-slate-700 font-medium text-center">No account-level CSV loaded for {weekDisplay}</div>
-            <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto text-center leading-relaxed">
-              The organized ABM engagement intelligence report is shown above. This section only populates when the uploaded 6sense Performance Trend Report is grouped by <span className="font-semibold text-slate-700">Account</span>. A report grouped by Week has campaign totals, but no account names to rank.
-            </p>
-          </div>
-        ) : (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Stat label="Accounts engaged" value={abmTotal.accounts_engaged || 0} icon={Users} color="teal" sub={`${abmTotal.accounts_reached || 0} reached`} />
@@ -802,8 +804,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               </div>
             </div>
           </div>
-        )}
       </section>
+      )}
 
       {/* Top movers */}
       {(topMovers.length > 0 || flatScoresCount > 0) && (
