@@ -6,35 +6,35 @@ import {
 } from 'lucide-react';
 import { isClosedWonAccount, mentionsClosedWonAccount } from '../lib/abmSuppression';
 
-interface PageHit {
+export interface PageHit {
   page: string;
   accounts: number;
   events: number;
   sessions?: number;
 }
 
-interface CampaignReach {
+export interface CampaignReach {
   name: string;
   reach_pct: number;
 }
 
-interface IntentTopic {
+export interface IntentTopic {
   topic: string;
   score: number;
 }
 
-interface IntentKeyword {
+export interface IntentKeyword {
   term: string;
   score: number;
 }
 
-interface AccountBehavior {
+export interface AccountBehavior {
   account: string;
   summary: string;
   signal: string;
 }
 
-interface Segment {
+export interface Segment {
   name: string;
   segment_size: number;
   on_site: number;
@@ -51,12 +51,12 @@ interface Segment {
   keyword_note?: string;
 }
 
-interface AccuracyFlag {
+export interface AccuracyFlag {
   label: string;
   detail: string;
 }
 
-interface RecommendedAction {
+export interface RecommendedAction {
   priority: number;
   account: string;
   action: string;
@@ -64,7 +64,7 @@ interface RecommendedAction {
   next_step: string;
 }
 
-interface BriefContent {
+export interface BriefContent {
   headline?: string;
   overlap_note?: string;
   methodology_notes?: string[];
@@ -80,6 +80,38 @@ interface BriefRow {
   view_window: string;
   generated_at: string;
   content: BriefContent;
+}
+
+export interface BriefData {
+  loading: boolean;
+  brief: BriefRow | null;
+  metrics: { label: string; value: number | string }[];
+  spotlights: AccountBehavior[];
+}
+
+export function useBriefData(): BriefData {
+  const [brief, setBrief] = useState<BriefRow | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from('cgt_abm_engagement_brief')
+        .select('period_label, view_window, generated_at, content')
+        .eq('is_published', true)
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) console.warn('Could not load ABM engagement brief; using bundled latest report.', error.message);
+      setBrief(enrichBrief(data as BriefRow | null));
+      setLoading(false);
+    })();
+  }, []);
+
+  const metrics = brief ? buildHeroMetrics(brief.content) : [];
+  const spotlights = brief ? collectSpotlights(brief.content) : [];
+
+  return { loading, brief, metrics, spotlights };
 }
 
 const FALLBACK_BRIEF: BriefRow = {
