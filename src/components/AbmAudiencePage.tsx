@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Layers, ShieldOff, Users, Search, ShieldCheck, Building2, Globe } from 'lucide-react';
-import { AbmEngagementBrief } from './AbmEngagementBrief';
 
 type AudienceMember = {
   id: string;
@@ -39,7 +38,6 @@ function segmentRingAccent(seg: string): string {
 }
 
 export function AbmAudiencePage() {
-  const [tab, setTab] = useState<'brief' | 'audience'>('brief');
   const [members, setMembers] = useState<AudienceMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -117,34 +115,7 @@ export function AbmAudiencePage() {
         </p>
       </header>
 
-      <div className="flex items-center gap-1 border-b border-slate-200">
-        <button
-          onClick={() => setTab('brief')}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            tab === 'brief'
-              ? 'border-teal-600 text-teal-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          Engagement Report
-        </button>
-        <button
-          onClick={() => setTab('audience')}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            tab === 'audience'
-              ? 'border-teal-600 text-teal-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          Audience Lists
-        </button>
-      </div>
-
-      {tab === 'brief' ? (
-        <AbmEngagementBrief />
-      ) : (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <button
           onClick={() => setFilter('all')}
           className={`rounded-xl border p-4 text-left transition-all ${
@@ -249,8 +220,6 @@ export function AbmAudiencePage() {
           ))}
         </div>
       </div>
-        </>
-      )}
     </div>
   );
 }
