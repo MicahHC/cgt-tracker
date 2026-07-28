@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "sync:abm:preview": "node scripts/sync-abm-phase-lists.mjs",
+    "sync:abm:apply": "node scripts/sync-abm-phase-lists.mjs --apply",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
