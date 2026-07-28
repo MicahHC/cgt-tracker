@@ -8,7 +8,7 @@ const MANAGED_SEGMENTS = new Set(['Early Stage', 'Late Stage', 'On Market']);
 
 const supabaseSource = readFileSync(new URL('../src/lib/supabase.ts', import.meta.url), 'utf8');
 const anonKey = process.env.CGT_SUPABASE_ANON_KEY
-  || supabaseSource.match(/CGT_SUPABASE_ANON_KEY = '([^']+)'/)?.[1];
+  || supabaseSource.match(/(?:CGT_SUPABASE_ANON_KEY|supabaseAnonKey)\s*=\s*'([^']+)'/)?.[1];
 
 if (!anonKey) {
   throw new Error('Missing CGT_SUPABASE_ANON_KEY. Set it in the environment or src/lib/supabase.ts.');
