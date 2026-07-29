@@ -3,9 +3,7 @@ import { CgtAsset, Segment, Tier } from '../types/database';
 export interface ScoreBreakdown {
   rawCommercial: number;
   finalCommercial: number;
-  strategic: number;
   commercialTier: Tier | null;
-  strategicTier: Tier | null;
   caps: string[];
 }
 
@@ -40,16 +38,6 @@ export function calculateCommercialReadiness(asset: Pick<CgtAsset,
   return { raw, final, caps };
 }
 
-export function calculateStrategicOpportunity(asset: Pick<CgtAsset,
-  'regulatory_score' | 'market_attractiveness_score' | 'capability_gap_leverage_score'
->): number {
-  return Math.round(
-    asset.regulatory_score * 0.4 * 20 +
-    asset.market_attractiveness_score * 0.3 * 20 +
-    asset.capability_gap_leverage_score * 0.3 * 20
-  );
-}
-
 export function assignCommercialTier(score: number, segment: Segment): Tier | null {
   if (segment !== 'Late Stage') return null;
   if (score >= 80) return 'Tier 1';
@@ -58,22 +46,12 @@ export function assignCommercialTier(score: number, segment: Segment): Tier | nu
   return 'Deprioritized';
 }
 
-export function assignStrategicTier(score: number): Tier {
-  if (score >= 80) return 'Tier 1';
-  if (score >= 65) return 'Tier 2';
-  if (score >= 50) return 'Watchlist';
-  return 'Deprioritized';
-}
-
 export function computeAllScores(asset: CgtAsset): ScoreBreakdown {
   const commercial = calculateCommercialReadiness(asset);
-  const strategic = calculateStrategicOpportunity(asset);
   return {
     rawCommercial: commercial.raw,
     finalCommercial: commercial.final,
-    strategic,
     commercialTier: assignCommercialTier(commercial.final, asset.segment),
-    strategicTier: assignStrategicTier(strategic),
     caps: commercial.caps,
   };
 }
@@ -103,15 +81,6 @@ export const MARKET_ATTRACTIVENESS_RUBRIC: Record<number, string> = {
   2: 'Below-average opportunity',
   1: 'Highly constrained opportunity',
   0: 'Not commercially viable',
-};
-
-export const CAPABILITY_GAP_RUBRIC: Record<number, string> = {
-  5: 'Strong asset with clear solvable gaps a partner could address',
-  4: 'Meaningful gaps a partner could address',
-  3: 'Some partner leverage available',
-  2: 'Limited partner leverage',
-  1: 'Minimal partner leverage',
-  0: 'Non-viable or fully self-sufficient',
 };
 
 export function tierColor(tier: Tier | null | undefined): string {

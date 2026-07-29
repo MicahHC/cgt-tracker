@@ -54,7 +54,6 @@ interface AssetWithCompany {
   likely_us_launch_within_24_months: string | null;
   final_commercial_score: number | null;
   commercial_priority_tier: Tier | null;
-  strategic_priority_tier: Tier | null;
 }
 
 interface ReevalOutput {
@@ -157,7 +156,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
       clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path,
       manufacturing_status, manufacturing_pathway,
       us_commercialization_window, likely_us_launch_within_24_months,
-      final_commercial_score, commercial_priority_tier, strategic_priority_tier,
+      final_commercial_score, commercial_priority_tier,
       cgt_companies!inner(id, company_name)
     `)
     .in("company_id", company_ids);
@@ -180,7 +179,6 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     likely_us_launch_within_24_months: r.likely_us_launch_within_24_months,
     final_commercial_score: r.final_commercial_score,
     commercial_priority_tier: r.commercial_priority_tier,
-    strategic_priority_tier: r.strategic_priority_tier,
   }));
 }
 
@@ -190,8 +188,7 @@ async function reevaluate(anthropic: Anthropic, asset: AssetWithCompany): Promis
 Do not anchor to prior scores. Re-derive subscores (0-5) for:
   regulatory (5=BLA accepted/PDUFA, 4=positive Ph3 filing imminent, 3=credible late Ph3, 2=early Ph3 uncertain, 1=weak, 0=hold/failure),
   commercial_infrastructure (5=full launch infra, 4=strong buildout, 3=early buildout, 2=minimal, 1=none, 0=structural gaps),
-  market_attractiveness (5=high-value/low-barrier, 3=moderate, 1=constrained),
-  capability_gap_leverage (5=strong asset + solvable gaps, 0=no leverage/non-viable).
+  market_attractiveness (5=high-value/low-barrier, 3=moderate, 1=constrained).
 
 Validate hard-cap flags explicitly (booleans):
   clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path.
@@ -232,9 +229,8 @@ Source hierarchy: Tier 1 (IR, SEC, FDA, ClinicalTrials.gov) > Tier 2 (investor d
             regulatory: { type: "integer", minimum: 0, maximum: 5 },
             commercial_infrastructure: { type: "integer", minimum: 0, maximum: 5 },
             market_attractiveness: { type: "integer", minimum: 0, maximum: 5 },
-            capability_gap_leverage: { type: "integer", minimum: 0, maximum: 5 },
           },
-          required: ["regulatory", "commercial_infrastructure", "market_attractiveness", "capability_gap_leverage"],
+          required: ["regulatory", "commercial_infrastructure", "market_attractiveness"],
         },
         flags: {
           type: "object",
@@ -297,8 +293,6 @@ async function applyAndPersist(
     next_final_commercial_score: scored.final_commercial_score,
     prev_commercial_tier: asset.commercial_priority_tier,
     next_commercial_tier: scored.commercial_priority_tier,
-    prev_strategic_tier: asset.strategic_priority_tier,
-    next_strategic_tier: scored.strategic_priority_tier,
   });
 
   const primary = out.sources[0];
@@ -322,12 +316,10 @@ async function applyAndPersist(
     regulatory_score: out.subscores.regulatory,
     commercial_infrastructure_score: out.subscores.commercial_infrastructure,
     market_attractiveness_score: out.subscores.market_attractiveness,
-    capability_gap_leverage_score: out.subscores.capability_gap_leverage,
+    capability_gap_leverage_score: 0,
     raw_commercial_score: scored.raw_commercial_score,
     final_commercial_score: scored.final_commercial_score ?? 0,
-    strategic_opportunity_score: scored.strategic_opportunity_score,
     commercial_priority_tier: scored.commercial_priority_tier,
-    strategic_priority_tier: scored.strategic_priority_tier,
   });
 
   if (!mat.is_material) return false;
@@ -338,16 +330,13 @@ async function applyAndPersist(
       regulatory_score: out.subscores.regulatory,
       commercial_infrastructure_score: out.subscores.commercial_infrastructure,
       market_attractiveness_score: out.subscores.market_attractiveness,
-      capability_gap_leverage_score: out.subscores.capability_gap_leverage,
       clinical_hold: out.flags.clinical_hold,
       no_manufacturing_pathway: out.flags.no_manufacturing_pathway,
       timeline_over_24_months: out.flags.timeline_over_24_months,
       no_us_path: out.flags.no_us_path,
       raw_commercial_score: scored.raw_commercial_score,
       final_commercial_score: scored.final_commercial_score ?? 0,
-      strategic_opportunity_score: scored.strategic_opportunity_score,
       commercial_priority_tier: scored.commercial_priority_tier,
-      strategic_priority_tier: scored.strategic_priority_tier,
       updated_at: new Date().toISOString(),
     })
     .eq("id", asset.id);
@@ -357,8 +346,6 @@ async function applyAndPersist(
     changes.push({ field: "final_commercial_score", prev: asset.final_commercial_score, next: scored.final_commercial_score });
   if (asset.commercial_priority_tier !== scored.commercial_priority_tier)
     changes.push({ field: "commercial_priority_tier", prev: asset.commercial_priority_tier, next: scored.commercial_priority_tier });
-  if (asset.strategic_priority_tier !== scored.strategic_priority_tier)
-    changes.push({ field: "strategic_priority_tier", prev: asset.strategic_priority_tier, next: scored.strategic_priority_tier });
 
   for (const ch of changes) {
     const delta =

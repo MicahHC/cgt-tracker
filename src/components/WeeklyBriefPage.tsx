@@ -29,9 +29,7 @@ interface ScoreRow extends CgtScoreHistory {
   asset_name?: string;
   company_name?: string;
   prev_final?: number | null;
-  prev_strategic?: number | null;
   prev_commercial_tier?: Tier | null;
-  prev_strategic_tier?: Tier | null;
 }
 
 interface RunSummary {
@@ -57,9 +55,7 @@ interface AssetContext {
   likely_us_launch_within_24_months: string;
   commercial_buildout_status: string;
   final_commercial_score: number;
-  strategic_opportunity_score: number;
   commercial_priority_tier: Tier | null;
-  strategic_priority_tier: Tier | null;
   key_upcoming_catalyst: string;
   catalyst_date: string | null;
 }
@@ -217,8 +213,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       .select(`
         id, company_id, asset_name, modality, lead_indication, target_indication,
         phase_regulatory_status, likely_us_launch_within_24_months, commercial_buildout_status,
-        final_commercial_score, strategic_opportunity_score,
-        commercial_priority_tier, strategic_priority_tier, key_upcoming_catalyst, catalyst_date,
+        final_commercial_score,
+        commercial_priority_tier, key_upcoming_catalyst, catalyst_date,
         cgt_companies!inner(company_name)
       `)
       .order('final_commercial_score', { ascending: false });
@@ -254,9 +250,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       likely_us_launch_within_24_months: r.likely_us_launch_within_24_months || '',
       commercial_buildout_status: r.commercial_buildout_status || '',
       final_commercial_score: r.final_commercial_score || 0,
-      strategic_opportunity_score: r.strategic_opportunity_score || 0,
       commercial_priority_tier: r.commercial_priority_tier,
-      strategic_priority_tier: r.strategic_priority_tier,
       key_upcoming_catalyst: r.key_upcoming_catalyst || '',
       catalyst_date: r.catalyst_date,
     }));
@@ -265,7 +259,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     if (assetIds.length > 0) {
       const { data: prior } = await supabase
         .from('cgt_score_history')
-        .select('asset_id, week_label, final_commercial_score, strategic_opportunity_score, commercial_priority_tier, strategic_priority_tier, recorded_at')
+        .select('asset_id, week_label, final_commercial_score, commercial_priority_tier, recorded_at')
         .in('asset_id', assetIds)
         .lt('week_label', w)
         .order('recorded_at', { ascending: false });
@@ -277,9 +271,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         const p = priorByAsset.get(s.asset_id);
         if (p) {
           s.prev_final = p.final_commercial_score;
-          s.prev_strategic = p.strategic_opportunity_score;
           s.prev_commercial_tier = p.commercial_priority_tier;
-          s.prev_strategic_tier = p.strategic_priority_tier;
         }
       }
     }
@@ -359,8 +351,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
   const tierChanges = useMemo(() => {
     return scores.filter(s =>
-      (s.prev_commercial_tier && s.prev_commercial_tier !== s.commercial_priority_tier) ||
-      (s.prev_strategic_tier && s.prev_strategic_tier !== s.strategic_priority_tier)
+      (s.prev_commercial_tier && s.prev_commercial_tier !== s.commercial_priority_tier)
     );
   }, [scores]);
 
@@ -883,14 +874,6 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                         <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.commercial_priority_tier)}`}>{s.commercial_priority_tier ?? '—'}</span>
                       </div>
                     )}
-                    {s.prev_strategic_tier && s.prev_strategic_tier !== s.strategic_priority_tier && (
-                      <div className="inline-flex items-center gap-1.5 text-xs">
-                        <span className="text-slate-500">Strategic:</span>
-                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.prev_strategic_tier)}`}>{s.prev_strategic_tier}</span>
-                        <ArrowUpRight className="w-3 h-3 text-slate-400" />
-                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.strategic_priority_tier)}`}>{s.strategic_priority_tier ?? '—'}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -918,8 +901,7 @@ function findRelatedAsset(row: CgtAbmWeeklyEngagement, assets: AssetContext[]): 
 
 function strongestAsset(assets: AssetContext[]): AssetContext {
   return [...assets].sort((a, b) =>
-    (b.final_commercial_score || 0) - (a.final_commercial_score || 0) ||
-    (b.strategic_opportunity_score || 0) - (a.strategic_opportunity_score || 0)
+    (b.final_commercial_score || 0) - (a.final_commercial_score || 0)
   )[0];
 }
 

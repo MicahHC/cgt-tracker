@@ -68,8 +68,7 @@ export function ScoreHistoryPage({ onOpenAsset }: Props) {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Recorded</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Asset</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Company</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Commercial</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Strategic</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Commercial readiness</th>
                   <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Δ vs prior</th>
                 </tr>
               </thead>
@@ -90,10 +89,6 @@ export function ScoreHistoryPage({ onOpenAsset }: Props) {
                       <td className="px-4 py-3 text-center">
                         <div className="font-bold text-slate-900">{r.final_commercial_score}</div>
                         <TierBadge tier={r.commercial_priority_tier} />
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="font-bold text-slate-900">{r.strategic_opportunity_score}</div>
-                        <TierBadge tier={r.strategic_priority_tier} />
                       </td>
                       <td className="px-4 py-3 text-center">
                         {prior ? (

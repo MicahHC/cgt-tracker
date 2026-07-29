@@ -4,18 +4,15 @@ import { CgtAsset, CgtAssetSource } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 import {
   calculateCommercialReadiness,
-  calculateStrategicOpportunity,
   assignCommercialTier,
-  assignStrategicTier,
   REGULATORY_RUBRIC,
   COMMERCIAL_INFRA_RUBRIC,
   MARKET_ATTRACTIVENESS_RUBRIC,
-  CAPABILITY_GAP_RUBRIC,
   tierColor,
 } from '../lib/scoring';
 import {
   X, Save, Loader2, ShieldAlert, AlertTriangle, CheckCircle2, Info,
-  Plus, Trash2, ClipboardList, Factory, TrendingUp, Target, Flag,
+  Plus, Trash2, ClipboardList, Factory, TrendingUp, Flag,
   Link2, BookOpen, ChevronRight,
 } from 'lucide-react';
 
@@ -40,7 +37,6 @@ const SECTIONS = [
   { id: 'regulatory', label: 'Regulatory', icon: ClipboardList },
   { id: 'commercial', label: 'Commercial Infra', icon: Factory },
   { id: 'market', label: 'Market', icon: TrendingUp },
-  { id: 'strategic', label: 'Strategic', icon: Target },
   { id: 'flags', label: 'Flags', icon: Flag },
   { id: 'sources', label: 'Sources', icon: Link2 },
 ] as const;
@@ -65,7 +61,6 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
     regulatory_score: asset.regulatory_score ?? 0,
     commercial_infrastructure_score: asset.commercial_infrastructure_score ?? 0,
     market_attractiveness_score: asset.market_attractiveness_score ?? 0,
-    capability_gap_leverage_score: asset.capability_gap_leverage_score ?? 0,
     phase_regulatory_status: asset.phase_regulatory_status || '',
     filing_status: asset.filing_status || '',
     fda_designations: asset.fda_designations || '',
@@ -113,26 +108,17 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
   }), [form.regulatory_score, form.commercial_infrastructure_score, form.market_attractiveness_score,
        form.clinical_hold_flag, form.no_manufacturing_flag, form.timeline_flag, form.no_us_path_flag]);
 
-  const strategic = useMemo(() => calculateStrategicOpportunity({
-    regulatory_score: form.regulatory_score,
-    market_attractiveness_score: form.market_attractiveness_score,
-    capability_gap_leverage_score: form.capability_gap_leverage_score,
-  }), [form.regulatory_score, form.market_attractiveness_score, form.capability_gap_leverage_score]);
-
   const commercialTier = assignCommercialTier(commercial.final, asset.segment);
-  const strategicTier = assignStrategicTier(strategic);
 
   const previousFinal = asset.final_commercial_score ?? 0;
-  const previousStrategic = asset.strategic_opportunity_score ?? 0;
   const delta = Math.abs(commercial.final - previousFinal);
-  const strategicDelta = Math.abs(strategic - previousStrategic);
   const regulatoryStatusChanged = form.phase_regulatory_status !== (asset.phase_regulatory_status || '');
   const anyFlagChanged =
     flagsForScoring.clinical_hold !== asset.clinical_hold ||
     flagsForScoring.no_manufacturing_pathway !== asset.no_manufacturing_pathway ||
     flagsForScoring.timeline_over_24_months !== asset.timeline_over_24_months ||
     flagsForScoring.no_us_path !== asset.no_us_path;
-  const rationaleRequired = delta >= 5 || strategicDelta >= 5 || anyFlagChanged || regulatoryStatusChanged;
+  const rationaleRequired = delta >= 5 || anyFlagChanged || regulatoryStatusChanged;
 
   const validSources = sources.filter(s => s.url.trim().length > 0);
   const hasPrimary = validSources.some(s => s.tier === 'Primary');
@@ -164,7 +150,6 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
         regulatory_score: form.regulatory_score,
         commercial_infrastructure_score: form.commercial_infrastructure_score,
         market_attractiveness_score: form.market_attractiveness_score,
-        capability_gap_leverage_score: form.capability_gap_leverage_score,
         phase_regulatory_status: form.phase_regulatory_status,
         filing_status: form.filing_status,
         fda_designations: form.fda_designations,
@@ -182,9 +167,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
         no_us_path: flagsForScoring.no_us_path,
         raw_commercial_score: commercial.raw,
         final_commercial_score: commercial.final,
-        strategic_opportunity_score: strategic,
         commercial_priority_tier: commercialTier,
-        strategic_priority_tier: strategicTier,
         last_reviewed_at: nowIso,
         last_reviewed_by: user?.id || null,
         updated_at: nowIso,
@@ -200,7 +183,6 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
         ['regulatory_score', asset.regulatory_score, form.regulatory_score],
         ['commercial_infrastructure_score', asset.commercial_infrastructure_score, form.commercial_infrastructure_score],
         ['market_attractiveness_score', asset.market_attractiveness_score, form.market_attractiveness_score],
-        ['capability_gap_leverage_score', asset.capability_gap_leverage_score, form.capability_gap_leverage_score],
         ['phase_regulatory_status', asset.phase_regulatory_status || '', form.phase_regulatory_status],
         ['filing_status', asset.filing_status || '', form.filing_status],
         ['fda_designations', asset.fda_designations || '', form.fda_designations],
@@ -213,9 +195,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
         ['timeline_over_24_months', asset.timeline_over_24_months, flagsForScoring.timeline_over_24_months],
         ['no_us_path', asset.no_us_path, flagsForScoring.no_us_path],
         ['final_commercial_score', previousFinal, commercial.final],
-        ['strategic_opportunity_score', previousStrategic, strategic],
         ['commercial_priority_tier', asset.commercial_priority_tier || '', commercialTier || ''],
-        ['strategic_priority_tier', asset.strategic_priority_tier || '', strategicTier || ''],
       ];
       for (const [f, o, n] of trackedComparisons) {
         if (String(o ?? '') !== String(n ?? '')) changedFields.push({ field: f, oldVal: o, newVal: n });
@@ -232,7 +212,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
           previous_value: String(c.oldVal ?? ''),
           new_value: String(c.newVal ?? ''),
           why_it_matters: form.rationale || '',
-          score_impact_explanation: c.field === 'final_commercial_score' || c.field === 'strategic_opportunity_score'
+          score_impact_explanation: c.field === 'final_commercial_score'
             ? `Δ ${Number(c.newVal) - Number(c.oldVal)} (${commercial.caps.join('; ') || 'no caps applied'})`
             : '',
           source_url: primarySourceUrl,
@@ -248,12 +228,10 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
         regulatory_score: form.regulatory_score,
         commercial_infrastructure_score: form.commercial_infrastructure_score,
         market_attractiveness_score: form.market_attractiveness_score,
-        capability_gap_leverage_score: form.capability_gap_leverage_score,
+        capability_gap_leverage_score: 0,
         raw_commercial_score: commercial.raw,
         final_commercial_score: commercial.final,
-        strategic_opportunity_score: strategic,
         commercial_priority_tier: commercialTier,
-        strategic_priority_tier: strategicTier,
         recorded_by: user?.id || null,
       });
       if (histErr) throw histErr;
@@ -358,7 +336,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
             </div>
 
             {activeSection === 'regulatory' && (
-              <SectionCard title="Regulatory" subtitle="Weight: 40% of commercial score · 40% of strategic score">
+              <SectionCard title="Regulatory" subtitle="Weight: 40% of commercial readiness">
                 <ScorePicker
                   label="Regulatory Score"
                   value={form.regulatory_score}
@@ -397,7 +375,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
             )}
 
             {activeSection === 'market' && (
-              <SectionCard title="Market Attractiveness" subtitle="Weight: 25% of commercial score · 30% of strategic score">
+              <SectionCard title="Market Attractiveness" subtitle="Weight: 25% of commercial readiness">
                 <ScorePicker
                   label="Market Score"
                   value={form.market_attractiveness_score}
@@ -405,18 +383,6 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
                   rubric={MARKET_ATTRACTIVENESS_RUBRIC}
                 />
                 <TextAreaField label="Market access / complexity notes" value={form.market_access_complexity_notes} onChange={v => setField('market_access_complexity_notes', v)} />
-              </SectionCard>
-            )}
-
-            {activeSection === 'strategic' && (
-              <SectionCard title="Strategic / Capability Gap" subtitle="Weight: 30% of strategic score">
-                <ScorePicker
-                  label="Capability Gap Score"
-                  value={form.capability_gap_leverage_score}
-                  onChange={v => setField('capability_gap_leverage_score', v)}
-                  rubric={CAPABILITY_GAP_RUBRIC}
-                />
-                <TextAreaField label="Gap rationale" value={form.market_access_complexity_notes} onChange={v => setField('market_access_complexity_notes', v)} placeholder="What capability could a partner uniquely provide?" />
               </SectionCard>
             )}
 
@@ -524,11 +490,8 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
               commercialRaw={commercial.raw}
               commercialFinal={commercial.final}
               commercialCaps={commercial.caps}
-              strategic={strategic}
               commercialTier={commercialTier}
-              strategicTier={strategicTier}
               previousCommercial={previousFinal}
-              previousStrategic={previousStrategic}
               segment={asset.segment}
             />
           </aside>
@@ -549,7 +512,6 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
               />
               <div className="mt-1 text-[11px] text-slate-500 flex flex-wrap gap-x-4">
                 {delta >= 5 && <span>Commercial Δ {commercial.final - previousFinal}</span>}
-                {strategicDelta >= 5 && <span>Strategic Δ {strategic - previousStrategic}</span>}
                 {anyFlagChanged && <span>Flag changed</span>}
                 {regulatoryStatusChanged && <span>Regulatory status changed</span>}
               </div>
@@ -575,7 +537,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
           <div className="flex items-center justify-between gap-4">
             <div className="text-xs text-slate-500 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5" />
-              Scoring framework: <b>Reg 40 · Infra 35 · Market 25</b> (commercial) · <b>Reg 40 · Market 30 · Gap 30</b> (strategic)
+              Scoring framework: <b>Reg 40 · Infra 35 · Market 25</b> commercial readiness
             </div>
             <div className="flex gap-2">
               <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
@@ -722,14 +684,13 @@ function SelectField({ label, value, onChange, options }: { label: string; value
 }
 
 function LiveScorePanel({
-  commercialRaw, commercialFinal, commercialCaps, strategic,
-  commercialTier, strategicTier, previousCommercial, previousStrategic, segment,
+  commercialRaw, commercialFinal, commercialCaps,
+  commercialTier, previousCommercial, segment,
 }: {
-  commercialRaw: number; commercialFinal: number; commercialCaps: string[]; strategic: number;
-  commercialTier: any; strategicTier: any; previousCommercial: number; previousStrategic: number; segment: string;
+  commercialRaw: number; commercialFinal: number; commercialCaps: string[];
+  commercialTier: any; previousCommercial: number; segment: string;
 }) {
   const commercialDelta = commercialFinal - previousCommercial;
-  const strategicDelta = strategic - previousStrategic;
   return (
     <div className="p-5 space-y-5">
       <div>
@@ -744,19 +705,6 @@ function LiveScorePanel({
           delta={commercialDelta}
           showRaw={commercialRaw !== commercialFinal}
           noteIfNull={segment !== 'Late Stage' ? 'Commercial tier only calculated for Late Stage assets.' : null}
-        />
-      </div>
-      <div>
-        <ScoreBlock
-          title="Strategic Opportunity"
-          final={strategic}
-          raw={strategic}
-          tier={strategicTier}
-          tierClass={tierColor(strategicTier)}
-          caps={[]}
-          delta={strategicDelta}
-          showRaw={false}
-          noteIfNull={null}
         />
       </div>
 

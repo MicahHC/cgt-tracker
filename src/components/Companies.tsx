@@ -71,10 +71,8 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
 
   const rows = companies.map(c => {
     const own = assets.filter(a => a.company_id === c.id);
-    const isOnMarket = own.length > 0 && own.every(a => a.segment === 'On-Market');
-    const scoreField: 'strategic_opportunity_score' | 'final_commercial_score' =
-      isOnMarket ? 'strategic_opportunity_score' : 'final_commercial_score';
-    const scoreLabel = isOnMarket ? 'SOS' : 'CSR';
+    const scoreField: 'final_commercial_score' = 'final_commercial_score';
+    const scoreLabel = 'CRS';
     const scores = own.map(a => (a[scoreField] as number) ?? 0).filter(s => s > 0);
     const topScore = scores.length ? Math.max(...scores) : null;
     const topAsset = own.slice().sort((a, b) => ((b[scoreField] as number) ?? 0) - ((a[scoreField] as number) ?? 0))[0];
@@ -85,7 +83,7 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
     const topPhase = own.length
       ? own.map(a => phaseBucket(a.phase_regulatory_status)).sort((a, b) => (phaseRank[b] ?? 0) - (phaseRank[a] ?? 0))[0]
       : 'Unknown';
-    return { company: c, own, isOnMarket, scoreField, scoreLabel, topScore, topAsset, topTier, tier1, topSegment, anyHold, topPhase };
+    return { company: c, own, scoreField, scoreLabel, topScore, topAsset, topTier, tier1, topSegment, anyHold, topPhase };
   });
 
   const filtered = rows.filter(r => {
@@ -370,10 +368,10 @@ function CompanyDetail({ company, assets, onBack, onOpenAsset, canEdit, onScoreA
               <SegmentBadge segment={a.segment} />
               <div className="text-center min-w-[56px]">
                 <div className="text-[9px] font-medium uppercase tracking-wide text-slate-500 leading-none">
-                  {a.segment === 'On-Market' ? 'SOS' : 'CSR'}
+                  CRS
                 </div>
                 <div className="text-sm font-bold text-slate-900 leading-tight">
-                  {a.segment === 'On-Market' ? a.strategic_opportunity_score : a.final_commercial_score}
+                  {a.final_commercial_score}
                 </div>
                 <TierBadge tier={a.commercial_priority_tier} />
               </div>

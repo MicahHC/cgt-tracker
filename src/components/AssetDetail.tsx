@@ -80,14 +80,11 @@ export function AssetDetail({ assetId, onBack }: Props) {
   const computed = computeAllScores(asset);
   const hasInputs = (asset.regulatory_score ?? 0) > 0 ||
     (asset.commercial_infrastructure_score ?? 0) > 0 ||
-    (asset.market_attractiveness_score ?? 0) > 0 ||
-    (asset.capability_gap_leverage_score ?? 0) > 0;
+    (asset.market_attractiveness_score ?? 0) > 0;
   const breakdown = hasInputs ? computed : {
     rawCommercial: asset.raw_commercial_score ?? asset.final_commercial_score ?? 0,
     finalCommercial: asset.final_commercial_score ?? 0,
-    strategic: asset.strategic_opportunity_score ?? 0,
     commercialTier: asset.commercial_priority_tier ?? computed.commercialTier,
-    strategicTier: asset.strategic_priority_tier ?? computed.strategicTier,
     caps: computed.caps,
   };
   const lockedByOther = asset.lock_status === 'In Progress' && asset.locked_by !== user?.id;
@@ -159,7 +156,7 @@ export function AssetDetail({ assetId, onBack }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <ScoreCard
           title="Commercial Readiness"
           subtitle="40% Reg / 35% Infra / 25% Market"
@@ -171,19 +168,6 @@ export function AssetDetail({ assetId, onBack }: Props) {
             { label: 'Regulatory', value: asset.regulatory_score },
             { label: 'Commercial Infra', value: asset.commercial_infrastructure_score },
             { label: 'Market', value: asset.market_attractiveness_score },
-          ]}
-        />
-        <ScoreCard
-          title="Strategic Opportunity"
-          subtitle="40% Reg / 30% Market / 30% Capability Gap"
-          raw={breakdown.strategic}
-          final={breakdown.strategic}
-          caps={[]}
-          tier={breakdown.strategicTier}
-          inputs={[
-            { label: 'Regulatory', value: asset.regulatory_score },
-            { label: 'Market', value: asset.market_attractiveness_score },
-            { label: 'Capability Gap', value: asset.capability_gap_leverage_score },
           ]}
         />
       </div>

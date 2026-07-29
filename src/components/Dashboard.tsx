@@ -4,7 +4,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtCompany } from '../types/database';
 import {
   Package, Target, FlaskConical, ShoppingBag, ShieldAlert,
-  CalendarClock, Activity, ArrowUpRight
+  CalendarClock, ArrowUpRight
 } from 'lucide-react';
 import { TierBadge, SegmentBadge } from './ui/Badge';
 import { PageKey } from './Layout';
@@ -60,7 +60,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const onMarketCompanies = uniqCompanies(onMarket);
   const tier1Commercial = lateStage.filter(a => a.commercial_priority_tier === 'Tier 1').length;
   const tier2Commercial = lateStage.filter(a => a.commercial_priority_tier === 'Tier 2').length;
-  const tier1Strategic = assets.filter(a => a.strategic_priority_tier === 'Tier 1').length;
   const clinicalHolds = assets.filter(a => a.clinical_hold).length;
   const noMfg = assets.filter(a => a.no_manufacturing_pathway).length;
 
@@ -110,7 +109,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Kpi label="Commercial Tier 1" value={tier1Commercial} icon={Target} color="emerald" />
         <Kpi label="Commercial Tier 2" value={tier2Commercial} icon={Target} color="blue" />
-        <Kpi label="Strategic Tier 1" value={tier1Strategic} icon={Activity} color="teal" />
         <Kpi label="Risk flags" value={clinicalHolds + noMfg} icon={ShieldAlert} color="red" sub={`${clinicalHolds} hold / ${noMfg} no mfg`} />
       </div>
 

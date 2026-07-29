@@ -12,7 +12,7 @@ interface AssetsListProps {
   canEdit: boolean;
 }
 
-type SortKey = 'name' | 'company' | 'segment' | 'commercial' | 'strategic' | 'catalyst';
+type SortKey = 'name' | 'company' | 'segment' | 'commercial' | 'catalyst';
 
 export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListProps) {
   const [assets, setAssets] = useState<CgtAssetWithCompany[]>([]);
@@ -21,7 +21,6 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
   const [search, setSearch] = useState('');
   const [segment, setSegment] = useState<'all' | Segment>('all');
   const [commercialTier, setCommercialTier] = useState<'all' | Tier>('all');
-  const [strategicTier, setStrategicTier] = useState<'all' | Tier>('all');
   const [mfg, setMfg] = useState<string>('all');
   const [confidence, setConfidence] = useState<string>('all');
   const [holdOnly, setHoldOnly] = useState(false);
@@ -59,7 +58,6 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
       }
       if (segment !== 'all' && a.segment !== segment) return false;
       if (commercialTier !== 'all' && a.commercial_priority_tier !== commercialTier) return false;
-      if (strategicTier !== 'all' && a.strategic_priority_tier !== strategicTier) return false;
       if (mfg !== 'all' && a.manufacturing_status !== mfg) return false;
       if (confidence !== 'all' && a.confidence_level !== confidence) return false;
       if (holdOnly && !a.clinical_hold) return false;
@@ -72,7 +70,6 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
         case 'company': return dir * (a.company?.company_name || '').localeCompare(b.company?.company_name || '');
         case 'segment': return dir * a.segment.localeCompare(b.segment);
         case 'commercial': return dir * (a.final_commercial_score - b.final_commercial_score);
-        case 'strategic': return dir * (a.strategic_opportunity_score - b.strategic_opportunity_score);
         case 'catalyst': {
           const av = a.catalyst_date ? new Date(a.catalyst_date).getTime() : Number.MAX_SAFE_INTEGER;
           const bv = b.catalyst_date ? new Date(b.catalyst_date).getTime() : Number.MAX_SAFE_INTEGER;
@@ -80,7 +77,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
         }
       }
     });
-  }, [assets, search, segment, commercialTier, strategicTier, mfg, confidence, holdOnly, launch24, sortKey, sortDir]);
+  }, [assets, search, segment, commercialTier, mfg, confidence, holdOnly, launch24, sortKey, sortDir]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -124,7 +121,6 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100">
             <FilterSelect label="Segment" value={segment} onChange={v => setSegment(v as any)} options={['all', ...SEGMENTS]} />
             <FilterSelect label="Commercial Tier" value={commercialTier} onChange={v => setCommercialTier(v as any)} options={['all', ...TIERS]} />
-            <FilterSelect label="Strategic Tier" value={strategicTier} onChange={v => setStrategicTier(v as any)} options={['all', ...TIERS]} />
             <FilterSelect label="Manufacturing" value={mfg} onChange={setMfg} options={['all', ...MANUFACTURING_STATUSES]} />
             <FilterSelect label="Confidence" value={confidence} onChange={setConfidence} options={['all', ...CONFIDENCE_LEVELS]} />
             <FilterSelect label="Likely launch (24mo)" value={launch24} onChange={setLaunch24} options={['all', 'Yes', 'No', 'Watchlist']} />
@@ -148,8 +144,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
                   <Th onClick={() => toggleSort('company')} active={sortKey === 'company'} dir={sortDir}>Company</Th>
                   <Th onClick={() => toggleSort('segment')} active={sortKey === 'segment'} dir={sortDir}>Segment</Th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Phase</th>
-                  <Th onClick={() => toggleSort('commercial')} active={sortKey === 'commercial'} dir={sortDir} align="center">Commercial</Th>
-                  <Th onClick={() => toggleSort('strategic')} active={sortKey === 'strategic'} dir={sortDir} align="center">Strategic</Th>
+                  <Th onClick={() => toggleSort('commercial')} active={sortKey === 'commercial'} dir={sortDir} align="center">Commercial readiness</Th>
                   <Th onClick={() => toggleSort('catalyst')} active={sortKey === 'catalyst'} dir={sortDir}>Next catalyst</Th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Flags</th>
                 </tr>
@@ -184,10 +179,6 @@ function AssetRow({ asset, onOpen }: { asset: CgtAssetWithCompany; onOpen: () =>
       <td className="px-4 py-3 text-center">
         <div className="font-bold text-slate-900">{asset.final_commercial_score}</div>
         <TierBadge tier={asset.commercial_priority_tier} />
-      </td>
-      <td className="px-4 py-3 text-center">
-        <div className="font-bold text-slate-900">{asset.strategic_opportunity_score}</div>
-        <TierBadge tier={asset.strategic_priority_tier} />
       </td>
       <td className="px-4 py-3 text-xs text-slate-600">
         {asset.catalyst_date ? new Date(asset.catalyst_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '-'}

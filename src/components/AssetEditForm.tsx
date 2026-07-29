@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { CgtAsset, CgtCompany } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
-import { computeAllScores, REGULATORY_RUBRIC, COMMERCIAL_INFRA_RUBRIC, MARKET_ATTRACTIVENESS_RUBRIC, CAPABILITY_GAP_RUBRIC } from '../lib/scoring';
+import { computeAllScores, REGULATORY_RUBRIC, COMMERCIAL_INFRA_RUBRIC, MARKET_ATTRACTIVENESS_RUBRIC } from '../lib/scoring';
 import { SEGMENTS, MANUFACTURING_STATUSES, MANUFACTURING_PATHWAYS, COMMERCIAL_BUILDOUTS, LIKELY_LAUNCH_24, CONFIDENCE_LEVELS } from '../lib/constants';
 import { X, Save, Loader2, Info } from 'lucide-react';
 
@@ -25,7 +25,6 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
     regulatory_score: 0,
     commercial_infrastructure_score: 0,
     market_attractiveness_score: 0,
-    capability_gap_leverage_score: 0,
     confidence_level: 'Medium',
     manufacturing_status: 'Early',
     manufacturing_pathway: 'Unclear',
@@ -52,7 +51,6 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
     regulatory_score: form.regulatory_score ?? 0,
     commercial_infrastructure_score: form.commercial_infrastructure_score ?? 0,
     market_attractiveness_score: form.market_attractiveness_score ?? 0,
-    capability_gap_leverage_score: form.capability_gap_leverage_score ?? 0,
     segment: (form.segment ?? 'Late Stage') as CgtAsset['segment'],
     clinical_hold: form.clinical_hold ?? false,
     no_manufacturing_pathway: form.no_manufacturing_pathway ?? false,
@@ -72,9 +70,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
       ...form,
       raw_commercial_score: preview.rawCommercial,
       final_commercial_score: preview.finalCommercial,
-      strategic_opportunity_score: preview.strategic,
       commercial_priority_tier: preview.commercialTier,
-      strategic_priority_tier: preview.strategicTier,
       last_reviewed_at: new Date().toISOString(),
       last_reviewed_by: user?.id,
       updated_at: new Date().toISOString(),
@@ -88,7 +84,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
 
         const changedFields: Array<keyof CgtAsset> = [
           'regulatory_score', 'commercial_infrastructure_score', 'market_attractiveness_score',
-          'capability_gap_leverage_score', 'clinical_hold', 'no_manufacturing_pathway',
+          'clinical_hold', 'no_manufacturing_pathway',
           'timeline_over_24_months', 'no_us_path', 'segment', 'phase_regulatory_status',
           'latest_material_update', 'key_upcoming_catalyst', 'catalyst_date',
         ];
@@ -125,12 +121,10 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           regulatory_score: form.regulatory_score ?? 0,
           commercial_infrastructure_score: form.commercial_infrastructure_score ?? 0,
           market_attractiveness_score: form.market_attractiveness_score ?? 0,
-          capability_gap_leverage_score: form.capability_gap_leverage_score ?? 0,
+          capability_gap_leverage_score: 0,
           raw_commercial_score: preview.rawCommercial,
           final_commercial_score: preview.finalCommercial,
-          strategic_opportunity_score: preview.strategic,
           commercial_priority_tier: preview.commercialTier,
-          strategic_priority_tier: preview.strategicTier,
           recorded_by: user?.id,
         });
       }
@@ -189,7 +183,6 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           <ScoreInput label="Regulatory" value={form.regulatory_score ?? 0} onChange={v => update('regulatory_score', v as any)} rubric={REGULATORY_RUBRIC} />
           <ScoreInput label="Commercial Infrastructure" value={form.commercial_infrastructure_score ?? 0} onChange={v => update('commercial_infrastructure_score', v as any)} rubric={COMMERCIAL_INFRA_RUBRIC} />
           <ScoreInput label="Market Attractiveness" value={form.market_attractiveness_score ?? 0} onChange={v => update('market_attractiveness_score', v as any)} rubric={MARKET_ATTRACTIVENESS_RUBRIC} />
-          <ScoreInput label="Capability Gap Leverage" value={form.capability_gap_leverage_score ?? 0} onChange={v => update('capability_gap_leverage_score', v as any)} rubric={CAPABILITY_GAP_RUBRIC} />
         </div>
 
         <div className="border-t border-slate-100 pt-4">
@@ -204,16 +197,11 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
 
         <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 flex items-center gap-4">
           <Info className="w-4 h-4 text-teal-600 flex-shrink-0" />
-          <div className="flex-1 grid grid-cols-2 gap-4 text-sm">
+          <div className="flex-1 text-sm">
             <div>
               <div className="text-xs text-teal-700 font-semibold">Commercial Readiness</div>
               <div className="text-2xl font-bold text-slate-900">{preview.finalCommercial}</div>
               <div className="text-xs text-slate-600">Tier: {preview.commercialTier || '—'}{preview.rawCommercial !== preview.finalCommercial ? ` (raw ${preview.rawCommercial})` : ''}</div>
-            </div>
-            <div>
-              <div className="text-xs text-teal-700 font-semibold">Strategic Opportunity</div>
-              <div className="text-2xl font-bold text-slate-900">{preview.strategic}</div>
-              <div className="text-xs text-slate-600">Tier: {preview.strategicTier || '—'}</div>
             </div>
           </div>
         </div>

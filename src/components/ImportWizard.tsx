@@ -51,7 +51,6 @@ const FIELDS: { key: string; label: string; kind: 'string' | 'number' | 'boolean
   { key: 'regulatory_score', label: 'Regulatory score (0-5)', kind: 'number', target: 'asset' },
   { key: 'commercial_infrastructure_score', label: 'Commercial infrastructure score (0-5)', kind: 'number', target: 'asset' },
   { key: 'market_attractiveness_score', label: 'Market attractiveness score (0-5)', kind: 'number', target: 'asset' },
-  { key: 'capability_gap_leverage_score', label: 'Capability gap leverage score (0-5)', kind: 'number', target: 'asset' },
   { key: 'confidence_level', label: 'Confidence level', kind: 'enum', enumValues: ['High', 'Medium', 'Low'], target: 'asset' },
 ];
 
@@ -158,7 +157,6 @@ export function ImportWizard() {
           regulatory_score: assetPayload.regulatory_score || 0,
           commercial_infrastructure_score: assetPayload.commercial_infrastructure_score || 0,
           market_attractiveness_score: assetPayload.market_attractiveness_score || 0,
-          capability_gap_leverage_score: assetPayload.capability_gap_leverage_score || 0,
           clinical_hold: assetPayload.clinical_hold || false,
           no_manufacturing_pathway: assetPayload.no_manufacturing_pathway || false,
           timeline_over_24_months: assetPayload.timeline_over_24_months || false,
@@ -168,9 +166,7 @@ export function ImportWizard() {
 
         assetPayload.raw_commercial_score = preview.rawCommercial;
         assetPayload.final_commercial_score = preview.finalCommercial;
-        assetPayload.strategic_opportunity_score = preview.strategic;
         assetPayload.commercial_priority_tier = preview.commercialTier;
-        assetPayload.strategic_priority_tier = preview.strategicTier;
 
         // Dedup: company + asset_name
         const { data: existingAsset } = await supabase
@@ -194,12 +190,10 @@ export function ImportWizard() {
               regulatory_score: assetPayload.regulatory_score || 0,
               commercial_infrastructure_score: assetPayload.commercial_infrastructure_score || 0,
               market_attractiveness_score: assetPayload.market_attractiveness_score || 0,
-              capability_gap_leverage_score: assetPayload.capability_gap_leverage_score || 0,
+              capability_gap_leverage_score: 0,
               raw_commercial_score: preview.rawCommercial,
               final_commercial_score: preview.finalCommercial,
-              strategic_opportunity_score: preview.strategic,
               commercial_priority_tier: preview.commercialTier,
-              strategic_priority_tier: preview.strategicTier,
               recorded_by: user?.id,
             });
           }

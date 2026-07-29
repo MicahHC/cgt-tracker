@@ -1,16 +1,12 @@
 /**
  * CGT scoring module — single source of truth for commercial readiness,
- * strategic opportunity, hard caps, and tier assignment.
+ * hard caps, and tier assignment.
  *
  * Spec:
- *   Subscores: 0–5 integers. Regulatory, Commercial Infrastructure, Market,
- *   Capability Gap.
+ *   Subscores: 0–5 integers. Regulatory, Commercial Infrastructure, Market.
  *
  *   Commercial Readiness Score (0–100):
  *     40% Regulatory, 35% Commercial Infrastructure, 25% Market
- *
- *   Strategic Opportunity Score (0–100):
- *     40% Regulatory, 30% Market, 30% Capability Gap
  *
  *   Hard caps (applied AFTER raw → 0–100 scale):
  *     - clinical_hold           → cap 30
@@ -31,7 +27,6 @@ export interface Subscores {
   regulatory: Subscore;
   commercial_infrastructure: Subscore;
   market_attractiveness: Subscore;
-  capability_gap_leverage: Subscore;
 }
 
 export interface HardCapFlags {
@@ -52,9 +47,7 @@ export interface CapResult {
 export interface ScoringOutput {
   raw_commercial_score: number;
   final_commercial_score: number | null;
-  strategic_opportunity_score: number;
   commercial_priority_tier: Tier;
-  strategic_priority_tier: Tier;
   cap_applied: CapResult["cap_applied"];
 }
 
@@ -65,7 +58,6 @@ export function validateSubscores(s: Subscores): void {
     ["regulatory", s.regulatory],
     ["commercial_infrastructure", s.commercial_infrastructure],
     ["market_attractiveness", s.market_attractiveness],
-    ["capability_gap_leverage", s.capability_gap_leverage],
   ];
   for (const [name, v] of entries) {
     if (!Number.isInteger(v) || v < 0 || v > 5) {
@@ -85,19 +77,6 @@ export function computeCommercialReadinessRaw(s: Subscores): number {
     0.35 * s.commercial_infrastructure +
     0.25 * s.market_attractiveness;
   // Subscores are 0–5, so weighted is 0–5. Scale to 0–100 and round.
-  return Math.round((weighted / 5) * 100);
-}
-
-/**
- * Strategic Opportunity — 0–100. Weights: Reg 40% / Market 30% / Capability 30%.
- * Not subject to hard caps per spec.
- */
-export function computeStrategicOpportunity(s: Subscores): number {
-  validateSubscores(s);
-  const weighted =
-    0.40 * s.regulatory +
-    0.30 * s.market_attractiveness +
-    0.30 * s.capability_gap_leverage;
   return Math.round((weighted / 5) * 100);
 }
 
@@ -141,29 +120,15 @@ export function assignCommercialTier(flags: HardCapFlags): Tier {
 }
 
 /**
- * Strategic priority tier — mirrors commercial tier's exclusion rule but
- * is otherwise score-independent; timeline is the same gating factor.
- * Adjust here if strategic tiering should diverge from commercial.
- */
-export function assignStrategicTier(flags: HardCapFlags): Tier {
-  if (flags.no_us_path) return "Excluded";
-  if (flags.timeline_over_24_months) return "Tier 2";
-  return "Tier 1";
-}
-
-/**
  * End-to-end: subscores + flags → all outputs ready to persist.
  */
 export function computeScoring(s: Subscores, flags: HardCapFlags): ScoringOutput {
   const raw = computeCommercialReadinessRaw(s);
   const capped = applyHardCaps(raw, flags);
-  const strategic = computeStrategicOpportunity(s);
   return {
     raw_commercial_score: raw,
     final_commercial_score: capped.final_score,
-    strategic_opportunity_score: strategic,
     commercial_priority_tier: assignCommercialTier(flags),
-    strategic_priority_tier: assignStrategicTier(flags),
     cap_applied: capped.cap_applied,
   };
 }
@@ -175,15 +140,13 @@ export function computeScoring(s: Subscores, flags: HardCapFlags): ScoringOutput
  *   - regulatory update (field change in regulatory domain)
  *   - manufacturing signal (field change in manufacturing domain)
  *   - commercial hiring (field change in commercial hiring domain)
- *   - tier change (commercial or strategic)
+ *   - commercial tier change
  */
 export interface MaterialityInputs {
   prev_final_commercial_score: number | null;
   next_final_commercial_score: number | null;
   prev_commercial_tier: Tier | null;
   next_commercial_tier: Tier;
-  prev_strategic_tier: Tier | null;
-  next_strategic_tier: Tier;
   signal_type?: "regulatory" | "trial" | "manufacturing" | "commercial_hiring" | "partnership" | "financial" | "other";
 }
 
@@ -205,9 +168,6 @@ export function evaluateMateriality(inputs: MaterialityInputs): {
 
   if (inputs.prev_commercial_tier && inputs.prev_commercial_tier !== inputs.next_commercial_tier) {
     reasons.push("commercial_tier_change");
-  }
-  if (inputs.prev_strategic_tier && inputs.prev_strategic_tier !== inputs.next_strategic_tier) {
-    reasons.push("strategic_tier_change");
   }
 
   switch (inputs.signal_type) {

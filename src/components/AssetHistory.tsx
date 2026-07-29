@@ -28,8 +28,7 @@ export function AssetHistory({ changes, history }: Props) {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-slate-600">Com: <span className="font-semibold text-slate-900">{h.final_commercial_score}</span></span>
-                    <span className="text-slate-600">Str: <span className="font-semibold text-slate-900">{h.strategic_opportunity_score}</span></span>
+                    <span className="text-slate-600">Commercial: <span className="font-semibold text-slate-900">{h.final_commercial_score}</span></span>
                   </div>
                 </div>
               ))}
@@ -76,16 +75,13 @@ function ScoreSparkline({ history }: { history: CgtScoreHistory[] }) {
   const h = 60;
   const step = ordered.length > 1 ? w / (ordered.length - 1) : w;
   const commercialPoints = ordered.map((v, i) => `${i * step},${h - (v.final_commercial_score / max) * h}`).join(' ');
-  const strategicPoints = ordered.map((v, i) => `${i * step},${h - (v.strategic_opportunity_score / max) * h}`).join(' ');
   return (
     <div>
       <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="overflow-visible">
         <polyline points={commercialPoints} fill="none" stroke="#0d9488" strokeWidth="2" />
-        <polyline points={strategicPoints} fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 3" />
       </svg>
       <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-1">
         <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-teal-600" /> Commercial</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-sky-400" style={{ borderTop: '1px dashed' }} /> Strategic</span>
       </div>
     </div>
   );
