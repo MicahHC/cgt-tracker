@@ -458,7 +458,7 @@ async function analyzeWithClaude(
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: Deno.env.get("RESEARCH_ANALYSIS_MODEL") ?? "claude-haiku-4-5",
         max_tokens: 400,
         system:
           "You are a biotech/pharma analyst. Answer concisely using only the provided context. If the context doesn't support an answer, say 'Not found'.",

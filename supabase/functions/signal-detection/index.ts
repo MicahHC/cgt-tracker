@@ -29,12 +29,12 @@ const corsHeaders = {
 };
 
 const MAX_COMPANIES_PER_BATCH = 10;
-// Haiku for high-volume structured extraction. Rate limits are ~10x
-// Opus at every tier, and Haiku is more than capable of extracting
-// signals from structured source dumps. Monthly re-evaluation keeps
-// Opus since it re-derives scores from first principles.
-const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+// High-volume weekly extraction should stay on Haiku by default: source
+// gathering is deterministic, and the model's job is concise structured
+// extraction/gating, not open-ended reasoning.
+const CLAUDE_MODEL = Deno.env.get("SIGNAL_DETECTION_MODEL") ?? "claude-haiku-4-5";
 const MAX_USER_PAYLOAD_CHARS = 40_000;
+const MAX_SIGNAL_OUTPUT_TOKENS = Number(Deno.env.get("SIGNAL_DETECTION_MAX_TOKENS") ?? "2048");
 const MAX_RETRIES_ON_429 = 2;
 
 // ---------- Types ----------
@@ -400,7 +400,7 @@ RULES:
   const resp = await callWithRetry(() =>
     anthropic.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 4096,
+      max_tokens: MAX_SIGNAL_OUTPUT_TOKENS,
       system,
       tools: [tool],
       tool_choice: { type: "tool", name: "emit_signals" },

@@ -29,7 +29,11 @@ const corsHeaders = {
 };
 
 const MAX_COMPANIES_PER_BATCH = 10;
-const CLAUDE_MODEL = "claude-opus-4-6";
+// Monthly reviews re-check assets from first principles, but this is still
+// structured regulatory/commercial analysis. Sonnet is the cost/quality
+// default; reserve Opus for manual escalation of conflicting/high-stakes cases.
+const CLAUDE_MODEL = Deno.env.get("MONTHLY_REEVALUATION_MODEL") ?? "claude-sonnet-5";
+const MAX_REEVALUATION_OUTPUT_TOKENS = Number(Deno.env.get("MONTHLY_REEVALUATION_MAX_TOKENS") ?? "3072");
 const MAX_RETRIES_ON_429 = 2;
 
 interface Req {
@@ -266,7 +270,7 @@ Source hierarchy: Tier 1 (IR, SEC, FDA, ClinicalTrials.gov) > Tier 2 (investor d
   const resp = await callWithRetry(() =>
     anthropic.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 4096,
+      max_tokens: MAX_REEVALUATION_OUTPUT_TOKENS,
       system,
       tools: [tool],
       tool_choice: { type: "tool", name: "emit_reevaluation" },

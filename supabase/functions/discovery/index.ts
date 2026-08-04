@@ -18,9 +18,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-// Haiku for discovery — cheap, fast, and sufficient for generating a
-// candidate list that will be human-reviewed before promotion.
-const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+// Discovery has higher miss-risk than extraction, so default to Sonnet.
+// It only runs once weekly and writes candidates for human review, so this
+// is the right place to spend a little more quality budget.
+const CLAUDE_MODEL = Deno.env.get("DISCOVERY_MODEL") ?? "claude-sonnet-5";
+const MAX_DISCOVERY_OUTPUT_TOKENS = Number(Deno.env.get("DISCOVERY_MAX_TOKENS") ?? "3072");
 const MAX_RETRIES_ON_429 = 2;
 
 interface DiscoveryRequest {
@@ -188,7 +190,7 @@ RULES:
   const resp = await callWithRetry(() =>
     anthropic.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 4096,
+      max_tokens: MAX_DISCOVERY_OUTPUT_TOKENS,
       system,
       tools: [tool],
       tool_choice: { type: "tool", name: "emit_candidates" },
