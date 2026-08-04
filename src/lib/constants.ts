@@ -1,12 +1,12 @@
-import { AbmAudienceSegment, CommercialBuildoutStatus, ConfidenceLevel, LikelyLaunch24, LockStatus, ManufacturingPathway, ManufacturingStatus, Segment, Tier, UserRole } from '../types/database';
+import { AbmAudienceSegment, CommercialBuildoutStatus, ConfidenceLevel, LikelyLaunch18, LockStatus, ManufacturingPathway, ManufacturingStatus, Segment, Tier, UserRole } from '../types/database';
 
 export const SEGMENTS: Segment[] = ['Late Stage', 'Early Stage', 'On-Market', 'ATC'];
 export const ABM_AUDIENCE_SEGMENTS: AbmAudienceSegment[] = ['ATC', 'Early Stage', 'Late Stage', 'On Market'];
-export const TIERS: Tier[] = ['Tier 1', 'Tier 2', 'Watchlist', 'Deprioritized'];
+export const TIERS: Tier[] = ['Tier 1', 'Tier 2', 'Watchlist', 'Deprioritized', 'Excluded'];
 export const MANUFACTURING_STATUSES: ManufacturingStatus[] = ['Established', 'Scaling', 'Early', 'Constrained', 'Critical Gap'];
 export const MANUFACTURING_PATHWAYS: ManufacturingPathway[] = ['Yes', 'No', 'Unclear'];
 export const COMMERCIAL_BUILDOUTS: CommercialBuildoutStatus[] = ['Established', 'Scaling', 'Early', 'Minimal', 'None'];
-export const LIKELY_LAUNCH_24: LikelyLaunch24[] = ['Yes', 'No', 'Watchlist'];
+export const LIKELY_LAUNCH_18: LikelyLaunch18[] = ['Yes', 'No', 'Watchlist'];
 export const CONFIDENCE_LEVELS: ConfidenceLevel[] = ['High', 'Medium', 'Low'];
 export const LOCK_STATUSES: LockStatus[] = ['Open', 'In Progress', 'Complete'];
 export const USER_ROLES: UserRole[] = ['admin', 'analyst', 'viewer'];

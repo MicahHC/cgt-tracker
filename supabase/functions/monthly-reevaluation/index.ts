@@ -196,8 +196,9 @@ Do not anchor to prior scores. Re-derive subscores (0-5) for:
 
 Validate hard-cap flags explicitly (booleans):
   clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path.
+  IMPORTANT: timeline_over_24_months is a legacy field name. Set it FALSE only when a Tier-1 / Priority-1 U.S. commercialization event is supported within 18 months. Set it TRUE when the asset is outside 18 months or the timeline is not proven.
 
-Validate the 24-month commercialization window against the most recent public statements.
+Validate the 18-month Priority 1 commercialization window against the most recent public statements.
 
 Source hierarchy: Tier 1 (IR, SEC, FDA, ClinicalTrials.gov) > Tier 2 (investor decks, pubs) > Tier 3 (trade press). Provide 1-3 sources. Never infer regulatory status.`;
 

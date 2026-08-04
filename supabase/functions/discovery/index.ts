@@ -38,7 +38,7 @@ interface CandidateCompany {
   indication: string;
   modality: string; // CAR-T | gene therapy | TCR | NK | other
   estimated_phase: string | null;
-  likely_commercialization_window: "within_24_months" | "beyond_24_months" | "unknown";
+  likely_commercialization_window: "within_18_months" | "beyond_18_months" | "unknown";
   rationale: string;
   sources: Array<{ url: string; tier: 1 | 2 | 3; domain: string }>;
   confidence: "low" | "medium" | "high";
@@ -121,7 +121,7 @@ async function discover(
   existing: Set<string>,
   searchFocus: string | undefined
 ): Promise<CandidateCompany[]> {
-  const system = `You are a CGT (cell & gene therapy) market scout. Identify companies with assets likely to commercialize in the U.S. within the next 24 months that are NOT in the provided exclusion list.
+  const system = `You are a CGT (cell & gene therapy) market scout. Identify companies with assets likely to commercialize in the U.S. within the next 18 months that are NOT in the provided exclusion list.
 
 SCOPE:
 - Autologous/allogeneic cell therapies (CAR-T, TCR, NK, TIL)
@@ -141,7 +141,7 @@ RULES:
 
   const user = JSON.stringify({
     exclude_names: Array.from(existing).slice(0, 500),
-    search_focus: searchFocus ?? "any CGT commercializing within 24 months in the U.S.",
+    search_focus: searchFocus ?? "any CGT commercializing within 18 months in the U.S.",
     instructions: "Return candidates via the emit_candidates tool.",
   });
 
@@ -163,7 +163,7 @@ RULES:
               indication: { type: "string" },
               modality: { type: "string" },
               estimated_phase: { type: ["string", "null"] },
-              likely_commercialization_window: { type: "string", enum: ["within_24_months", "beyond_24_months", "unknown"] },
+              likely_commercialization_window: { type: "string", enum: ["within_18_months", "beyond_18_months", "unknown"] },
               rationale: { type: "string" },
               sources: {
                 type: "array",

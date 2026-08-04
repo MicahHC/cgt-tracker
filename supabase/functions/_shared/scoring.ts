@@ -12,11 +12,14 @@
  *     - clinical_hold           → cap 30
  *     - no_manufacturing_pathway → cap 40
  *     - timeline_over_24_months → cap 50
+ *       Legacy column name. Business meaning is now:
+ *       not proven to commercialize within 18 months.
  *     - no_us_path              → excluded entirely (final = null)
  *
- *   Commercial tier:
- *     - Tier 1 if the asset is likely to commercialize in the next 24 months
- *       (i.e., timeline_over_24_months = false AND no_us_path = false)
+ *   Commercial priority:
+ *     - Tier 1 / Priority 1 if the asset is likely to commercialize in the
+ *       next 18 months (i.e., legacy timeline_over_24_months = false AND
+ *       no_us_path = false)
  *     - Tier 2 otherwise
  *     - Excluded if no_us_path = true
  */
@@ -110,7 +113,7 @@ export function applyHardCaps(raw: number, flags: HardCapFlags): CapResult {
 }
 
 /**
- * Commercial priority tier — driven by 24-month commercialization window,
+ * Commercial priority tier — driven by the 18-month commercialization window,
  * NOT by score. Score is used for prioritization within a tier.
  */
 export function assignCommercialTier(flags: HardCapFlags): Tier {

@@ -150,7 +150,7 @@ export function AssetDetail({ assetId, onBack }: Props) {
               {asset.clinical_hold && <FlagBadge label="Clinical hold" color="red" />}
               {asset.no_manufacturing_pathway && <FlagBadge label="No manufacturing" color="red" />}
               {asset.no_us_path && <FlagBadge label="No US path" color="red" />}
-              {asset.timeline_over_24_months && <FlagBadge label="Timeline >24 mo" color="amber" />}
+              {asset.timeline_over_24_months && <FlagBadge label="Outside 18-mo Priority 1 window" color="amber" />}
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ export function AssetDetail({ assetId, onBack }: Props) {
 
         <Section title="Commercial & Launch">
           <Field label="US commercialization window" value={asset.us_commercialization_window} />
-          <Field label="Likely US launch within 24 mo" value={asset.likely_us_launch_within_24_months} />
+          <Field label="Likely US launch within 18 months" value={asset.likely_us_launch_within_24_months} />
           <Field label="Commercial buildout" value={asset.commercial_buildout_status} />
           <Field label="Distribution model" value={asset.distribution_model} />
           <Field label="Treatment network" value={asset.treatment_network_status} />

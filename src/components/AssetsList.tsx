@@ -24,7 +24,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
   const [mfg, setMfg] = useState<string>('all');
   const [confidence, setConfidence] = useState<string>('all');
   const [holdOnly, setHoldOnly] = useState(false);
-  const [launch24, setLaunch24] = useState<string>('all');
+  const [launch18, setLaunch18] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('commercial');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -61,7 +61,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
       if (mfg !== 'all' && a.manufacturing_status !== mfg) return false;
       if (confidence !== 'all' && a.confidence_level !== confidence) return false;
       if (holdOnly && !a.clinical_hold) return false;
-      if (launch24 !== 'all' && a.likely_us_launch_within_24_months !== launch24) return false;
+      if (launch18 !== 'all' && a.likely_us_launch_within_24_months !== launch18) return false;
       return true;
     }).sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1;
@@ -77,7 +77,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
         }
       }
     });
-  }, [assets, search, segment, commercialTier, mfg, confidence, holdOnly, launch24, sortKey, sortDir]);
+  }, [assets, search, segment, commercialTier, mfg, confidence, holdOnly, launch18, sortKey, sortDir]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -123,7 +123,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
             <FilterSelect label="Commercial Tier" value={commercialTier} onChange={v => setCommercialTier(v as any)} options={['all', ...TIERS]} />
             <FilterSelect label="Manufacturing" value={mfg} onChange={setMfg} options={['all', ...MANUFACTURING_STATUSES]} />
             <FilterSelect label="Confidence" value={confidence} onChange={setConfidence} options={['all', ...CONFIDENCE_LEVELS]} />
-            <FilterSelect label="Likely launch (24mo)" value={launch24} onChange={setLaunch24} options={['all', 'Yes', 'No', 'Watchlist']} />
+            <FilterSelect label="Likely launch (18mo)" value={launch18} onChange={setLaunch18} options={['all', 'Yes', 'No', 'Watchlist']} />
             <label className="flex items-center gap-2 text-sm text-slate-700 pt-6">
               <input type="checkbox" checked={holdOnly} onChange={e => setHoldOnly(e.target.checked)} className="rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
               Clinical hold only
@@ -189,7 +189,7 @@ function AssetRow({ asset, onOpen }: { asset: CgtAssetWithCompany; onOpen: () =>
           {asset.clinical_hold && <FlagBadge label="Hold" color="red" />}
           {asset.no_manufacturing_pathway && <FlagBadge label="No CMC" color="red" />}
           {asset.no_us_path && <FlagBadge label="No US" color="red" />}
-          {asset.timeline_over_24_months && <FlagBadge label=">24mo" color="amber" />}
+          {asset.timeline_over_24_months && <FlagBadge label="Outside 18mo" color="amber" />}
         </div>
       </td>
     </tr>

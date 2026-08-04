@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { CgtAsset, CgtCompany } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 import { computeAllScores, REGULATORY_RUBRIC, COMMERCIAL_INFRA_RUBRIC, MARKET_ATTRACTIVENESS_RUBRIC } from '../lib/scoring';
-import { SEGMENTS, MANUFACTURING_STATUSES, MANUFACTURING_PATHWAYS, COMMERCIAL_BUILDOUTS, LIKELY_LAUNCH_24, CONFIDENCE_LEVELS } from '../lib/constants';
+import { SEGMENTS, MANUFACTURING_STATUSES, MANUFACTURING_PATHWAYS, COMMERCIAL_BUILDOUTS, LIKELY_LAUNCH_18, CONFIDENCE_LEVELS } from '../lib/constants';
 import { X, Save, Loader2, Info } from 'lucide-react';
 
 interface Props {
@@ -190,7 +190,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Check label="Clinical hold (cap 30)" value={!!form.clinical_hold} onChange={v => update('clinical_hold', v as any)} />
             <Check label="No manufacturing pathway (cap 40)" value={!!form.no_manufacturing_pathway} onChange={v => update('no_manufacturing_pathway', v as any)} />
-            <Check label="Timeline > 24 months (cap 50)" value={!!form.timeline_over_24_months} onChange={v => update('timeline_over_24_months', v as any)} />
+            <Check label="Outside 18-month Priority 1 window (cap 50)" value={!!form.timeline_over_24_months} onChange={v => update('timeline_over_24_months', v as any)} />
             <Check label="No US path (score 0, excluded)" value={!!form.no_us_path} onChange={v => update('no_us_path', v as any)} />
           </div>
         </div>
@@ -213,7 +213,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           <Select label="Manufacturing status" value={form.manufacturing_status || 'Early'} onChange={v => update('manufacturing_status', v as any)} options={MANUFACTURING_STATUSES.map(s => ({ value: s, label: s }))} />
           <Select label="Manufacturing pathway" value={form.manufacturing_pathway || 'Unclear'} onChange={v => update('manufacturing_pathway', v as any)} options={MANUFACTURING_PATHWAYS.map(s => ({ value: s, label: s }))} />
           <Select label="Commercial buildout" value={form.commercial_buildout_status || 'Minimal'} onChange={v => update('commercial_buildout_status', v as any)} options={COMMERCIAL_BUILDOUTS.map(s => ({ value: s, label: s }))} />
-          <Select label="Likely US launch (24 mo)" value={form.likely_us_launch_within_24_months || 'No'} onChange={v => update('likely_us_launch_within_24_months', v as any)} options={LIKELY_LAUNCH_24.map(s => ({ value: s, label: s }))} />
+          <Select label="Likely US launch within 18 months" value={form.likely_us_launch_within_24_months || 'No'} onChange={v => update('likely_us_launch_within_24_months', v as any)} options={LIKELY_LAUNCH_18.map(s => ({ value: s, label: s }))} />
           <Input label="US commercialization window" value={form.us_commercialization_window} onChange={v => update('us_commercialization_window', v as any)} />
           <Input label="Distribution model" value={form.distribution_model} onChange={v => update('distribution_model', v as any)} />
           <Input label="Treatment network status" value={form.treatment_network_status} onChange={v => update('treatment_network_status', v as any)} />

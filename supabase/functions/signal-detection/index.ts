@@ -311,6 +311,7 @@ SCORING SUBSCORES (0-5 integers, required if you emit any signal):
 
 HARD-CAP FLAGS (booleans):
   clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path
+  IMPORTANT: timeline_over_24_months is a legacy field name. Set it FALSE only when a Tier-1 / Priority-1 U.S. commercialization event is supported within 18 months. Set it TRUE when the asset is outside 18 months or the timeline is not proven.
 
 SOURCE HIERARCHY: Tier 1 = IR, press releases, SEC, FDA, ClinicalTrials.gov (PREFER). Tier 2 = investor decks, conference, publications. Tier 3 = Fierce Biotech, Endpoints, STAT.
 
@@ -553,9 +554,9 @@ function tierChangeRationale(
   }
 
   if (newTier === "Tier 1") {
-    const base = `Commercial tier set to Tier 1 — asset has a U.S. path and is projected to commercialize within 24 months.`;
+    const base = `Priority 1 set — asset has a U.S. path and is projected to commercialize within 18 months.`;
     if (prevTier && prevFlags.timeline_over_24_months && !newFlags.timeline_over_24_months) {
-      return base + " Timeline estimate was revised this week from >24 months to ≤24 months.";
+      return base + " Timeline estimate was revised this week into the 18-month commercialization window.";
     }
     if (prevTier && prevFlags.no_us_path && !newFlags.no_us_path) {
       return base + " A U.S. commercialization path was established this week.";
@@ -567,9 +568,9 @@ function tierChangeRationale(
   }
 
   if (newTier === "Tier 2") {
-    const base = `${kind} tier set to Tier 2 — asset has a U.S. path but is projected to commercialize beyond 24 months.`;
+    const base = `Commercial tier set to Tier 2 — asset has a U.S. path but is not proven to commercialize within 18 months.`;
     if (prevTier && !prevFlags.timeline_over_24_months && newFlags.timeline_over_24_months) {
-      return base + " Timeline estimate was revised this week from ≤24 months to >24 months.";
+      return base + " Timeline estimate was revised this week outside the 18-month Priority 1 window.";
     }
     if (!prevTier || prevTier === "Excluded") {
       return base + " (Initial tier assignment from re-evaluation of the U.S. path and launch timeline.)";
@@ -577,7 +578,7 @@ function tierChangeRationale(
     return base + " (Tier rule re-evaluated against current U.S. path and launch timeline; no underlying flag change recorded.)";
   }
 
-  return `${kind} tier reassigned to ${newTier}.`;
+  return `Commercial tier reassigned to ${newTier}.`;
 }
 
 // ---------- Utils ----------

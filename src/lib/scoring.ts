@@ -1,4 +1,4 @@
-import { CgtAsset, Segment, Tier } from '../types/database';
+import { CgtAsset, Tier } from '../types/database';
 
 export interface ScoreBreakdown {
   rawCommercial: number;
@@ -31,19 +31,18 @@ export function calculateCommercialReadiness(asset: Pick<CgtAsset,
       final = Math.min(final, 40);
     }
     if (asset.timeline_over_24_months) {
-      if (final > 50) caps.push('Timeline over 24 months: capped at 50');
+      if (final > 50) caps.push('Outside 18-month Priority 1 window: capped at 50');
       final = Math.min(final, 50);
     }
   }
   return { raw, final, caps };
 }
 
-export function assignCommercialTier(score: number, segment: Segment): Tier | null {
-  if (segment !== 'Late Stage') return null;
-  if (score >= 80) return 'Tier 1';
-  if (score >= 65) return 'Tier 2';
-  if (score >= 50) return 'Watchlist';
-  return 'Deprioritized';
+export function assignCommercialTier(asset: Pick<CgtAsset, 'no_us_path' | 'timeline_over_24_months' | 'segment'>): Tier | null {
+  if (asset.segment === 'On-Market') return null;
+  if (asset.no_us_path) return 'Excluded';
+  if (!asset.timeline_over_24_months) return 'Tier 1';
+  return asset.segment === 'Late Stage' ? 'Tier 2' : 'Watchlist';
 }
 
 export function computeAllScores(asset: CgtAsset): ScoreBreakdown {
@@ -51,7 +50,7 @@ export function computeAllScores(asset: CgtAsset): ScoreBreakdown {
   return {
     rawCommercial: commercial.raw,
     finalCommercial: commercial.final,
-    commercialTier: assignCommercialTier(commercial.final, asset.segment),
+    commercialTier: assignCommercialTier(asset),
     caps: commercial.caps,
   };
 }
@@ -89,6 +88,7 @@ export function tierColor(tier: Tier | null | undefined): string {
     case 'Tier 2': return 'bg-blue-100 text-blue-700 border-blue-200';
     case 'Watchlist': return 'bg-amber-100 text-amber-700 border-amber-200';
     case 'Deprioritized': return 'bg-slate-100 text-slate-600 border-slate-200';
+    case 'Excluded': return 'bg-red-100 text-red-700 border-red-200';
     default: return 'bg-slate-50 text-slate-500 border-slate-200';
   }
 }

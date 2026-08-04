@@ -944,7 +944,7 @@ function buildAbmRecommendation(
       tone: 'market',
       label: 'Market now',
       fit: 'High fit',
-      reason: `${row.account_name} is engaging and maps to ${therapy}. ${timely ? 'The asset is inside/near the 24-month commercialization window.' : 'This week’s tracker activity gives the outreach a timely hook.'}`,
+      reason: `${row.account_name} is engaging and maps to ${therapy}. ${timely ? 'The asset is inside the 18-month Priority 1 commercialization window.' : 'This week’s tracker activity gives the outreach a timely hook.'}`,
       nextStep: 'Start/refresh ABM outreach this week. Anchor messaging to commercialization readiness, launch support, manufacturing access, and the latest tracker signal.',
     };
   }

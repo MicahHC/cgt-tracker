@@ -108,7 +108,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
   }), [form.regulatory_score, form.commercial_infrastructure_score, form.market_attractiveness_score,
        form.clinical_hold_flag, form.no_manufacturing_flag, form.timeline_flag, form.no_us_path_flag]);
 
-  const commercialTier = assignCommercialTier(commercial.final, asset.segment);
+  const commercialTier = assignCommercialTier({ ...asset, ...flagsForScoring });
 
   const previousFinal = asset.final_commercial_score ?? 0;
   const delta = Math.abs(commercial.final - previousFinal);
@@ -401,7 +401,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
                   onChange={v => setField('no_manufacturing_flag', v)}
                 />
                 <FlagRow
-                  label="Timeline > 24 Months"
+                  label="Outside 18-Month Priority 1 Window"
                   caption="If yes, commercial score is capped at 50."
                   value={form.timeline_flag}
                   onChange={v => setField('timeline_flag', v)}

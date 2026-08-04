@@ -14,7 +14,7 @@ export function RubricPanel() {
             <div className="mt-2 text-xs text-slate-600 space-y-1">
               <div>· Clinical hold → cap at 30</div>
               <div>· No manufacturing pathway → cap at 40</div>
-              <div>· Timeline &gt; 24 months → cap at 50</div>
+              <div>· Outside 18-month Priority 1 window → cap at 50</div>
               <div>· No US path → score 0 and exclude</div>
             </div>
           </div>

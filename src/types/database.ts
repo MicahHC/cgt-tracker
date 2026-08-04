@@ -1,10 +1,10 @@
 export type Segment = 'Late Stage' | 'Early Stage' | 'On-Market' | 'ATC';
 export type AbmAudienceSegment = 'ATC' | 'Early Stage' | 'Late Stage' | 'On Market' | '';
-export type Tier = 'Tier 1' | 'Tier 2' | 'Watchlist' | 'Deprioritized';
+export type Tier = 'Tier 1' | 'Tier 2' | 'Watchlist' | 'Deprioritized' | 'Excluded';
 export type ManufacturingStatus = 'Established' | 'Scaling' | 'Early' | 'Constrained' | 'Critical Gap';
 export type ManufacturingPathway = 'Yes' | 'No' | 'Unclear';
 export type CommercialBuildoutStatus = 'Established' | 'Scaling' | 'Early' | 'Minimal' | 'None';
-export type LikelyLaunch24 = 'Yes' | 'No' | 'Watchlist';
+export type LikelyLaunch18 = 'Yes' | 'No' | 'Watchlist';
 export type ConfidenceLevel = 'High' | 'Medium' | 'Low';
 export type LockStatus = 'Open' | 'In Progress' | 'Complete';
 export type UserRole = 'admin' | 'analyst' | 'viewer';
@@ -38,7 +38,8 @@ export interface CgtAsset {
   key_upcoming_catalyst: string;
   catalyst_date: string | null;
   us_commercialization_window: string;
-  likely_us_launch_within_24_months: LikelyLaunch24;
+  // Legacy database column name; product meaning is likely U.S. launch within 18 months.
+  likely_us_launch_within_24_months: LikelyLaunch18;
   manufacturing_status: ManufacturingStatus;
   manufacturing_pathway: ManufacturingPathway;
   manufacturing_cmc_risk_notes: string;

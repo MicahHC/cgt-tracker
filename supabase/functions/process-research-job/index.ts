@@ -987,9 +987,9 @@ function computeScore(input: {
   let tier1Eligible = false;
   let tier1Reason = "";
 
-  if (effectivePhase3 && primaryCompletionMonths !== null && primaryCompletionMonths <= 24) {
+  if (effectivePhase3 && primaryCompletionMonths !== null && primaryCompletionMonths <= 18) {
     tier1Eligible = true;
-    tier1Reason = `Phase III primary completion within 24 months (${primaryCompletionMonths}mo)`;
+    tier1Reason = `Phase III primary completion within 18 months (${primaryCompletionMonths}mo)`;
   }
 
   if (filingTarget) {
@@ -998,7 +998,7 @@ function computeScore(input: {
     if (yearMatch) {
       const filingYear = 2000 + parseInt(yearMatch[1]);
       const currentYear = new Date().getFullYear();
-      if (filingYear <= currentYear + 2) {
+      if (filingYear <= currentYear + 1) {
         tier1Eligible = true;
         tier1Reason = `BLA/NDA filing target: ${filingTarget}`;
       }
@@ -1009,7 +1009,7 @@ function computeScore(input: {
     (hasFastTrack || hasRMAT || hasBreakthrough) &&
     effectivePhase2 &&
     primaryCompletionMonths !== null &&
-    primaryCompletionMonths <= 24
+    primaryCompletionMonths <= 18
   ) {
     tier1Eligible = true;
     const desigNames = [
@@ -1019,7 +1019,7 @@ function computeScore(input: {
     ]
       .filter(Boolean)
       .join("/");
-    tier1Reason = `${desigNames} + Phase II/III completion within 24mo`;
+    tier1Reason = `${desigNames} + Phase II/III completion within 18mo`;
   }
 
   // --- Base score ---
