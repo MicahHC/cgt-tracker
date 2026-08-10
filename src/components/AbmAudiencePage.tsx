@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Layers, ShieldOff, Users, Search, ShieldCheck, Building2, Globe } from 'lucide-react';
+import { Layers, ShieldOff, Users, Search, ShieldCheck, Building2, Globe, Download } from 'lucide-react';
 
 type AudienceMember = {
   id: string;
@@ -12,6 +12,21 @@ type AudienceMember = {
 };
 
 const CANONICAL_SEGMENTS = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
+const CSV_HEADERS = ['Company Name', 'Domain/URL', 'Priority Label'];
+
+function csvCell(value: string | null | undefined): string {
+  const text = value || '';
+  if (/[",\n\r]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
+}
+
+function safeFilenamePart(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'audience';
+}
+
+function exportableDomain(domain: string): string {
+  return domain.endsWith('.missing-domain.invalid') ? '' : domain;
+}
 
 function segmentColor(seg: string): string {
   switch (seg) {
@@ -90,6 +105,10 @@ export function AbmAudiencePage() {
     });
   }, [members, filter, search]);
 
+  const exportable = useMemo(() => {
+    return visible.filter(m => !m.is_client && filter !== 'Closed Won');
+  }, [visible, filter]);
+
   async function handleToggleClient(member: AudienceMember) {
     setBusyId(member.id);
     try {
@@ -103,6 +122,31 @@ export function AbmAudiencePage() {
     } finally {
       setBusyId(null);
     }
+  }
+
+  function handleExportCsv() {
+    if (exportable.length === 0) return;
+
+    const lines = [
+      CSV_HEADERS.map(csvCell).join(','),
+      ...exportable.map(member => [
+        member.account_name,
+        exportableDomain(member.domain),
+        member.audience_segment || (filter === 'all' ? 'Unlabeled' : filter),
+      ].map(csvCell).join(',')),
+    ];
+
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    const segmentName = filter === 'all' ? 'all-active' : filter;
+    anchor.href = url;
+    anchor.download = `cgt-abm-${safeFilenamePart(segmentName)}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -150,7 +194,7 @@ export function AbmAudiencePage() {
         ))}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -160,9 +204,24 @@ export function AbmAudiencePage() {
             className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-white"
           />
         </div>
-        <span className="text-xs text-slate-500">
-          Showing <span className="font-semibold text-slate-900">{visible.length}</span> of {members.length}
-        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs text-slate-500">
+            Showing <span className="font-semibold text-slate-900">{visible.length}</span> of {members.length}
+          </span>
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            disabled={exportable.length === 0}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:border-teal-300 hover:text-teal-800 disabled:cursor-not-allowed disabled:opacity-40"
+            title="Download the current audience as a 6sense-ready CSV"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
+        </div>
+        <p className="text-[11px] text-slate-400 lg:basis-full">
+          6sense format: Company Name, Domain/URL, Priority Label. Closed Won accounts are excluded from exports.
+        </p>
       </div>
 
       <div className="prestige-card overflow-hidden">
