@@ -1,5 +1,5 @@
 export type Segment = 'Late Stage' | 'Early Stage' | 'On-Market' | 'ATC';
-export type AbmAudienceSegment = 'ATC' | 'Early Stage' | 'Late Stage' | 'On Market' | '';
+export type AbmAudienceSegment = 'Tier 1' | 'Tier 2' | 'ATC' | 'Early Stage' | 'Late Stage' | 'On Market' | '';
 export type Tier = 'Tier 1' | 'Tier 2' | 'Watchlist' | 'Deprioritized' | 'Excluded';
 export type ManufacturingStatus = 'Established' | 'Scaling' | 'Early' | 'Constrained' | 'Critical Gap';
 export type ManufacturingPathway = 'Yes' | 'No' | 'Unclear';

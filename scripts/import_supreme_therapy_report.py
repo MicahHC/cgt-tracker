@@ -439,6 +439,38 @@ def main() -> int:
                 else:
                     abm_keys[abm_key] = {"id": f"dry-{uuid.uuid4()}", **abm_payload}
 
+            priority_abm_segment = scored["commercial_priority_tier"]
+            if not closed_won and priority_abm_segment in {"Tier 1", "Tier 2"}:
+                priority_key = (domain, priority_abm_segment)
+                priority_payload = {
+                    "account_name": company_name,
+                    "domain": domain,
+                    "country": clean(company.get("hq_country", "")),
+                    "audience_segment": priority_abm_segment,
+                    "is_client": False,
+                }
+                if priority_key in abm_keys:
+                    counts["abm_updated"] += 1
+                    if args.apply:
+                        sb.request(
+                            "PATCH",
+                            "cgt_abm_audience_members",
+                            f"?id=eq.{urllib.parse.quote(abm_keys[priority_key]['id'])}",
+                            {
+                                "account_name": company_name,
+                                "country": clean(company.get("hq_country", "")),
+                                "is_client": False,
+                            },
+                            prefer="return=minimal",
+                        )
+                else:
+                    counts["abm_created"] += 1
+                    if args.apply:
+                        created_priority_abm = sb.request("POST", "cgt_abm_audience_members", body=priority_payload)
+                        abm_keys[priority_key] = created_priority_abm[0]
+                    else:
+                        abm_keys[priority_key] = {"id": f"dry-{uuid.uuid4()}", **priority_payload}
+
             if args.abm_only:
                 action = "abm_synced"
                 report.append({
