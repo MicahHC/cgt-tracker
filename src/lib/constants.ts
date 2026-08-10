@@ -1,7 +1,7 @@
 import { AbmAudienceSegment, CommercialBuildoutStatus, ConfidenceLevel, LikelyLaunch18, LockStatus, ManufacturingPathway, ManufacturingStatus, Segment, Tier, UserRole } from '../types/database';
 
 export const SEGMENTS: Segment[] = ['Late Stage', 'Early Stage', 'On-Market', 'ATC'];
-export const ABM_AUDIENCE_SEGMENTS: AbmAudienceSegment[] = ['Tier 1', 'Tier 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market'];
+export const ABM_AUDIENCE_SEGMENTS: AbmAudienceSegment[] = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market'];
 export const TIERS: Tier[] = ['Tier 1', 'Tier 2', 'Watchlist', 'Deprioritized', 'Excluded'];
 export const MANUFACTURING_STATUSES: ManufacturingStatus[] = ['Established', 'Scaling', 'Early', 'Constrained', 'Critical Gap'];
 export const MANUFACTURING_PATHWAYS: ManufacturingPathway[] = ['Yes', 'No', 'Unclear'];

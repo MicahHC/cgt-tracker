@@ -439,8 +439,11 @@ def main() -> int:
                 else:
                     abm_keys[abm_key] = {"id": f"dry-{uuid.uuid4()}", **abm_payload}
 
-            priority_abm_segment = scored["commercial_priority_tier"]
-            if not closed_won and priority_abm_segment in {"Tier 1", "Tier 2"}:
+            priority_abm_segment = {
+                "Tier 1": "Priority 1",
+                "Tier 2": "Priority 2",
+            }.get(scored["commercial_priority_tier"])
+            if not closed_won and priority_abm_segment:
                 priority_key = (domain, priority_abm_segment)
                 priority_payload = {
                     "account_name": company_name,

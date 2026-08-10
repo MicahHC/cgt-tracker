@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync Tier 1 / Tier 2 tracker companies into ABM audience members."""
+"""Sync Priority 1 / Priority 2 tracker companies into ABM audience members."""
 
 from __future__ import annotations
 
@@ -54,9 +54,9 @@ def matches_client(company: dict[str, Any], members: list[dict[str, Any]]) -> bo
 
 def best_priority_tier(assets: list[dict[str, Any]]) -> str | None:
     if any(asset.get("commercial_priority_tier") == "Tier 1" and not asset.get("no_us_path") for asset in assets):
-        return "Tier 1"
+        return "Priority 1"
     if any(asset.get("commercial_priority_tier") == "Tier 2" and not asset.get("no_us_path") for asset in assets):
-        return "Tier 2"
+        return "Priority 2"
     return None
 
 
@@ -97,9 +97,9 @@ def main() -> int:
             counts["skipped_no_priority"] += 1
             continue
 
-        if tier == "Tier 1":
+        if tier == "Priority 1":
             counts["tier_1_companies"] += 1
-        elif tier == "Tier 2":
+        elif tier == "Priority 2":
             counts["tier_2_companies"] += 1
 
         if matches_client(company, members):

@@ -11,12 +11,12 @@ type AudienceMember = {
   is_client: boolean;
 };
 
-const CANONICAL_SEGMENTS = ['Tier 1', 'Tier 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
+const CANONICAL_SEGMENTS = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
 
 function segmentColor(seg: string): string {
   switch (seg) {
-    case 'Tier 1': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-    case 'Tier 2': return 'bg-blue-50 text-blue-700 border-blue-200';
+    case 'Priority 1': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    case 'Priority 2': return 'bg-blue-50 text-blue-700 border-blue-200';
     case 'ATC': return 'bg-rose-50 text-rose-700 border-rose-200';
     case 'Early Stage': return 'bg-sky-50 text-sky-700 border-sky-200';
     case 'Late Stage': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
@@ -29,8 +29,8 @@ function segmentColor(seg: string): string {
 
 function segmentRingAccent(seg: string): string {
   switch (seg) {
-    case 'Tier 1': return 'ring-emerald-300 border-emerald-200 bg-emerald-50/60';
-    case 'Tier 2': return 'ring-blue-300 border-blue-200 bg-blue-50/60';
+    case 'Priority 1': return 'ring-emerald-300 border-emerald-200 bg-emerald-50/60';
+    case 'Priority 2': return 'ring-blue-300 border-blue-200 bg-blue-50/60';
     case 'ATC': return 'ring-rose-300 border-rose-200 bg-rose-50/60';
     case 'Early Stage': return 'ring-sky-300 border-sky-200 bg-sky-50/60';
     case 'Late Stage': return 'ring-emerald-300 border-emerald-200 bg-emerald-50/60';
@@ -114,8 +114,8 @@ export function AbmAudiencePage() {
         </span>
         <h1 className="prestige-section-title mt-3">Target audience lists</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-3xl">
-          The primary target account universe is organized by commercial priority: Tier 1 means a tracked
-          therapy is expected to commercialize within 18 months; Tier 2 means relevant but not yet inside
+          The primary target account universe is organized by commercial priority: Priority 1 means a tracked
+          therapy is expected to commercialize within 18 months; Priority 2 means relevant but not yet inside
           that Priority 1 window. Phase buckets remain available as secondary reference lists. Accounts
           flagged as clients move into Closed Won and are suppressed from spend while engagement is still tracked.
         </p>
