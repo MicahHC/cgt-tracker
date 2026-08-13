@@ -12,7 +12,7 @@ import { ConfidenceBadge } from './ui/Badge';
 import { briefSignature, markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
-import { formatTrackerWeekLabel } from '../lib/weekLabels';
+import { formatTrackerWeekLabel, getTrackerWeekRange } from '../lib/weekLabels';
 import { useBriefData, type BriefContent, type Segment as BriefSegment, type AccountBehavior } from './AbmEngagementBrief';
 import { isSuppressedAbmRow } from '../lib/abmSuppression';
 
@@ -59,6 +59,13 @@ interface AssetContext {
   key_upcoming_catalyst: string;
   catalyst_date: string | null;
 }
+
+type EngagementBriefRow = {
+  period_label: string;
+  view_window: string;
+  generated_at: string;
+  content: BriefContent;
+};
 
 type AbmRecommendationTone = 'market' | 'add' | 'nurture' | 'research' | 'deprioritize';
 
@@ -114,6 +121,20 @@ function priorityDisplayCopy(value: string | null | undefined): string {
     .replace(/\bTier 1\b/g, 'Priority 1')
     .replace(/\bTier-2\b/g, 'Priority 2')
     .replace(/\bTier 2\b/g, 'Priority 2');
+}
+
+function isFreshEngagementBriefForWeek(brief: EngagementBriefRow | null | undefined, week: string | null | undefined): boolean {
+  if (!brief || !week) return false;
+  const range = getTrackerWeekRange(week);
+  const generatedAt = Date.parse(brief.generated_at || '');
+  if (!range || Number.isNaN(generatedAt)) return false;
+
+  const start = new Date(range.start);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(range.end);
+  end.setHours(23, 59, 59, 999);
+
+  return generatedAt >= start.getTime() && generatedAt <= end.getTime();
 }
 
 function fallbackPriorityReason(tier: Tier | null | undefined): string {
@@ -508,6 +529,16 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       .slice(0, 12);
   }, [activeAbmRows, assetContext, changes, scores]);
 
+  const showAudienceEngagementBrief = useMemo(() => {
+    if (!isFreshEngagementBriefForWeek(briefData.brief, week)) return false;
+    const onSiteAccounts = briefData.brief?.content?.segments?.reduce((total, segment) => total + (segment.on_site || 0), 0) || 0;
+    return onSiteAccounts > 0;
+  }, [briefData.brief, week]);
+
+  const audienceOnSiteCount = showAudienceEngagementBrief
+    ? briefData.brief?.content?.segments?.reduce((total, segment) => total + (segment.on_site || 0), 0) || 0
+    : 0;
+
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" /></div>;
   }
@@ -618,7 +649,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             The week in <span className="prestige-gradient-text">cell &amp; gene therapy</span>
           </h1>
           <p className="text-base md:text-lg text-white/70 mt-5 max-w-2xl mx-auto leading-relaxed">
-            Market movement, scoring updates, and ABM audience engagement in one view.
+            {showAudienceEngagementBrief || abmTotal
+              ? 'Market movement, scoring updates, and ABM audience engagement in one view.'
+              : 'Market movement and scoring updates in one view.'}
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-6 md:gap-10 flex-wrap">
@@ -640,7 +673,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                 <div className="prestige-divider-vert hidden md:block" />
               </>
             )}
-            <HeroMetric value={briefData.brief?.content?.segments?.reduce((a, s) => a + s.on_site, 0) ?? 0} label="Accounts on site" sub={briefData.brief ? briefData.brief.view_window : undefined} />
+            {showAudienceEngagementBrief && (
+              <HeroMetric value={audienceOnSiteCount} label="Accounts on site" sub={briefData.brief ? briefData.brief.view_window : undefined} />
+            )}
           </div>
 
           <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
@@ -650,7 +685,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       </section>
 
       {/* ABM Audience Engagement Intelligence */}
-      {briefData.brief && (
+      {showAudienceEngagementBrief && briefData.brief && (
         <EngagementBriefSection brief={briefData.brief} spotlights={briefData.spotlights} />
       )}
 
