@@ -88,6 +88,39 @@ function tierColor(tier: Tier | null | undefined) {
   }
 }
 
+function priorityLabel(tier: Tier | string | null | undefined): string {
+  switch (tier) {
+    case 'Tier 1': return 'Priority 1';
+    case 'Tier 2': return 'Priority 2';
+    case '': return 'No priority';
+    case null:
+    case undefined:
+      return 'No priority';
+    default: return String(tier);
+  }
+}
+
+function formatChangeValue(field: string | null | undefined, value: string | null | undefined): string {
+  if (/commercial_priority_tier/i.test(field || '')) return priorityLabel(value);
+  return value || '—';
+}
+
+function fallbackPriorityReason(tier: Tier | null | undefined): string {
+  if (tier === 'Tier 1') {
+    return 'Moved into Priority 1 because the asset is treated as having a U.S. path and a commercialization window inside 18 months.';
+  }
+  if (tier === 'Tier 2') {
+    return 'Moved into Priority 2 because the asset remains relevant for CGT monitoring but is not proven to commercialize in the U.S. within 18 months.';
+  }
+  if (tier === 'Watchlist') {
+    return 'Moved to Watchlist because it still needs confirmation on launch timing, U.S. path, or commercial readiness before it belongs in an active ABM audience.';
+  }
+  if (tier === 'Deprioritized') {
+    return 'Moved to Deprioritized because the latest profile does not support active commercialization targeting.';
+  }
+  return 'Priority changed based on the latest score snapshot and tracker rules.';
+}
+
 function segmentColor(seg: AbmAudienceSegment | string): string {
   switch (seg) {
     case 'ATC': return 'bg-violet-50 text-violet-700 border-violet-200';
@@ -336,24 +369,50 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     } catch {}
   }
 
+  const latestScores = useMemo(() => {
+    const latestByAsset = new Map<string, ScoreRow>();
+    for (const score of scores) {
+      const existing = latestByAsset.get(score.asset_id);
+      if (!existing || Date.parse(score.recorded_at || '') > Date.parse(existing.recorded_at || '')) {
+        latestByAsset.set(score.asset_id, score);
+      }
+    }
+    return Array.from(latestByAsset.values());
+  }, [scores]);
+
   const topMovers = useMemo(() => {
-    return [...scores]
+    return [...latestScores]
       .filter(s => s.prev_final != null)
       .map(s => ({ ...s, delta: (s.final_commercial_score || 0) - (s.prev_final || 0) }))
       .filter(s => Math.abs(s.delta) > 0)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
       .slice(0, 8);
-  }, [scores]);
+  }, [latestScores]);
 
   const flatScoresCount = useMemo(() => {
-    return scores.filter(s => s.prev_final != null && (s.final_commercial_score || 0) - (s.prev_final || 0) === 0).length;
-  }, [scores]);
+    return latestScores.filter(s => s.prev_final != null && (s.final_commercial_score || 0) - (s.prev_final || 0) === 0).length;
+  }, [latestScores]);
 
   const tierChanges = useMemo(() => {
-    return scores.filter(s =>
+    return latestScores.filter(s =>
       (s.prev_commercial_tier && s.prev_commercial_tier !== s.commercial_priority_tier)
     );
-  }, [scores]);
+  }, [latestScores]);
+
+  const tierChangeDetails = useMemo(() => {
+    return tierChanges.map(score => {
+      const reason = changes.find(change =>
+        change.asset_id === score.asset_id &&
+        /commercial_priority_tier/i.test(change.field_changed || '') &&
+        (!change.previous_value || change.previous_value === score.prev_commercial_tier) &&
+        (!change.new_value || change.new_value === score.commercial_priority_tier)
+      ) || changes.find(change =>
+        change.asset_id === score.asset_id &&
+        /commercial_priority_tier/i.test(change.field_changed || '')
+      );
+      return { score, reason };
+    });
+  }, [tierChanges, changes]);
 
   const criticalChanges = useMemo(() => {
     return changes.filter(c => /tier|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(c.field_changed || ''));
@@ -595,7 +654,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             </span>
             <h2 className="prestige-section-title mt-3">Top priority changes</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-xl leading-relaxed">
-              The changes most likely to move a thesis this week: tier shifts, phase moves, filings, PDUFA dates, and regulatory signals.
+              The changes most likely to move a thesis this week: audience-priority shifts, phase moves, filings, PDUFA dates, and regulatory signals.
             </p>
           </div>
           <div className="text-xs font-medium text-slate-500 tracking-wide uppercase">
@@ -617,8 +676,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                         {c.field_changed}
                       </div>
                       <div className="text-sm mt-1.5 text-slate-700">
-                        <span className="text-slate-400 line-through">{c.previous_value || '—'}</span>{' '}
-                        <span className="text-slate-900 font-medium">→ {c.new_value || '—'}</span>
+                        <span className="text-slate-400 line-through">{formatChangeValue(c.field_changed, c.previous_value)}</span>{' '}
+                        <span className="text-slate-900 font-medium">→ {formatChangeValue(c.field_changed, c.new_value)}</span>
                       </div>
                       {c.why_it_matters && <div className="text-sm text-slate-600 mt-2 leading-relaxed">{c.why_it_matters}</div>}
                     </div>
@@ -751,7 +810,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                             <>
                               <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 font-medium">Matched: {account.relatedAsset.company_name}</span>
                               <span className={`px-2 py-0.5 rounded-full font-medium ${tierColor(account.relatedAsset.commercial_priority_tier)}`}>
-                                {account.relatedAsset.commercial_priority_tier || 'No tier'}
+                                {priorityLabel(account.relatedAsset.commercial_priority_tier)}
                               </span>
                               <span className="text-slate-500">
                                 {account.relatedAsset.asset_name}
@@ -845,18 +904,22 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       )}
 
       {/* Tier changes */}
-      {tierChanges.length > 0 && (
+      {tierChangeDetails.length > 0 && (
         <section className="reveal reveal-delay-4">
           <header className="mb-6">
             <span className="prestige-eyebrow prestige-eyebrow-light">
               <AlertCircle className="w-3 h-3" />
-              Tiering
+              Audience Priority
             </span>
-            <h2 className="prestige-section-title mt-3">Tier changes</h2>
+            <h2 className="prestige-section-title mt-3">Priority movement</h2>
+            <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
+              Priority 1 means a U.S. commercialization window inside 18 months. Priority 2 means relevant CGT opportunity,
+              but not yet proven inside that active commercialization window.
+            </p>
           </header>
           <div className="prestige-card overflow-hidden">
             <div className="divide-y divide-slate-100">
-              {tierChanges.map(s => (
+              {tierChangeDetails.map(({ score: s, reason }) => (
                 <div key={s.id} className="px-6 py-4 hover:bg-slate-50/60 transition-colors">
                   <button
                     onClick={() => onOpenAsset(s.asset_id)}
@@ -868,12 +931,31 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                   <div className="flex flex-wrap items-center gap-3 mt-2">
                     {s.prev_commercial_tier && s.prev_commercial_tier !== s.commercial_priority_tier && (
                       <div className="inline-flex items-center gap-1.5 text-xs">
-                        <span className="text-slate-500">Commercial:</span>
-                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.prev_commercial_tier)}`}>{s.prev_commercial_tier}</span>
+                        <span className="text-slate-500">Audience priority:</span>
+                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.prev_commercial_tier)}`}>{priorityLabel(s.prev_commercial_tier)}</span>
                         <ArrowUpRight className="w-3 h-3 text-slate-400" />
-                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.commercial_priority_tier)}`}>{s.commercial_priority_tier ?? '—'}</span>
+                        <span className={`px-2 py-0.5 rounded font-medium ${tierColor(s.commercial_priority_tier)}`}>{priorityLabel(s.commercial_priority_tier)}</span>
                       </div>
                     )}
+                  </div>
+                  <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                      <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Why it moved</div>
+                      <div className="text-sm text-slate-700 mt-1 leading-relaxed">
+                        {reason?.why_it_matters || fallbackPriorityReason(s.commercial_priority_tier)}
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-teal-50/60 border border-teal-100 px-3 py-2">
+                      <div className="text-[10px] font-semibold uppercase tracking-widest text-teal-700">Score impact</div>
+                      <div className="text-sm text-teal-900 mt-1 leading-relaxed">
+                        {reason?.score_impact_explanation || `Commercial score ${s.prev_final ?? '—'} to ${s.final_commercial_score}.`}
+                        {reason?.source_url && (
+                          <a href={reason.source_url} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-teal-700 font-semibold hover:underline">
+                            Source <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -954,7 +1036,7 @@ function buildAbmRecommendation(
       tone: 'nurture',
       label: 'Nurture',
       fit: 'Possible fit',
-      reason: `${row.account_name} is engaged and has a tracked CGT therapy (${therapy}), but there is no urgent weekly catalyst or Tier 1 commercialization trigger.`,
+      reason: `${row.account_name} is engaged and has a tracked CGT therapy (${therapy}), but there is no urgent weekly catalyst or Priority 1 commercialization trigger.`,
       nextStep: 'Keep in the ABM nurture lane. Use education-oriented content and watch for regulatory, manufacturing, or commercial hiring signals before escalating.',
     };
   }
@@ -964,7 +1046,7 @@ function buildAbmRecommendation(
       tone: 'research',
       label: 'Qualify',
       fit: 'Possible fit',
-      reason: `${row.account_name} is engaged and matched to ${therapy}, but the current score/tier does not yet justify aggressive commercialization messaging.`,
+      reason: `${row.account_name} is engaged and matched to ${therapy}, but the current score/priority does not yet justify aggressive commercialization messaging.`,
       nextStep: 'Have research validate launch timing, manufacturing pathway, and U.S. commercial path before moving this account into active campaign focus.',
     };
   }
