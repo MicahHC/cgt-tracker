@@ -105,6 +105,17 @@ function formatChangeValue(field: string | null | undefined, value: string | nul
   return value || '—';
 }
 
+function priorityDisplayCopy(value: string | null | undefined): string {
+  return (value || '')
+    .replace(/\bCommercial tier\b/g, 'Audience priority')
+    .replace(/\bcommercial tier\b/g, 'audience priority')
+    .replace(/\btier rule\b/g, 'priority rule')
+    .replace(/\bTier-1\b/g, 'Priority 1')
+    .replace(/\bTier 1\b/g, 'Priority 1')
+    .replace(/\bTier-2\b/g, 'Priority 2')
+    .replace(/\bTier 2\b/g, 'Priority 2');
+}
+
 function fallbackPriorityReason(tier: Tier | null | undefined): string {
   if (tier === 'Tier 1') {
     return 'Moved into Priority 1 because the asset is treated as having a U.S. path and a commercialization window inside 18 months.';
@@ -679,7 +690,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                         <span className="text-slate-400 line-through">{formatChangeValue(c.field_changed, c.previous_value)}</span>{' '}
                         <span className="text-slate-900 font-medium">→ {formatChangeValue(c.field_changed, c.new_value)}</span>
                       </div>
-                      {c.why_it_matters && <div className="text-sm text-slate-600 mt-2 leading-relaxed">{c.why_it_matters}</div>}
+                      {c.why_it_matters && <div className="text-sm text-slate-600 mt-2 leading-relaxed">{priorityDisplayCopy(c.why_it_matters)}</div>}
                     </div>
                     <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-slate-500">
                       <div>{new Date(c.created_at).toLocaleDateString()}</div>
@@ -942,7 +953,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                     <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
                       <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Why it moved</div>
                       <div className="text-sm text-slate-700 mt-1 leading-relaxed">
-                        {reason?.why_it_matters || fallbackPriorityReason(s.commercial_priority_tier)}
+                        {priorityDisplayCopy(reason?.why_it_matters) || fallbackPriorityReason(s.commercial_priority_tier)}
                       </div>
                     </div>
                     <div className="rounded-lg bg-teal-50/60 border border-teal-100 px-3 py-2">
