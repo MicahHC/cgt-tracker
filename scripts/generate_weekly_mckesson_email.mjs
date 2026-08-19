@@ -117,6 +117,187 @@ function normalizeDomain(value) {
     .split('#')[0];
 }
 
+function formatCurrency(value) {
+  const safeValue = Number(value || 0);
+  if (Math.abs(safeValue) >= 1_000_000) {
+    return `$${(safeValue / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 1 })}M`;
+  }
+  return safeValue.toLocaleString(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString();
+}
+
+function formatPercent(value) {
+  if (value == null) return '—';
+  return `${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}%`;
+}
+
+function plural(value, singular, pluralForm = `${singular}s`) {
+  return Number(value || 0) === 1 ? singular : pluralForm;
+}
+
+function isSuppressedAbmRow(row, clientRows) {
+  if (row.is_client || row.audience_segment === 'Closed Won') return true;
+  const account = normalizeName(row.account_name);
+  return clientRows.some(client => normalizeName(client.account_name) === account);
+}
+
+function findRelatedAsset(row, assets) {
+  const account = row.normalized_account_name || normalizeName(row.account_name);
+  if (!account) return undefined;
+
+  const exact = assets.filter(asset => normalizeName(asset.cgt_companies?.company_name) === account);
+  if (exact.length > 0) return strongestAsset(exact);
+
+  const fuzzy = assets.filter(asset => {
+    const company = normalizeName(asset.cgt_companies?.company_name);
+    return company.length >= 5 && account.length >= 5 && (company.includes(account) || account.includes(company));
+  });
+  return fuzzy.length > 0 ? strongestAsset(fuzzy) : undefined;
+}
+
+function strongestAsset(assets) {
+  return [...assets].sort((a, b) =>
+    Number(b.final_commercial_score || 0) - Number(a.final_commercial_score || 0)
+  )[0];
+}
+
+function describeTherapy(asset) {
+  return [
+    asset.asset_name,
+    asset.modality,
+    asset.lead_indication || asset.target_indication,
+    asset.phase_regulatory_status,
+  ].filter(Boolean).join(' / ');
+}
+
+function buildAbmRecommendation(row, asset, relatedChanges, relatedScoreUpdates) {
+  const hasEngagement = Number(row.accounts_engaged || 0) > 0 || Number(row.clicks || 0) > 0;
+  const hasPipeline = Number(row.pipeline || 0) > 0 || Number(row.new_pipeline || 0) > 0 || Number(row.closed_won_pipeline || 0) > 0;
+
+  if (!asset) {
+    return {
+      label: hasEngagement || hasPipeline ? 'Add / research' : 'Research fit',
+      fit: 'Unknown fit',
+      reason: `${row.account_name} is showing 6sense activity but is not matched to a CGT tracker company.`,
+      nextStep: 'Verify whether this account has a relevant CGT asset and U.S. commercialization path; add it to the tracker if confirmed.',
+    };
+  }
+
+  const therapy = describeTherapy(asset);
+  const timely = asset.commercial_priority_tier === 'Tier 1' || /yes/i.test(asset.likely_us_launch_within_24_months || '');
+  const meaningfulMovement = relatedChanges > 0 || relatedScoreUpdates > 0;
+  const strongScore = Number(asset.final_commercial_score || 0) >= 50 || asset.commercial_priority_tier === 'Tier 2';
+
+  if (hasEngagement && (timely || meaningfulMovement)) {
+    return {
+      label: 'Market now',
+      fit: 'High fit',
+      reason: `${row.account_name} is engaging and maps to ${therapy}. ${timely ? 'The asset is inside the Priority 1 commercialization window.' : 'This week’s tracker activity gives outreach a timely hook.'}`,
+      nextStep: 'Refresh ABM outreach this week with commercialization-readiness, launch-support, manufacturing-access, or patient-services messaging.',
+    };
+  }
+
+  if (hasEngagement && strongScore) {
+    return {
+      label: 'Nurture',
+      fit: 'Possible fit',
+      reason: `${row.account_name} is engaged and has a tracked CGT therapy (${therapy}), but there is no urgent Priority 1 trigger this week.`,
+      nextStep: 'Keep in nurture with education-oriented content and watch for regulatory, manufacturing, or commercial hiring signals.',
+    };
+  }
+
+  return {
+    label: hasEngagement ? 'Qualify' : 'Do not prioritize',
+    fit: hasEngagement ? 'Possible fit' : 'Low fit',
+    reason: `${row.account_name} ${hasEngagement ? 'is engaged' : 'has a tracker match'} and maps to ${therapy}, but the current tracker profile does not justify aggressive commercialization messaging yet.`,
+    nextStep: hasEngagement
+      ? 'Validate launch timing, manufacturing pathway, and U.S. commercial path before escalating.'
+      : 'Do not spend active ABM effort this week unless new engagement or a material tracker signal appears.',
+  };
+}
+
+async function buildAbmEmailSection(targetWeek, clientRows, changes, scores) {
+  const abmRows = await fetchAll(
+    'cgt_abm_weekly_engagement',
+    '*',
+    query => query.eq('week_label', targetWeek).order('accounts_engaged', { ascending: false })
+  );
+  const accountRows = abmRows.filter(row => !row.is_total);
+  if (accountRows.length === 0) return [];
+
+  const assetContext = await fetchAll(
+    'cgt_assets',
+    `id, company_id, asset_name, modality, lead_indication, target_indication,
+     phase_regulatory_status, likely_us_launch_within_24_months, commercial_buildout_status,
+     final_commercial_score, commercial_priority_tier, key_upcoming_catalyst, catalyst_date,
+     cgt_companies!inner(company_name)`,
+    query => query.order('final_commercial_score', { ascending: false })
+  );
+
+  const changesByCompany = new Map();
+  for (const change of changes) {
+    const key = normalizeName(change.cgt_assets?.cgt_companies?.company_name || '');
+    if (key) changesByCompany.set(key, (changesByCompany.get(key) || 0) + 1);
+  }
+
+  const scoresByCompany = new Map();
+  for (const score of scores) {
+    const key = normalizeName(score.cgt_assets?.cgt_companies?.company_name || '');
+    if (key) scoresByCompany.set(key, (scoresByCompany.get(key) || 0) + 1);
+  }
+
+  const activeRows = accountRows
+    .filter(row => !isSuppressedAbmRow(row, clientRows))
+    .map(row => {
+      const relatedAsset = findRelatedAsset(row, assetContext);
+      const relatedKey = relatedAsset
+        ? normalizeName(relatedAsset.cgt_companies?.company_name)
+        : row.normalized_account_name;
+      const relatedChanges = changesByCompany.get(relatedKey) || 0;
+      const relatedScoreUpdates = scoresByCompany.get(relatedKey) || 0;
+      const recommendation = buildAbmRecommendation(row, relatedAsset, relatedChanges, relatedScoreUpdates);
+      const engagementScore =
+        Number(row.accounts_engaged || 0) * 1000 +
+        Number(row.clicks || 0) * 120 +
+        Number(row.pipeline || 0) / 100000 +
+        relatedChanges * 750 +
+        relatedScoreUpdates * 500 +
+        (recommendation.label === 'Market now' ? 600 : 0) +
+        (recommendation.label === 'Add / research' ? 500 : 0) +
+        (relatedAsset ? 250 : 0);
+      return { ...row, relatedAsset, relatedChanges, relatedScoreUpdates, recommendation, engagementScore };
+    })
+    .filter(row => Number(row.accounts_engaged || 0) > 0 || Number(row.clicks || 0) > 0 || Number(row.pipeline || 0) > 0 || row.relatedChanges > 0 || row.relatedScoreUpdates > 0)
+    .sort((a, b) => b.engagementScore - a.engagementScore)
+    .slice(0, 5);
+
+  if (activeRows.length === 0) return [];
+
+  const totalEngaged = activeRows.reduce((sum, row) => sum + Number(row.accounts_engaged || 0), 0);
+  const totalClicks = activeRows.reduce((sum, row) => sum + Number(row.clicks || 0), 0);
+  const suppressedCount = accountRows.filter(row => isSuppressedAbmRow(row, clientRows)).length;
+
+  return [
+    '6sense ABM engagement signals:',
+    `- ${activeRows.length} active account(s) stood out in the latest 6sense engagement data (${formatNumber(totalEngaged)} engaged accounts, ${formatNumber(totalClicks)} clicks across highlighted accounts). ${suppressedCount > 0 ? `${suppressedCount} Closed Won/client account(s) were suppressed from this recommendation set.` : ''}`.trim(),
+    ...activeRows.map(row => {
+      const metrics = `${formatNumber(row.accounts_engaged)} engaged / ${formatNumber(row.clicks)} ${plural(row.clicks, 'click')} / ${formatPercent(row.ctr)} CTR${Number(row.pipeline || 0) > 0 ? ` / ${formatCurrency(row.pipeline)} pipeline` : ''}`;
+      const trackerFit = row.relatedAsset
+        ? `${priorityLabel(row.relatedAsset.commercial_priority_tier)}; ${row.relatedAsset.phase_regulatory_status || 'phase not captured'}`
+        : 'not currently matched in tracker';
+      return `- ${row.account_name} (${row.audience_segment || 'Unlabeled'}): ${metrics}. Fit: ${row.recommendation.fit}; tracker: ${trackerFit}. Why: ${row.recommendation.reason} Next step: ${row.recommendation.nextStep}`;
+    }),
+    '',
+  ];
+}
+
 function fallbackReason(row, asset) {
   const currentPriority = row.score.commercial_priority_tier;
   const status = asset?.phase_regulatory_status || 'status not captured';
@@ -246,6 +427,7 @@ async function buildEmail(week) {
   const suppressedBullets = suppressedRows.map(bulletFor);
   const movedIntoP1 = activeRows.filter(row => row.score.commercial_priority_tier === 'Tier 1' && row.previous.commercial_priority_tier !== 'Tier 1').length;
   const movedOutOfP1 = activeRows.filter(row => row.previous.commercial_priority_tier === 'Tier 1' && row.score.commercial_priority_tier !== 'Tier 1').length;
+  const abmSection = await buildAbmEmailSection(targetWeek, clientRows, changes, scores);
 
   const subject = `CGT tracker weekly update: ${getWeekRange(targetWeek)}`;
   const body = [
@@ -265,6 +447,7 @@ async function buildEmail(week) {
         '',
       ]
       : []),
+    ...abmSection,
     `Net/net for active, non-client accounts: ${movedIntoP1} account(s) moved into Priority 1 and ${movedOutOfP1} moved out of Priority 1. Priority 1 remains the active commercialization audience: U.S. path plus expected commercialization inside 18 months.`,
     '',
     'Recommended next steps:',
