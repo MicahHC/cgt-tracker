@@ -125,8 +125,14 @@ function memberMatchesCompany(member, companyName, domain) {
   return normalizeName(member.account_name) === normalizeName(companyName);
 }
 
+function clientMatchesCompany(client, companyName, domain) {
+  const clientDomain = cleanDomain(client.domain);
+  if (domain && clientDomain && domain === clientDomain) return true;
+  return normalizeName(client.account_name) === normalizeName(companyName);
+}
+
 async function main() {
-  const [companies, members] = await Promise.all([
+  const [companies, members, clientDomains] = await Promise.all([
     request(
       'GET',
       'cgt_companies?select=id,company_name,hq_country,website,status,segment_default,cgt_assets(id,segment,phase_regulatory_status,filing_status,us_commercialization_window,no_us_path)&limit=2000',
@@ -134,6 +140,7 @@ async function main() {
       null,
     ),
     request('GET', 'cgt_abm_audience_members?select=*&limit=5000', undefined, null),
+    request('GET', 'cgt_abm_client_domains?select=domain,account_name&limit=5000', undefined, null),
   ]);
 
   const actions = [];
@@ -166,8 +173,14 @@ async function main() {
 
     const matches = members.filter(member => memberMatchesCompany(member, company.company_name, company.domain));
     const clientMatches = matches.filter(member => member.is_client);
-    if (clientMatches.length) {
-      actions.push({ type: 'preserved_client', company: company.company_name, count: clientMatches.length });
+    const validatedClientMatch = clientDomains.find(client => clientMatchesCompany(client, company.company_name, company.domain));
+    if (clientMatches.length || validatedClientMatch) {
+      actions.push({
+        type: 'preserved_client',
+        company: company.company_name,
+        count: clientMatches.length,
+        source: validatedClientMatch ? 'cgt_abm_client_domains' : 'cgt_abm_audience_members',
+      });
       continue;
     }
 

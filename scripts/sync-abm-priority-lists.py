@@ -38,9 +38,20 @@ def member_key(member: dict[str, Any]) -> tuple[str, str]:
     )
 
 
-def matches_client(company: dict[str, Any], members: list[dict[str, Any]]) -> bool:
+def matches_client(
+    company: dict[str, Any],
+    members: list[dict[str, Any]],
+    client_domains: list[dict[str, Any]],
+) -> bool:
     domain = company_key(company)
     company_norm = mod.norm(company.get("company_name", ""))
+    for client in client_domains:
+        client_domain = mod.clean(client.get("domain")).lower()
+        if domain and client_domain == domain:
+            return True
+        if mod.norm(client.get("account_name", "")) == company_norm:
+            return True
+
     for member in members:
         if not member.get("is_client"):
             continue
@@ -69,6 +80,7 @@ def main() -> int:
     companies = sb.select_all("cgt_companies")
     assets = sb.select_all("cgt_assets")
     members = sb.select_all("cgt_abm_audience_members")
+    client_domains = sb.select_all("cgt_abm_client_domains")
 
     assets_by_company: dict[str, list[dict[str, Any]]] = {}
     for asset in assets:
@@ -102,7 +114,7 @@ def main() -> int:
         elif tier == "Priority 2":
             counts["tier_2_companies"] += 1
 
-        if matches_client(company, members):
+        if matches_client(company, members, client_domains):
             counts["suppressed_clients"] += 1
             actions.append({
                 "action": "suppressed_client",

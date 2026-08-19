@@ -38,6 +38,11 @@ interface AbmRow {
   is_client: boolean;
 }
 
+type ClientSuppressions = {
+  domains: Set<string>;
+  accountNames: Set<string>;
+};
+
 function normalizeKey(value: string): string {
   return value
     .toLowerCase()
@@ -86,6 +91,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+    const clientSuppressions = await fetchClientSuppressions(supabase);
 
     let body: { week_label?: string; segment_override?: string } = {};
     if (req.method === "POST") {
@@ -105,7 +111,8 @@ Deno.serve(async (req: Request) => {
         abmSalesUrl,
         "6SENSE_ABM_Sales",
         weekLabel,
-        body.segment_override || ""
+        body.segment_override || "",
+        clientSuppressions
       );
       results.push(r);
     }
@@ -116,7 +123,8 @@ Deno.serve(async (req: Request) => {
         abmCompanyUrl,
         "6SENSE_ABM_Company",
         weekLabel,
-        body.segment_override || ""
+        body.segment_override || "",
+        clientSuppressions
       );
       results.push(r);
     }
@@ -144,7 +152,8 @@ async function fetchAndIngest(
   url: string,
   sourceName: string,
   weekLabel: string,
-  segmentOverride: string
+  segmentOverride: string,
+  clientSuppressions: ClientSuppressions
 ): Promise<{ source: string; accounts: number; error?: string }> {
   try {
     const response = await fetch(url);
@@ -162,7 +171,7 @@ async function fetchAndIngest(
     }
 
     const segment = segmentOverride || detectSegment(sourceName);
-    const rows = parseCsv6sense(csvText, weekLabel, sourceName, segment);
+    const rows = parseCsv6sense(csvText, weekLabel, sourceName, segment, clientSuppressions);
 
     if (rows.length === 0) {
       return {
@@ -202,6 +211,20 @@ async function fetchAndIngest(
   }
 }
 
+async function fetchClientSuppressions(supabase: any): Promise<ClientSuppressions> {
+  const { data } = await supabase
+    .from("cgt_abm_client_domains")
+    .select("domain, account_name");
+
+  const domains = new Set<string>();
+  const accountNames = new Set<string>();
+  for (const row of data || []) {
+    if (row.domain) domains.add(String(row.domain).toLowerCase().trim());
+    if (row.account_name) accountNames.add(normalizeKey(String(row.account_name)));
+  }
+  return { domains, accountNames };
+}
+
 function detectSegment(sourceName: string): string {
   const lower = sourceName.toLowerCase();
   if (lower.includes("sales")) return "Late Stage";
@@ -213,7 +236,8 @@ function parseCsv6sense(
   text: string,
   weekLabel: string,
   sourceName: string,
-  segment: string
+  segment: string,
+  clientSuppressions: ClientSuppressions
 ): AbmRow[] {
   const matrix = parseCsvMatrix(text).filter((row) =>
     row.some((cell) => cell.trim() !== "")
@@ -235,7 +259,13 @@ function parseCsv6sense(
     .map((row) => toRecord(headers, row))
     .map((record) => {
       const accountName = val(record, "Account");
+      const domain = val(record, "Domain").toLowerCase().trim();
       const closedWonPipeline = money(record, "Closed Won Pipeline");
+      const accountKey = normalizeKey(accountName);
+      const isClient =
+        closedWonPipeline > 0 ||
+        (domain ? clientSuppressions.domains.has(domain) : false) ||
+        (accountKey ? clientSuppressions.accountNames.has(accountKey) : false);
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,
@@ -266,7 +296,7 @@ function parseCsv6sense(
         new_pipeline: money(record, "New Pipeline"),
         closed_won_pipeline: closedWonPipeline,
         audience_segment: segment,
-        is_client: closedWonPipeline > 0,
+        is_client: isClient,
       };
     });
 }
