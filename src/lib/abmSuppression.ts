@@ -12,43 +12,9 @@ export function normalizeSuppressionKey(value: string): string {
     .replace(/\s+/g, ' ');
 }
 
-export const CLOSED_WON_DOMAINS = new Set([
-  'iovance.com',
-  'vrtx.com',
-  'kitepharma.com',
-  'gilead.com',
-  'regeneron.com',
-  'precigen.com',
-  'ptcbio.com',
-  'merck.com',
-  'rocketpharma.com',
-  'orcabio.com',
-  'bms.com',
-  'nanostherapeutics.com',
-]);
+export const CLOSED_WON_DOMAINS = new Set<string>();
 
-const CLOSED_WON_ACCOUNT_ALIASES = [
-  'Iovance Biotherapeutics',
-  'Vertex Pharmaceuticals',
-  'Kite Pharma',
-  'Kite Pharma Gilead',
-  'Gilead',
-  'Gilead Sciences',
-  'Regeneron',
-  'Regeneron Pharmaceuticals',
-  'Precigen',
-  'PTC Therapeutics',
-  'Merck',
-  'Rocket Pharmaceuticals',
-  'Orca Bio',
-  'Juno Therapeutics',
-  'Juno Therapeutics BMS',
-  'BMS',
-  'Bristol Myers Squibb',
-  'Bristol-Myers Squibb',
-  'NanoScope Therapeutics',
-  'Nanoscope Therapeutics',
-];
+const CLOSED_WON_ACCOUNT_ALIASES: string[] = [];
 
 export const CLOSED_WON_ACCOUNT_KEYS = new Set(
   CLOSED_WON_ACCOUNT_ALIASES.map(normalizeSuppressionKey)

@@ -38,30 +38,6 @@ interface AbmRow {
   is_client: boolean;
 }
 
-const CLOSED_WON_ALIASES = [
-  "iovance biotherapeutics",
-  "vertex pharmaceuticals",
-  "kite pharma",
-  "kite pharma gilead",
-  "gilead",
-  "gilead sciences",
-  "regeneron",
-  "regeneron pharmaceuticals",
-  "precigen",
-  "ptc therapeutics",
-  "merck",
-  "rocket pharmaceuticals",
-  "orca bio",
-  "juno therapeutics",
-  "juno therapeutics bms",
-  "bms",
-  "bristol myers squibb",
-  "bristol-myers squibb",
-  "nanoscope therapeutics",
-];
-
-const CLOSED_WON_KEYS = new Set(CLOSED_WON_ALIASES.map(normalizeKey));
-
 function normalizeKey(value: string): string {
   return value
     .toLowerCase()
@@ -77,11 +53,6 @@ function normalizeKey(value: string): string {
 
 function normalizeAccountName(value: string): string {
   return normalizeKey(value);
-}
-
-function isClosedWon(accountName: string): boolean {
-  const key = normalizeKey(accountName);
-  return key ? CLOSED_WON_KEYS.has(key) : false;
 }
 
 function currentIsoWeek(): string {
@@ -264,6 +235,7 @@ function parseCsv6sense(
     .map((row) => toRecord(headers, row))
     .map((record) => {
       const accountName = val(record, "Account");
+      const closedWonPipeline = money(record, "Closed Won Pipeline");
       return {
         week_label: weekLabel,
         reporting_period: reportingPeriod,
@@ -292,9 +264,9 @@ function parseCsv6sense(
         ),
         pipeline: money(record, "Pipeline"),
         new_pipeline: money(record, "New Pipeline"),
-        closed_won_pipeline: money(record, "Closed Won Pipeline"),
+        closed_won_pipeline: closedWonPipeline,
         audience_segment: segment,
-        is_client: isClosedWon(accountName),
+        is_client: closedWonPipeline > 0,
       };
     });
 }
