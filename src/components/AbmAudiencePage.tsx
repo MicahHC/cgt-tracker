@@ -12,7 +12,7 @@ type AudienceMember = {
 };
 
 const CANONICAL_SEGMENTS = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
-const CSV_HEADERS = ['Company Name', 'Domain/URL', 'Priority Label'];
+const CSV_HEADERS = ['Name', 'Country', 'Domain'];
 
 function csvCell(value: string | null | undefined): string {
   const text = value || '';
@@ -26,6 +26,20 @@ function safeFilenamePart(value: string): string {
 
 function exportableDomain(domain: string): string {
   return domain.endsWith('.missing-domain.invalid') ? '' : domain;
+}
+
+function exportKey(member: AudienceMember): string {
+  return exportableDomain(member.domain) || member.account_name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function dedupeExportRows(rows: AudienceMember[]): AudienceMember[] {
+  const seen = new Set<string>();
+  return rows.filter(member => {
+    const key = exportKey(member);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function segmentColor(seg: string): string {
@@ -106,7 +120,7 @@ export function AbmAudiencePage() {
   }, [members, filter, search]);
 
   const exportable = useMemo(() => {
-    return visible.filter(m => !m.is_client && filter !== 'Closed Won');
+    return dedupeExportRows(visible.filter(m => !m.is_client && filter !== 'Closed Won'));
   }, [visible, filter]);
 
   async function handleToggleClient(member: AudienceMember) {
@@ -131,8 +145,8 @@ export function AbmAudiencePage() {
       CSV_HEADERS.map(csvCell).join(','),
       ...exportable.map(member => [
         member.account_name,
+        member.country,
         exportableDomain(member.domain),
-        member.audience_segment || (filter === 'all' ? 'Unlabeled' : filter),
       ].map(csvCell).join(',')),
     ];
 
@@ -220,7 +234,7 @@ export function AbmAudiencePage() {
           </button>
         </div>
         <p className="text-[11px] text-slate-400 lg:basis-full">
-          6sense format: Company Name, Domain/URL, Priority Label. Closed Won accounts are excluded from exports.
+          6sense format: Name, Country, Domain. Closed Won accounts are excluded from exports.
         </p>
       </div>
 
