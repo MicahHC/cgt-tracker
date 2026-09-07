@@ -1,0 +1,7 @@
+.bolt
+.env
+.env.*
+!.env.example
+health-checks
+node_modules
+supabase/.temp

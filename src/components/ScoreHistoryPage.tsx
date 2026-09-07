@@ -73,7 +73,7 @@ export function ScoreHistoryPage({ onOpenAsset }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {rows.map((r, i) => {
+                {rows.map((r) => {
                   const assetRows = byAsset[r.asset_id];
                   const idx = assetRows.findIndex(x => x.id === r.id);
                   const prior = idx >= 0 ? assetRows[idx + 1] : null;

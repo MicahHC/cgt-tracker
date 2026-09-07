@@ -4,7 +4,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetSource, CgtChangeLog, CgtCompany, CgtScoreHistory } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 import { computeAllScores } from '../lib/scoring';
-import { ArrowLeft, Pencil, Lock, Unlock, Package, Building2, ExternalLink, ShieldAlert, Factory, CalendarClock, Gauge } from 'lucide-react';
+import { ArrowLeft, Pencil, Lock, Unlock, Package, Building2, ShieldAlert, CalendarClock, Gauge } from 'lucide-react';
 import { SegmentBadge, TierBadge, ConfidenceBadge, FlagBadge } from './ui/Badge';
 import { AssetEditForm } from './AssetEditForm';
 import { AssetSources } from './AssetSources';

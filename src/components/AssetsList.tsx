@@ -4,7 +4,7 @@ import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetWithCompany, CgtCompany, Segment, Tier } from '../types/database';
 import { SEGMENTS, TIERS, MANUFACTURING_STATUSES, CONFIDENCE_LEVELS } from '../lib/constants';
 import { TierBadge, SegmentBadge, FlagBadge } from './ui/Badge';
-import { Search, Filter, Plus, ShieldAlert, Factory, ChevronDown, ArrowUpDown, Lock } from 'lucide-react';
+import { Search, Filter, Plus, ShieldAlert, ChevronDown, ArrowUpDown, Lock } from 'lucide-react';
 
 interface AssetsListProps {
   onOpenAsset: (id: string) => void;
@@ -16,7 +16,6 @@ type SortKey = 'name' | 'company' | 'segment' | 'commercial' | 'catalyst';
 
 export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListProps) {
   const [assets, setAssets] = useState<CgtAssetWithCompany[]>([]);
-  const [companies, setCompanies] = useState<Record<string, CgtCompany>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [segment, setSegment] = useState<'all' | Segment>('all');
@@ -43,7 +42,6 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
     ]);
     const companyMap: Record<string, CgtCompany> = {};
     (companyData as CgtCompany[] | null)?.forEach(c => { companyMap[c.id] = c; });
-    setCompanies(companyMap);
     const enriched = ((assetData as CgtAsset[] | null) || []).map(a => ({ ...a, company: companyMap[a.company_id] }));
     setAssets(enriched);
     setLoading(false);

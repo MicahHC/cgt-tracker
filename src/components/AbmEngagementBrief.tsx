@@ -298,6 +298,8 @@ export function AbmEngagementBrief() {
     );
   }
 
+  if (!brief) return null;
+
   const c = brief.content;
   const metrics = buildHeroMetrics(c);
   const spotlights = collectSpotlights(c);

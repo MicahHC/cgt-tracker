@@ -18,6 +18,7 @@ export interface CgtCompany {
   ticker: string;
   segment_default: string;
   notes: string;
+  status: string;
   created_at: string;
   updated_at: string;
 }
@@ -186,18 +187,45 @@ export interface CgtAbmClientDomain {
   created_at: string;
 }
 
+export interface CgtAbmAudienceMember {
+  id: string;
+  domain: string;
+  account_name: string;
+  country: string;
+  audience_segment: AbmAudienceSegment;
+  created_at: string;
+  is_client: boolean;
+  buying_stage: string | null;
+  profile_fit: string | null;
+  intent_score: number | null;
+  sixsense_segments: string | null;
+  enriched_at: string | null;
+}
+
+type Table<Row> = {
+  Row: Row;
+  Insert: Partial<Row>;
+  Update: Partial<Row>;
+  Relationships: [];
+};
+
 export type Database = {
   public: {
     Tables: {
-      cgt_companies: { Row: CgtCompany; Insert: Partial<CgtCompany>; Update: Partial<CgtCompany> };
-      cgt_assets: { Row: CgtAsset; Insert: Partial<CgtAsset>; Update: Partial<CgtAsset> };
-      cgt_asset_sources: { Row: CgtAssetSource; Insert: Partial<CgtAssetSource>; Update: Partial<CgtAssetSource> };
-      cgt_change_log: { Row: CgtChangeLog; Insert: Partial<CgtChangeLog>; Update: Partial<CgtChangeLog> };
-      cgt_score_history: { Row: CgtScoreHistory; Insert: Partial<CgtScoreHistory>; Update: Partial<CgtScoreHistory> };
-      cgt_users: { Row: CgtUser; Insert: Partial<CgtUser>; Update: Partial<CgtUser> };
-      cgt_agent_assignments: { Row: CgtAgentAssignment; Insert: Partial<CgtAgentAssignment>; Update: Partial<CgtAgentAssignment> };
-      cgt_abm_weekly_engagement: { Row: CgtAbmWeeklyEngagement; Insert: Partial<CgtAbmWeeklyEngagement>; Update: Partial<CgtAbmWeeklyEngagement> };
-      cgt_abm_client_domains: { Row: CgtAbmClientDomain; Insert: Partial<CgtAbmClientDomain>; Update: Partial<CgtAbmClientDomain> };
+      cgt_companies: Table<CgtCompany>;
+      cgt_assets: Table<CgtAsset>;
+      cgt_asset_sources: Table<CgtAssetSource>;
+      cgt_change_log: Table<CgtChangeLog>;
+      cgt_score_history: Table<CgtScoreHistory>;
+      cgt_users: Table<CgtUser>;
+      cgt_agent_assignments: Table<CgtAgentAssignment>;
+      cgt_abm_weekly_engagement: Table<CgtAbmWeeklyEngagement>;
+      cgt_abm_client_domains: Table<CgtAbmClientDomain>;
+      cgt_abm_audience_members: Table<CgtAbmAudienceMember>;
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
