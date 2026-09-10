@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Layers, ShieldOff, Users, Search, ShieldCheck, Building2, Globe, Download } from 'lucide-react';
-
-type AudienceMember = {
-  id: string;
-  account_name: string;
-  country: string;
-  domain: string;
-  audience_segment: string;
-  is_client: boolean;
-};
+import { AudienceMember, audienceCounts } from '../lib/audienceCounts';
+import { loadAudiences } from '../lib/loadAudiences';
+import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 
 const CANONICAL_SEGMENTS = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
 const CSV_HEADERS = ['Name', 'Country', 'Domain'];
@@ -76,19 +70,22 @@ export function AbmAudiencePage() {
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   async function load() {
     setLoading(true);
-    const { data } = await supabase
-      .from('cgt_abm_audience_members')
-      .select('id, account_name, country, domain, audience_segment, is_client')
-      .order('audience_segment')
-      .order('account_name');
-    setMembers((data as AudienceMember[]) || []);
-    setLoading(false);
+    try {
+      setMembers(await loadAudiences());
+      setError('');
+    } catch {
+      setError('Audience data could not be loaded. Retry before using these counts or exporting.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
+  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains'], () => load());
 
   const segments = useMemo(() => {
     const found = new Set(members.map(m => m.audience_segment).filter(Boolean));
@@ -97,21 +94,14 @@ export function AbmAudiencePage() {
     return [...ordered, ...extras];
   }, [members]);
 
-  const clientCount = useMemo(() => members.filter(m => m.is_client).length, [members]);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: members.length };
-    for (const m of members) c[m.audience_segment] = (c[m.audience_segment] || 0) + 1;
-    c['Closed Won'] = clientCount;
-    return c;
-  }, [members, clientCount]);
+  const counts = useMemo(() => audienceCounts(members), [members]);
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return members.filter(m => {
       if (filter === 'Closed Won') {
         if (!m.is_client) return false;
-      } else if (filter !== 'all' && m.audience_segment !== filter) {
+      } else if (filter !== 'all' && (m.is_client || m.audience_segment !== filter)) {
         return false;
       }
       if (q && !m.account_name.toLowerCase().includes(q) && !m.domain.toLowerCase().includes(q)) return false;
@@ -131,7 +121,7 @@ export function AbmAudiencePage() {
         .update({ is_client: !member.is_client })
         .eq('id', member.id);
       if (!error) {
-        setMembers(prev => prev.map(m => m.id === member.id ? { ...m, is_client: !m.is_client } : m));
+        await load();
       }
     } finally {
       setBusyId(null);
@@ -162,6 +152,8 @@ export function AbmAudiencePage() {
     anchor.remove();
     URL.revokeObjectURL(url);
   }
+
+  if (error) return <div role="alert" className="p-6 text-red-700">{error} <button onClick={load} className="underline">Retry</button></div>;
 
   return (
     <div className="space-y-8">
@@ -220,7 +212,7 @@ export function AbmAudiencePage() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs text-slate-500">
-            Showing <span className="font-semibold text-slate-900">{visible.length}</span> of {members.length}
+            Showing <span className="font-semibold text-slate-900">{visible.length}</span> audience memberships across {counts.all} unique accounts
           </span>
           <button
             type="button"
@@ -241,7 +233,7 @@ export function AbmAudiencePage() {
       <div className="prestige-card overflow-hidden">
         <div className="px-6 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            {filter === 'all' ? 'All accounts' : filter} ({visible.length})
+            {filter === 'all' ? 'All audience memberships' : filter} ({visible.length})
           </span>
           <span className="text-xs text-slate-400">Domain / Country</span>
         </div>

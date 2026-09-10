@@ -10,6 +10,8 @@ type TableName =
   | 'cgt_agent_runs'
   | 'cgt_signals'
   | 'cgt_abm_weekly_engagement'
+  | 'cgt_abm_audience_members'
+  | 'cgt_abm_client_domains'
   | 'research_jobs';
 
 interface Options {

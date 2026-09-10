@@ -76,8 +76,12 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
     const scores = own.map(a => (a[scoreField] as number) ?? 0).filter(s => s > 0);
     const topScore = scores.length ? Math.max(...scores) : null;
     const topAsset = own.slice().sort((a, b) => ((b[scoreField] as number) ?? 0) - ((a[scoreField] as number) ?? 0))[0];
-    const topTier = topAsset?.commercial_priority_tier || null;
-    const tier1 = own.filter(a => a.commercial_priority_tier === 'Tier 1').length;
+    const topTier = c.status?.toLowerCase() === 'excluded' ? 'Excluded' : own
+      .filter(a => !a.no_us_path && a.segment !== 'On-Market')
+      .map(a => a.commercial_priority_tier)
+      .filter(tier => tier && tier !== 'Excluded')
+      .sort((a, b) => (tierRank[b || ''] ?? 0) - (tierRank[a || ''] ?? 0))[0] || null;
+    const tier1 = own.filter(a => !a.no_us_path && a.segment !== 'On-Market' && a.commercial_priority_tier === 'Tier 1').length;
     const topSegment = topAsset?.segment || (own[0]?.segment ?? '');
     const anyHold = own.some(a => a.clinical_hold);
     const topPhase = own.length
@@ -187,9 +191,9 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
             { v: 'On-Market', l: 'On-Market' },
           ]} />
           <FilterSelect value={tierFilter} onChange={setTierFilter} options={[
-            { v: 'all', l: 'All tiers' },
-            { v: 'Tier 1', l: 'Tier 1' },
-            { v: 'Tier 2', l: 'Tier 2' },
+            { v: 'all', l: 'All priorities' },
+            { v: 'Tier 1', l: 'Priority 1' },
+            { v: 'Tier 2', l: 'Priority 2' },
             { v: 'Watchlist', l: 'Watchlist' },
             { v: 'Deprioritized', l: 'Deprioritized' },
           ]} />

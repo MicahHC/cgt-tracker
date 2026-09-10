@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { TierBadge, SegmentBadge } from './ui/Badge';
 import { PageKey } from './Layout';
+import { audienceCounts } from '../lib/audienceCounts';
+import { loadAudiences } from '../lib/loadAudiences';
 
 interface DashboardProps {
   onNavigate: (page: PageKey) => void;
@@ -20,12 +22,25 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const [companyCount, setCompanyCount] = useState(0);
   const [recentChanges, setRecentChanges] = useState<Array<{ id: string; asset_id: string; field_changed: string; why_it_matters: string; created_at: string; asset_name?: string }>>([]);
   const [loading, setLoading] = useState(true);
+  const [priorityCounts, setPriorityCounts] = useState<Record<string, number> | null>(null);
+  const [audienceError, setAudienceError] = useState(false);
+
+  async function refreshAudiences() {
+    try {
+      setPriorityCounts(audienceCounts(await loadAudiences()));
+      setAudienceError(false);
+    } catch {
+      setAudienceError(true);
+    }
+  }
 
   useEffect(() => {
     load();
+    refreshAudiences();
   }, []);
 
   useRealtimeRefresh(['cgt_assets', 'cgt_companies', 'cgt_change_log', 'cgt_score_history'], () => load());
+  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains'], refreshAudiences);
 
   async function load() {
     const [{ data: assetData }, { data: companyData, count: cCount }, { data: changes }] = await Promise.all([
@@ -58,8 +73,6 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const lateStageCompanies = uniqCompanies(lateStage);
   const earlyStageCompanies = uniqCompanies(earlyStage);
   const onMarketCompanies = uniqCompanies(onMarket);
-  const tier1Commercial = lateStage.filter(a => a.commercial_priority_tier === 'Tier 1').length;
-  const tier2Commercial = lateStage.filter(a => a.commercial_priority_tier === 'Tier 2').length;
   const clinicalHolds = assets.filter(a => a.clinical_hold).length;
   const noMfg = assets.filter(a => a.no_manufacturing_pathway).length;
 
@@ -107,8 +120,12 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Kpi label="Commercial Tier 1" value={tier1Commercial} icon={Target} color="emerald" />
-        <Kpi label="Commercial Tier 2" value={tier2Commercial} icon={Target} color="blue" />
+        {!audienceError && priorityCounts && <>
+          <Kpi label="Priority 1 accounts" value={priorityCounts['Priority 1'] || 0} icon={Target} color="emerald" onClick={() => onNavigate('abmaudience')} sub="Within 18 months; closed won excluded" />
+          <Kpi label="Priority 2 accounts" value={priorityCounts['Priority 2'] || 0} icon={Target} color="blue" onClick={() => onNavigate('abmaudience')} sub="Outside Priority 1; closed won excluded" />
+        </>}
+        {audienceError && <div role="alert" className="text-sm text-red-700">Audience counts unavailable. <button className="underline" onClick={refreshAudiences}>Retry</button></div>}
+        {!audienceError && !priorityCounts && <p className="text-sm text-slate-500">Loading audience counts...</p>}
         <Kpi label="Risk flags" value={clinicalHolds + noMfg} icon={ShieldAlert} color="red" sub={`${clinicalHolds} hold / ${noMfg} no mfg`} />
       </div>
 
