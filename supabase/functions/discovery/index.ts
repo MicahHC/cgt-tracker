@@ -38,7 +38,7 @@ interface CandidateCompany {
   indication: string;
   modality: string; // CAR-T | gene therapy | TCR | NK | other
   estimated_phase: string | null;
-  likely_commercialization_window: "within_18_months" | "beyond_18_months" | "unknown";
+  likely_commercialization_window: "within_18_months" | "months_19_to_24" | "beyond_24_months" | "unknown";
   rationale: string;
   sources: Array<{ url: string; tier: 1 | 2 | 3; domain: string }>;
   confidence: "low" | "medium" | "high";
@@ -74,7 +74,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     const existing = await loadExistingCompanyNames(supabase);
-    const candidates = await discover(anthropic, existing, body.search_focus);
+    const studies = await fetchRegistryStudies();
+    const candidates = await discover(anthropic, existing, studies, body.search_focus);
 
     let inserted = 0;
     let skipped = 0;
@@ -84,6 +85,14 @@ Deno.serve(async (req: Request) => {
         skipped += 1;
         continue;
       }
+      if (!c.sources?.some((source) => studies.some((study) =>
+        study.url === source.url && study.sponsor.trim().toLowerCase() === norm
+      ))) {
+        skipped += 1;
+        continue;
+      }
+      // Registry milestones do not establish a U.S. launch window.
+      c.likely_commercialization_window = "unknown";
       const ok = await persistCandidate(supabase, c, run.id);
       if (ok) inserted += 1;
     }
@@ -116,12 +125,64 @@ async function loadExistingCompanyNames(supabase: SupabaseClient): Promise<Set<s
   return new Set((data ?? []).map((r: any) => String(r.company_name).trim().toLowerCase()));
 }
 
+interface RegistryStudy {
+  url: string;
+  sponsor: string;
+  title: string;
+  interventions: string[];
+  phase: string[];
+  status: string;
+  last_update: string | null;
+}
+
+async function fetchRegistryStudies(): Promise<RegistryStudy[]> {
+  const queries = ["gene therapy", "CAR T-cell", "T-cell receptor therapy", "NK cell therapy"];
+  const batches = await Promise.allSettled(queries.map(async (query) => {
+    const url = new URL("https://clinicaltrials.gov/api/v2/studies");
+    url.searchParams.set("query.intr", query);
+    url.searchParams.set("query.locn", "United States");
+    url.searchParams.set("filter.overallStatus", "RECRUITING,ACTIVE_NOT_RECRUITING,ENROLLING_BY_INVITATION,NOT_YET_RECRUITING");
+    url.searchParams.set("pageSize", "25");
+    const response = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000) });
+    if (!response.ok) throw new Error(`ClinicalTrials.gov ${query}: HTTP ${response.status}`);
+    const data = await response.json();
+    return (data.studies ?? []).map((study: {
+      protocolSection?: {
+        identificationModule?: { nctId?: string; briefTitle?: string };
+        sponsorCollaboratorsModule?: { leadSponsor?: { name?: string } };
+        armsInterventionsModule?: { interventions?: Array<{ name?: string }> };
+        designModule?: { phases?: string[] };
+        statusModule?: { overallStatus?: string; lastUpdatePostDateStruct?: { date?: string } };
+      };
+    }): RegistryStudy | null => {
+      const p = study.protocolSection;
+      const id = p?.identificationModule?.nctId;
+      const sponsor = p?.sponsorCollaboratorsModule?.leadSponsor?.name;
+      if (!id || !sponsor) return null;
+      return {
+        url: `https://clinicaltrials.gov/study/${id}`,
+        sponsor,
+        title: p?.identificationModule?.briefTitle ?? "",
+        interventions: (p?.armsInterventionsModule?.interventions ?? []).map((item) => item.name ?? "").filter(Boolean),
+        phase: p?.designModule?.phases ?? [],
+        status: p?.statusModule?.overallStatus ?? "",
+        last_update: p?.statusModule?.lastUpdatePostDateStruct?.date ?? null,
+      };
+    }).filter((study: RegistryStudy | null): study is RegistryStudy => study !== null);
+  }));
+  const successes = batches.filter((batch): batch is PromiseFulfilledResult<RegistryStudy[]> => batch.status === "fulfilled");
+  if (!successes.length) throw new Error("No ClinicalTrials.gov discovery source was available");
+  for (const failure of batches.filter((batch) => batch.status === "rejected")) console.error("Discovery source unavailable", failure.reason);
+  return [...new Map(successes.flatMap((batch) => batch.value).map((study) => [study.url, study])).values()];
+}
+
 async function discover(
   anthropic: Anthropic,
   existing: Set<string>,
+  studies: RegistryStudy[],
   searchFocus: string | undefined
 ): Promise<CandidateCompany[]> {
-  const system = `You are a CGT (cell & gene therapy) market scout. Identify companies with assets likely to commercialize in the U.S. within the next 18 months that are NOT in the provided exclusion list.
+  const system = `You are a CGT (cell & gene therapy) market scout. Extract new candidate companies and therapies from the supplied ClinicalTrials.gov study records. Look across the full pipeline, especially U.S. commercialization prospects within 24 months. Do not rely on memory for new facts.
 
 SCOPE:
 - Autologous/allogeneic cell therapies (CAR-T, TCR, NK, TIL)
@@ -131,17 +192,18 @@ SCOPE:
 INCLUDE only if:
 - Clear U.S. regulatory path (do not include EU-only or ex-US-only assets)
 - Indication has meaningful commercial potential
-- There is a public, Tier-1 or Tier-2 source you can cite (IR, press release, SEC, FDA, ClinicalTrials.gov, investor deck, publication)
+- The supplied registry record names the sponsor, therapy and U.S. trial location
 
 RULES:
 - NEVER fabricate or infer regulatory status.
-- Provide 1-3 sources per candidate with URLs.
+- Cite only study URLs present in the supplied records. A trial date is not a launch forecast. Set likely_commercialization_window to unknown unless the supplied evidence explicitly states a U.S. commercial launch window.
 - Be conservative — if evidence is weak, lower confidence.
 - Return at most 15 candidates per run.`;
 
   const user = JSON.stringify({
     exclude_names: Array.from(existing).slice(0, 500),
-    search_focus: searchFocus ?? "any CGT commercializing within 18 months in the U.S.",
+    search_focus: searchFocus ?? "new U.S. CGT pipeline programs, including potential launches within 24 months",
+    registry_studies: studies,
     instructions: "Return candidates via the emit_candidates tool.",
   });
 
@@ -163,7 +225,7 @@ RULES:
               indication: { type: "string" },
               modality: { type: "string" },
               estimated_phase: { type: ["string", "null"] },
-              likely_commercialization_window: { type: "string", enum: ["within_18_months", "beyond_18_months", "unknown"] },
+              likely_commercialization_window: { type: "string", enum: ["within_18_months", "months_19_to_24", "beyond_24_months", "unknown"] },
               rationale: { type: "string" },
               sources: {
                 type: "array",

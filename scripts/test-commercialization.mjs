@@ -51,6 +51,13 @@ console.log('Company audience tests passed: exclusive priorities, early-phase el
 
 const pendingRows = buildCommercialAudiences(companies, [{ company_id: 'one', us_commercialization_window: 'Unverified U.S. launch timing; previous record: 2027' }], [], [], now);
 assert.deepEqual(pendingRows.map(r => r.audience_segment), ['Launch Timing Review']);
+const reviewedPending = buildCommercialAudiences(companies, [{
+  company_id: 'one', asset_name: 'Therapy A',
+  us_commercialization_window: 'Unverified U.S. launch timing; source review required',
+  latest_material_update: 'An older update\nLaunch evidence review 2026-09-22: Previous finding\nLaunch evidence review 2026-09-23: Filing planned; launch date not established',
+}], [], [], now);
+assert.match(reviewedPending[0].launch_evidence, /Filing planned; launch date not established/);
+assert.doesNotMatch(reviewedPending[0].launch_evidence, /Previous finding/);
 const scoringBuild = await build({ entryPoints: ['supabase/functions/_shared/scoring.ts'], bundle: true, write: false, platform: 'node', format: 'esm' });
 const { assignCommercialTier } = await import(`data:text/javascript;base64,${Buffer.from(scoringBuild.outputFiles[0].text).toString('base64')}`);
 const flags = { no_us_path: false, clinical_hold: false, no_manufacturing_pathway: false, timeline_over_24_months: false };

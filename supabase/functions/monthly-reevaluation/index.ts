@@ -198,9 +198,9 @@ Do not anchor to prior scores. Re-derive subscores (0-5) for:
 
 Validate hard-cap flags explicitly (booleans):
   clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path.
-  IMPORTANT: timeline_over_24_months is a legacy field name. Set it FALSE only when a Tier-1 / Priority-1 U.S. commercialization event is supported within 18 months. Set it TRUE when the asset is outside 18 months or the timeline is not proven.
+  Set timeline_over_24_months TRUE only when a cited U.S. commercialization forecast is beyond 24 months. Set it FALSE for supported launches within 24 months, including Priority 2 (months 19-24). If launch timing is unknown, do not assert that it is over 24 months; flag the uncertainty in timeline_validation_notes.
 
-Validate the 18-month Priority 1 commercialization window against the most recent public statements.
+Validate both the 18-month Priority 1 and 19-24 month Priority 2 windows against current primary sources. Trial completion, BLA filing and approval dates are not launch dates.
 
 Source hierarchy: Tier 1 (IR, SEC, FDA, ClinicalTrials.gov) > Tier 2 (investor decks, pubs) > Tier 3 (trade press). Provide 1-3 sources. Never infer regulatory status.`;
 
@@ -329,9 +329,7 @@ async function applyAndPersist(
     commercial_priority_tier: scored.commercial_priority_tier,
   });
 
-  if (!mat.is_material) return false;
-
-  await supabase
+  const { error: updateError } = await supabase
     .from("cgt_assets")
     .update({
       regulatory_score: out.subscores.regulatory,
@@ -347,6 +345,9 @@ async function applyAndPersist(
       updated_at: new Date().toISOString(),
     })
     .eq("id", asset.id);
+  if (updateError) throw new Error(`update asset ${asset.id}: ${updateError.message}`);
+
+  if (!mat.is_material) return false;
 
   const changes: Array<{ field: string; prev: unknown; next: unknown }> = [];
   if (asset.final_commercial_score !== scored.final_commercial_score)

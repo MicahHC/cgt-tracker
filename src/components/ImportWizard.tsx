@@ -46,7 +46,7 @@ const FIELDS: { key: string; label: string; kind: 'string' | 'number' | 'boolean
   { key: 'latest_material_update', label: 'Latest material update', kind: 'string', target: 'asset' },
   { key: 'clinical_hold', label: 'Clinical hold', kind: 'boolean', target: 'asset' },
   { key: 'no_manufacturing_pathway', label: 'No manufacturing pathway', kind: 'boolean', target: 'asset' },
-  { key: 'timeline_over_24_months', label: 'Outside 18-month Priority 1 window', kind: 'boolean', target: 'asset' },
+  { key: 'timeline_over_24_months', label: 'U.S. launch beyond 24 months', kind: 'boolean', target: 'asset' },
   { key: 'no_us_path', label: 'No US path', kind: 'boolean', target: 'asset' },
   { key: 'regulatory_score', label: 'Regulatory score (0-5)', kind: 'number', target: 'asset' },
   { key: 'commercial_infrastructure_score', label: 'Commercial infrastructure score (0-5)', kind: 'number', target: 'asset' },

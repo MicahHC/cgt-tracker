@@ -18,7 +18,17 @@ async function all(table) {
 }
 const inputs = JSON.parse(readFileSync('data/launch-reviews-2026-09-23.json', 'utf8'));
 const reviewById = new Map(inputs.reviews.map(r => [r.asset_id, r]));
+const followup = JSON.parse(readFileSync('data/launch-review-followup-2026-09-23.json', 'utf8'));
+if (followup.reviewed_at !== inputs.reviewed_at) throw new Error('Review dates must match');
+for (const review of followup.reviews) reviewById.set(review.asset_id, review);
+inputs.reviews = [...reviewById.values()];
 const assets = await all('cgt_assets');
+const knownIds = new Set(assets.map(a => a.id));
+for (const review of inputs.reviews) {
+  if (!knownIds.has(review.asset_id)) throw new Error(`Unknown reviewed asset: ${review.asset_id}`);
+  if (!review.reason || !review.sources?.length) throw new Error(`Missing review evidence: ${review.asset_id}`);
+  if (review.sources.length > 3) throw new Error(`Too many sources: ${review.asset_id}`);
+}
 const companies = await all('cgt_companies');
 const companyById = new Map(companies.map(c => [c.id, c.company_name]));
 const now = new Date();
@@ -42,6 +52,9 @@ for (const asset of assets) {
     if (!review.sources?.length) throw new Error(`No evidence for ${asset.id}`);
     patch.us_commercialization_window = `Source-reviewed U.S. launch target: ${review.launch_target}; conditional company forecast, not a guaranteed launch`;
     patch.likely_us_launch_within_24_months = 'Yes';
+  } else if (review?.disposition === 'outside_window') {
+    patch.us_commercialization_window = 'Outside the next 24 months per source review; see evidence notes';
+    patch.likely_us_launch_within_24_months = 'No';
   } else if (review || candidates.has(asset.id) || unverified) {
     // Keep the old date in the append-only log, not in a field legacy clients parse.
     patch.us_commercialization_window = 'Unverified U.S. launch timing; source review required';
@@ -81,7 +94,7 @@ for (const row of plan.rows) {
     if (data.length !== 1) throw new Error('Concurrent update or permission prevented change');
     row.status = 'asset_updated';
     writeFileSync(planPath, JSON.stringify(plan, null, 2));
-    const log = Object.entries(row.patch).filter(([field]) => !['last_reviewed_at', 'latest_material_update'].includes(field)).map(([field, value]) => ({
+    const log = Object.entries(row.patch).filter(([field]) => field !== 'last_reviewed_at').map(([field, value]) => ({
       asset_id: row.id, agent_id: runId, run_date: inputs.reviewed_at, update_week: '2026-W39', change_type: 'launch_evidence_review', field_changed: field,
       previous_value: String(row.before[field] ?? ''), new_value: String(value ?? ''), why_it_matters: row.reason,
       score_impact_explanation: 'Commercial scores unchanged. Audience qualification reviewed independently.', source_url: row.sources[0] ?? '', confidence_level: row.sources.length ? 'Medium' : 'Low',

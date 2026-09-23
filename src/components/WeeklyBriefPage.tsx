@@ -142,7 +142,7 @@ function fallbackPriorityReason(tier: Tier | null | undefined): string {
     return 'Moved into Priority 1 because the asset is treated as having a U.S. path and a commercialization window inside 18 months.';
   }
   if (tier === 'Tier 2') {
-    return 'Moved into Priority 2 because the asset remains relevant for CGT monitoring but is not proven to commercialize in the U.S. within 18 months.';
+    return 'Moved into Priority 2 because a source-reviewed U.S. launch target falls beyond 18 months but within 24 months.';
   }
   if (tier === 'Watchlist') {
     return 'Moved to Watchlist because it still needs confirmation on launch timing, U.S. path, or commercial readiness before it belongs in an active ABM audience.';

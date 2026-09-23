@@ -25,7 +25,10 @@ export function buildCommercialAudiences(companies: Company[], assets: LaunchAss
     const cleanDomain = domain.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
     const evidence = priority
       ? own.filter(a => assessLaunch(a, now).priority === priority).map(a => `${a.asset_name}: ${assessLaunch(a, now).reason}`).join(' | ')
-      : pending.map(a => `${a.asset_name}: launch timing requires source review; not a finding that launch is impossible`).join(' | ');
+      : pending.map(a => {
+        const review = a.latest_material_update?.split('\n').filter(line => /^Launch evidence review \d{4}-\d{2}-\d{2}:/.test(line)).slice(-1)[0];
+        return `${a.asset_name}: ${review || 'launch timing requires source review; not a finding that launch is impossible'}`;
+      }).join(' | ');
     for (const segment of priority ? [priority, 'Late Stage'] : ['Launch Timing Review']) {
       const existing = matches.find(m => m.audience_segment === segment);
       rows.push({

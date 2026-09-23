@@ -6,6 +6,7 @@ export interface LaunchAsset {
   no_us_path?: boolean;
   clinical_hold?: boolean;
   us_commercialization_window?: string | null;
+  latest_material_update?: string | null;
 }
 
 export type LaunchAssessment = {

@@ -190,7 +190,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Check label="Clinical hold (cap 30)" value={!!form.clinical_hold} onChange={v => update('clinical_hold', v as any)} />
             <Check label="No manufacturing pathway (cap 40)" value={!!form.no_manufacturing_pathway} onChange={v => update('no_manufacturing_pathway', v as any)} />
-            <Check label="Outside 18-month Priority 1 window (cap 50)" value={!!form.timeline_over_24_months} onChange={v => update('timeline_over_24_months', v as any)} />
+            <Check label="U.S. launch beyond 24 months (cap 50)" value={!!form.timeline_over_24_months} onChange={v => update('timeline_over_24_months', v as any)} />
             <Check label="No US path (score 0, excluded)" value={!!form.no_us_path} onChange={v => update('no_us_path', v as any)} />
           </div>
         </div>

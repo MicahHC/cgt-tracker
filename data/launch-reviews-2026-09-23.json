@@ -127,9 +127,29 @@
     },
     {
       "asset_id": "90b75eab-332c-4ade-8efa-289e75cb3f7b",
-      "reason": "August sponsor update ties rolling BLA to Q1 2027 topline results. The tracker claim of a rolling BLA in Q3 2026 is stale; launch timing must be revalidated against the new sequence.",
-      "patch": {"phase_regulatory_status": "Phase 3 enrollment complete; topline expected Q1 2027; rolling BLA tied to topline data"},
-      "sources": ["https://ocugen.gcs-web.com/news-releases/news-release-details/ocugen-provides-business-update-second-quarter-2026-financial"]
+      "launch_target": "2027Q4",
+      "reason": "September 2026 SEC-filed sponsor presentation, slide 27, places OCU400 approval/launch in Q4 2027. This is a conditional sponsor forecast, not FDA approval. Slide 4 targets BLA submission in Q2 2027, superseding the tracker claim of a Q3 2026 filing.",
+      "patch": {"phase_regulatory_status": "Phase 3 enrollment complete; BLA submission targeted Q2 2027; conditional approval/launch target Q4 2027"},
+      "sources": ["https://www.sec.gov/Archives/edgar/data/1372299/000110465926105968/tm2624985d1_ex99-1.htm"]
+    },
+    {
+      "asset_id": "905f2323-8884-48b5-965d-250089a579e7",
+      "launch_target": "2028H1",
+      "reason": "September 2026 SEC-filed sponsor presentation, slide 27, places OCU410ST approval/launch in H1 2028. Conditional on successful development and FDA approval. Ocugen belongs only in Priority 1 at company level because its OCU400 target is earlier; this therapy is Priority 2.",
+      "patch": {"phase_regulatory_status": "Phase 2/3 pivotal confirmatory trial; BLA submission targeted mid-2027; conditional approval/launch H1 2028"},
+      "sources": ["https://www.sec.gov/Archives/edgar/data/1372299/000110465926105968/tm2624985d1_ex99-1.htm"]
+    },
+    {
+      "asset_id": "25a5ac86-b260-440d-8e90-389771ddc22d",
+      "reason": "Sponsor reported July 20, 2026 that ACTiVION-II missed both co-primary endpoints and key secondary endpoints. ACTiVION-I results are expected October 2026, after which next steps will be determined. A near-term U.S. launch is not established; failure of this study is not an FDA clinical hold.",
+      "patch": {"phase_regulatory_status": "Phase 3; ACTiVION-II missed co-primary endpoints; ACTiVION-I results expected October 2026"},
+      "sources": ["https://www.tissuegene.com/en_US/investors/pr/detail/45/kolon-tissuegene-reports-topline-activion-ii-phase-3"]
+    },
+    {
+      "asset_id": "e5e71a15-ed93-48da-8cac-9f5c27413b54",
+      "reason": "ClinicalTrials.gov NCT05984199 lists the VCAR33ALLO Phase 1/2 trial as terminated for lack of funding, last updated July 29, 2025. No current near-term launch evidence established. Trial termination does not establish an FDA clinical hold or the status of every Vor program.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 trial NCT05984199 terminated: lack of funding (registry updated July 29, 2025)"},
+      "sources": ["https://clinicaltrials.gov/study/NCT05984199"]
     },
     {
       "asset_id": "7bd36137-b95c-4f8a-96d0-efabebe145f0",

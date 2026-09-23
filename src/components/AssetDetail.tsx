@@ -150,7 +150,7 @@ export function AssetDetail({ assetId, onBack }: Props) {
               {asset.clinical_hold && <FlagBadge label="Clinical hold" color="red" />}
               {asset.no_manufacturing_pathway && <FlagBadge label="No manufacturing" color="red" />}
               {asset.no_us_path && <FlagBadge label="No US path" color="red" />}
-              {asset.timeline_over_24_months && <FlagBadge label="Outside 18-mo Priority 1 window" color="amber" />}
+              {asset.timeline_over_24_months && <FlagBadge label="U.S. launch beyond 24 months" color="amber" />}
             </div>
           </div>
         </div>

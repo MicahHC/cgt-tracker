@@ -32,7 +32,7 @@ export function calculateCommercialReadiness(asset: Pick<CgtAsset,
       final = Math.min(final, 40);
     }
     if (asset.timeline_over_24_months) {
-      if (final > 50) caps.push('Outside 18-month Priority 1 window: capped at 50');
+      if (final > 50) caps.push('U.S. launch beyond 24 months: capped at 50');
       final = Math.min(final, 50);
     }
   }

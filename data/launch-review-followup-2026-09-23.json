@@ -1,0 +1,243 @@
+{
+  "reviewed_at": "2026-09-23",
+  "scope": "Follow-up of all 56 candidate therapy records across the original 52 unresolved companies. A reviewed-but-unconfirmed launch is not a negative clinical finding. Registry dates are not launch dates.",
+  "reviews": [
+    {
+      "asset_id": "0944af67-d98a-48d0-b2f0-1c688618ed64",
+      "reason": "JWATM204 matches Phase 1 NCT06144385 in China, whose status is UNKNOWN and last update is January 2024. The tracker Phase II label is not supported by that study. A current U.S. registrational path and launch forecast remain unverified; do not infer no U.S. path solely from this search.",
+      "patch": {"phase_regulatory_status": "Phase 1 NCT06144385 (China); registry status unknown; current development requires confirmation"},
+      "sources": ["https://clinicaltrials.gov/study/NCT06144385"]
+    },
+    {
+      "asset_id": "0bd92424-9359-4268-a1eb-4f807ac36caf",
+      "reason": "REQORSA has recruiting Phase 1/2 trials in NSCLC and SCLC (NCT04486833 and NCT05703971). Their estimated study milestones are not commercial launch guidance. No source-backed U.S. launch within 24 months established in this review.",
+      "patch": {"phase_regulatory_status": "Phase 1/2; recruiting NSCLC and SCLC trials; U.S. launch timing unconfirmed"},
+      "sources": ["https://clinicaltrials.gov/study/NCT04486833", "https://clinicaltrials.gov/study/NCT05703971"]
+    },
+    {
+      "asset_id": "13087908-4746-4d47-a4d3-46788370a349",
+      "reason": "FLT201 GALILEO-3 is Phase 3 and recruiting; NCT07223944 estimates primary completion July 2028. Spur confirmed Phase 3 development in July 2026. This supports a pivotal-stage watchlist, not an independently established U.S. launch date within 24 months.",
+      "sources": ["https://clinicaltrials.gov/study/NCT07223944", "https://www.globenewswire.com/news-release/2026/07/14/3327230/0/en/Spur-Therapeutics-Announces-Executive-Transitions.html"]
+    },
+    {
+      "asset_id": "24498809-3f3f-42c0-9ca0-732615a24a68",
+      "reason": "OncoVAX Phase 3 NCT02448173 is listed as not yet recruiting, with estimated primary completion August 2031. This contradicts treating the old near-term forecast as established. Trial estimates can change and are not launch dates; obtain an updated sponsor development plan.",
+      "patch": {"phase_regulatory_status": "Phase 3 NCT02448173 listed not yet recruiting; estimated primary completion August 2031"},
+      "sources": ["https://clinicaltrials.gov/study/NCT02448173"]
+    },
+    {
+      "asset_id": "2e3de929-d41a-4610-84ff-47ff6d65dc5b",
+      "reason": "INKmune NCT06056791 is a completed Phase 1/2 prostate cancer study. INmune's August 2026 anticipated FDA filing belongs to Ebstrocel/CORDStrom, not INKmune. No validated INKmune launch window; do not transfer milestones between assets.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06056791", "https://inmunebio.com/index.php/newsroom/2026-news/muneioncnnounceseconduarter2026esultsandi20260806130513"]
+    },
+    {
+      "asset_id": "2e4fe980-4eef-48c1-a0f8-5ce00d0c0131",
+      "reason": "TLPO basket trial NCT06175221 is Phase 2 and terminated by sponsor decision; a separate Mayo Clinic early Phase 1 glioma study NCT07025226 is recruiting. Neither supports the tracker blanket Phase III label or a near-term launch. Do not describe all TLPO research as terminated.",
+      "patch": {"phase_regulatory_status": "Phase 2 basket trial terminated by sponsor decision; separate early Phase 1 glioma study recruiting"},
+      "sources": ["https://clinicaltrials.gov/study/NCT06175221", "https://clinicaltrials.gov/study/NCT07025226"]
+    },
+    {
+      "asset_id": "2f970984-1b9e-4da6-932f-4e22bd711446",
+      "reason": "CTE Biologics describes IND 27377 and a proposed 10-patient safety/proof-of-concept study. This is not marketing approval or evidence for the tracker Phase II/near-term launch assumption. Current study activation, formal phase and commercial timeline require sponsor confirmation.",
+      "patch": {"phase_regulatory_status": "Investigational; sponsor describes IND 27377 proof-of-concept study; current clinical phase unconfirmed"},
+      "sources": ["https://ctebiologics.com/index.php/ind-27377/"]
+    },
+    {
+      "asset_id": "30b78b67-f281-451a-bd05-9e48053ed2ae",
+      "reason": "NTLA-2001/nex-z has recruiting Phase 3 ATTR studies NCT06672237 and NCT06128629. It is not lonvo-z for HAE, and cannot inherit lonvo-z's BLA or launch timing. Review ATTR-specific regulatory and launch guidance; primary completion estimates alone do not qualify this asset.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06672237", "https://clinicaltrials.gov/study/NCT06128629"]
+    },
+    {
+      "asset_id": "328aa623-056f-421b-b9b3-bd2eb1f90df6",
+      "reason": "Nula-cel NCT04819841 is Phase 1/2 and recruiting. Kamau identifies the program as the former Graphite Bio gene-correction asset. No verified U.S. filing or launch window found; retain an early-stage watchlist rather than deriving launch from the estimated trial completion.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 nula-cel study NCT04819841; registry lists recruiting"},
+      "sources": ["https://clinicaltrials.gov/study/NCT04819841", "https://kamautx.com/kamau-therapeutics-emerges-from-stealth-with-clinical-stage-novel-gene-correction-technology-targeting-life-threatening-genetic-diseases/"]
+    },
+    {
+      "asset_id": "3368decf-c145-458f-8346-cf5ad56f2898",
+      "reason": "August 2026 sponsor update says ARCT-810 Phase 2 enrollment and dosing are complete, with data/regulatory plan expected Q3 2026. That is not a filing or launch commitment. Keep separate from ARCT-032 and the KOSTAIVE vaccine.",
+      "patch": {"phase_regulatory_status": "Phase 2 enrollment and dosing completed; sponsor targets data and regulatory-plan update Q3 2026"},
+      "sources": ["https://ir.arcturusrx.com/news-releases/news-release-details/arcturus-therapeutics-announces-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "35237229-66ce-47af-a080-60d100fb5b2e",
+      "reason": "Bria-IMT Phase 3 NCT06072612 is recruiting, with estimated primary completion December 2027. A pivotal trial supports monitoring, but its completion date is not a U.S. commercial launch. Launch timing remains unconfirmed.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06072612", "https://briacell.com/patients-2/"]
+    },
+    {
+      "asset_id": "358b08c6-69e9-4ff2-99ad-22b8ef462693",
+      "reason": "Multi-Pathogen Vaccine is too broad to match to a single AIVITA investigational product. Sponsor materials distinguish COVID-19 vaccines from AV-MEL-1 and AV-GBM-1 cancer programs. The imported Phase III and near-term date cannot be validated until the product identity is reconciled.",
+      "patch": {"phase_regulatory_status": "Unconfirmed: generic imported vaccine name requires exact product and trial mapping"},
+      "sources": ["https://aivitabiomedical.com/programs/"]
+    },
+    {
+      "asset_id": "37eec6fd-8263-4128-a91f-11746e4661c4",
+      "reason": "Dyne explicitly forecasts potential U.S. z-basivarsen launch H1 2028, assuming Priority Review and approval; that is a timing fit for Priority 2. However, DYNE-101 is an oligonucleotide-conjugate advanced therapy, not automatically a CGT. Retain the asset and flag audience-scope confirmation, rather than silently expanding the CGT audience. DYNE-251's January 2027 PDUFA is a different asset.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 registrational cohort enrolled; confirmatory Phase 3 HARMONIA dosing begun; potential BLA Q3 2027"},
+      "sources": ["https://www.sec.gov/Archives/edgar/data/1818794/000119312526323940/dyn-ex99_1.htm", "https://clinicaltrials.gov/study/NCT05481879"]
+    },
+    {
+      "asset_id": "383005d5-103d-4729-8151-b958586934db",
+      "reason": "Marker describes MT-601 as a Phase 1 APOLLO program in lymphoma. NCT05798897 is recruiting; no supported launch target established. Promising response data are not evidence of imminent commercialization.",
+      "sources": ["https://markertherapeutics.com/clinical-trials/active-clinical-trials/", "https://clinicaltrials.gov/study/NCT05798897"]
+    },
+    {
+      "asset_id": "384dc3b6-17c8-4220-b7b3-756972fbc4a2",
+      "reason": "Lete-cel's Phase 2 SPEARHEAD-1 record is active, not recruiting. The acquisition agreement sets contractual BLA/approval effort milestones, not proof that FDA accepted or approved a filing. Current US WorldMeds launch guidance is still needed; do not reuse Adaptimmune's older forecast without confirmation.",
+      "sources": ["https://clinicaltrials.gov/study/NCT03967223", "https://www.sec.gov/Archives/edgar/data/1621227/000110465925071009/tm2521829d1_ex2-1.htm"]
+    },
+    {
+      "asset_id": "39e69030-a654-4e5e-b544-5c2631bdde93",
+      "disposition": "outside_window",
+      "reason": "Kyowa Kirin's Q2 2026 pipeline, as of August 3, places OTL-203 planned approval in 2029/2030. That is outside this audience's 24-month window. It is an approval forecast, not an actual launch date; Orchard's marketed OTL-200 is a different product.",
+      "sources": ["https://ir.kyowakirin.com/en/library/earnings/earnings0/main/0118/teaserItems1/00/linkList/01/link/presentation_2026_q1_en.pdf"]
+    },
+    {
+      "asset_id": "3b0a205e-77f8-49ea-87b7-172c128dffae",
+      "reason": "BMS reported positive registrational Phase 2 QUINTESSENTIAL results on September 8, 2026. This is a material near-term regulatory signal, but the reviewed announcement does not give a U.S. launch date. Do not dismiss a registrational Phase 2 asset merely because of its phase, or invent a launch date from the readout.",
+      "patch": {"phase_regulatory_status": "Positive registrational Phase 2 QUINTESSENTIAL topline results September 2026; separate Phase 3 program ongoing"},
+      "sources": ["https://news.bms.com/news/corporate-financial/2026/Bristol-Myers-Squibb-Announces-Positive-Topline-Results-from-Registrational-Phase-2-QUINTESSENTIAL-Trial-of-the-Potential-First-in-Class-GPRC5D-Directed-CAR-T-Cell-Therapy-Arlocabtagene-Autoleucel----/default.aspx", "https://clinicaltrials.gov/study/NCT06615479"]
+    },
+    {
+      "asset_id": "42dbe663-bb25-4c0d-bd41-7c6bc5534686",
+      "reason": "UCLA's EFS-ADA study NCT05432310 is Phase 1/2 and active, not recruiting. The former OTL-101 commercial-validation trial NCT04140539 was withdrawn for a business decision. Academic study progress does not establish an active commercial sponsor or a launch date.",
+      "patch": {"phase_regulatory_status": "UCLA EFS-ADA Phase 1/2 study active, not recruiting; commercial launch path unconfirmed"},
+      "sources": ["https://clinicaltrials.gov/study/NCT05432310", "https://clinicaltrials.gov/study/NCT04140539"]
+    },
+    {
+      "asset_id": "473c260c-78c1-4d20-8e75-01b0a8263e1a",
+      "reason": "Xalud's pipeline describes completed Phase 2b XT-150 work in knee osteoarthritis and Phase 1/2a facet-joint development, not a confirmed Phase III launch program. Different indications must not share one forecast. U.S. launch guidance was not established.",
+      "patch": {"phase_regulatory_status": "Phase 2b knee osteoarthritis study completed; separate facet-joint Phase 1/2a development"},
+      "sources": ["https://www.xaludthera.com/our-pipeline", "https://clinicaltrials.gov/study/NCT05196919"]
+    },
+    {
+      "asset_id": "52796f20-4c49-4647-8876-7dff4ad1bb9c",
+      "reason": "NCT05387239 and NCT06072794 list the Vitti pulmonary trials as suspended at sponsor request. This is a trial status, not an inferred FDA clinical hold. Website IND/IRB approvals are not marketing approvals; a current restart and launch plan are required.",
+      "patch": {"phase_regulatory_status": "Phase 2 NCT05387239 and Phase 1 NCT06072794 suspended at sponsor request"},
+      "sources": ["https://clinicaltrials.gov/study/NCT05387239", "https://clinicaltrials.gov/study/NCT06072794"]
+    },
+    {
+      "asset_id": "532002a5-c6ba-4ea6-8861-e717f1b259fb",
+      "reason": "The tracker label ET-1402 is not a sufficiently exact match to Eureka's ET140203/ARYA program. Sponsor pipeline confirms ET140203 in pediatric AFP-positive liver cancer; resolve the alias and indication before assigning stage or launch. No launch date established for this imported record.",
+      "sources": ["https://www.eurekatherapeutics.com/pipeline/"]
+    },
+    {
+      "asset_id": "5b289282-7e67-4588-bf4b-26edc9e94fbd",
+      "reason": "CardiAMP HF II is recruiting. BioCardia describes an FDA pathway dependent on HF II data and a separate Japanese PMDA submission target; Japan milestones cannot establish U.S. availability. The U.S. commercial launch date remains unconfirmed.",
+      "sources": ["https://www.biocardia.com/investors/press-releases/press-release/id/1037?pressReleaseId=267", "https://clinicaltrials.gov/study/NCT06258447"]
+    },
+    {
+      "asset_id": "662085f2-08de-4cb9-8050-91718d38503a",
+      "reason": "CG Oncology's August update targets completion of the initial high-risk BCG-unresponsive NMIBC BLA in Q4 2026. This is a high-interest prelaunch account, but a planned filing is not an accepted BLA or a source-confirmed launch date. Track filing completion and FDA acceptance as the next triggers.",
+      "patch": {"phase_regulatory_status": "BLA submission underway; completion targeted Q4 2026 for high-risk BCG-unresponsive NMIBC"},
+      "sources": ["https://cgoncology.com/news-media/cg-oncology-reports-second-quarter-2026-financial-results-and-provides-business-updates"]
+    },
+    {
+      "asset_id": "67b7c9fc-73b6-4754-b0f0-d48ca3df1525",
+      "reason": "Cynata's June 17, 2026 ASX announcement reports no significant difference on the primary or key secondary endpoints in Phase 2 CYP-001 GvHD and a decision to terminate the trial early. This supersedes the registry's active/not-recruiting status. Do not transfer other MSC products' approvals to CYP-001; near-term launch is unsupported.",
+      "patch": {"phase_regulatory_status": "Phase 2 GvHD primary/key secondary endpoints not met; sponsor announced early trial termination June 17, 2026"},
+      "sources": ["https://company-announcements.afr.com/asx/cyp/34aa7e89-69f1-11f1-afe3-92ae68f8bc5b.pdf", "https://clinicaltrials.gov/study/NCT05643638"]
+    },
+    {
+      "asset_id": "6bbd8b2c-3810-4b2c-bbf2-f148f44312bb",
+      "reason": "Stem Cell Educator studies cover multiple indications. NCT04011020 is Phase 2/3 but status UNKNOWN; an old completion estimate is not a current Phase III commercial program. Updated indication-specific sponsor/trial confirmation and U.S. launch guidance are needed.",
+      "patch": {"phase_regulatory_status": "Phase 2/3 NCT04011020 registry status unknown; current indication-specific development needs confirmation"},
+      "sources": ["https://clinicaltrials.gov/study/NCT04011020"]
+    },
+    {
+      "asset_id": "6f5d571a-72f7-4c7f-9eb6-dc433e15d5c5",
+      "reason": "A2B530 EVEREST-1 is Phase 1/2 and active, not recruiting. A2's separate A2B543 Fast Track designation does not establish A2B530 launch timing. No source-backed commercial target established.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 EVEREST-1; active, not recruiting"},
+      "sources": ["https://clinicaltrials.gov/study/NCT05736731", "https://www.a2bio.com/our-pipeline/"]
+    },
+    {
+      "asset_id": "757c75b0-de11-4fa2-b270-ee3fabc3fba1",
+      "reason": "Raguneprocel/AMCHEPRY received conditional, time-limited Japanese approval in March 2026, but U.S. DSP-1083 NCT06753331 is Phase 1/2. Japanese commercialization must not qualify the U.S. launch audience; U.S. launch timing remains unsupported.",
+      "patch": {"phase_regulatory_status": "Conditional time-limited approval in Japan; U.S. DSP-1083 Phase 1/2 recruiting"},
+      "sources": ["https://www.sumitomo-chem.co.jp/english/news/files/docs/20260306e.pdf", "https://clinicaltrials.gov/study/NCT06753331"]
+    },
+    {
+      "asset_id": "9a4d0603-d1ab-4302-bb64-14fdebda8bfd",
+      "reason": "MPC-06ID/rexlemestrocel-L in chronic discogenic low back pain has a confirmatory Phase 3 study NCT06325566. Management's potential 2028 approval discussion is not a precise launch date and must not be conflated with heart-failure Revascor or marketed Ryoncil. Confirm launch quarter before 24-month inclusion.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06325566", "https://www.sec.gov/Archives/edgar/data/1345099/000134509926000081/meso-20260630.htm"]
+    },
+    {
+      "asset_id": "a2030b61-71ee-4789-b13f-cb5ad8865f33",
+      "reason": "SKG0106 matches Phase 1/2 NCT05986864. The separate long-term follow-up study NCT06346600 cannot be used as a pivotal completion or commercial launch milestone. Current U.S. registrational and launch plans remain unverified.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 SKG0106 study; no verified U.S. launch guidance"},
+      "sources": ["https://clinicaltrials.gov/study/NCT05986864", "https://clinicaltrials.gov/study/NCT06346600"]
+    },
+    {
+      "asset_id": "a3e71b7f-683c-4b8f-92f6-ae7132dffdce",
+      "reason": "PD-L1 t-haNK is investigated in indication-specific Phase 1/2 combinations, including Phase 2 pancreatic NCT04390399. ANKTIVA is a separate product; its approval does not approve this cell therapy. A blanket Phase III/near-term launch label is unsupported by the matched trials.",
+      "patch": {"phase_regulatory_status": "Investigational Phase 1/2 programs; Phase 2 pancreatic combination trial active, not recruiting"},
+      "sources": ["https://clinicaltrials.gov/study/NCT04390399", "https://clinicaltrials.gov/study/NCT06334991"]
+    },
+    {
+      "asset_id": "ad03d386-63fd-4db7-bdaf-518d5a3a744b",
+      "reason": "HB-adMSCs are a platform spanning many diseases, trials and expanded-access protocols. Hope's February 2026 announcement confirms a recruiting AKI study, not a platform-wide Phase III commercial launch. Split indication-level evidence before assigning an audience date; expanded access is not approval.",
+      "patch": {"phase_regulatory_status": "Multiple investigational indication-specific studies; blanket Phase III status unconfirmed"},
+      "sources": ["https://www.hope.bio/post/hope-biosciences-deploying-new-cellular-therapeutic-for-acute-kidney-injury", "https://www.hope.bio/research"]
+    },
+    {
+      "asset_id": "b5bc82f9-39f5-4186-a3e7-580189aa6585",
+      "reason": "MELPIDA has recruiting Phase 3 NCT06692712 and Phase 1/2 NCT05518188 records. Their long follow-up estimates are not launch dates or proof launch cannot occur sooner. No source-backed U.S. commercial window established; confirm sponsor filing plans and use MELPIDA rather than an unrelated Elpida asset alias.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06692712", "https://clinicaltrials.gov/study/NCT05518188"]
+    },
+    {
+      "asset_id": "b8b964b2-e2c4-45c1-b6d2-dbfaf23e2181",
+      "reason": "Castle Creek confirms registrational Phase 3 D-Fi in DEB; NCT06892639 is active, not recruiting, with estimated primary completion September 2027. Retain pivotal-stage monitoring, but do not turn that study date into a commercial launch date without sponsor guidance.",
+      "sources": ["https://castlecreekbio.com/about/", "https://clinicaltrials.gov/study/NCT06892639"]
+    },
+    {
+      "asset_id": "bce63a06-1c9a-4c09-8e9f-becc328ce2f2",
+      "reason": "Ebesanar's RDEB program has Phase 3 studies. RHEACELL's separate AMESANAR German authorization and AOP European commercialization agreement do not establish FDA approval or a U.S. Ebesanar launch date. Request U.S.-specific filing/launch guidance.",
+      "sources": ["https://www.rheacell.com/en/pipeline/", "https://clinicaltrials.gov/study/NCT05838092"]
+    },
+    {
+      "asset_id": "c597426b-841c-41e9-a163-0bfab7d9cb10",
+      "reason": "Gameto distinguishes commercial Fertilo use in APAC/LATAM from the U.S. Phase 3 FIRST program. NCT06858111 estimates primary completion May 2027, which is not a U.S. commercial launch. Foreign clinic availability cannot qualify the U.S. audience.",
+      "sources": ["https://www.gametogen.com/pipeline/", "https://clinicaltrials.gov/study/NCT06858111"]
+    },
+    {
+      "asset_id": "ceaa58eb-def3-4ccc-b471-63318bbec5a4",
+      "reason": "CorestemChemon reports the overall Neuronata-R trial missed primary and secondary endpoints, with a favorable subgroup analysis. Phase 3 completion and Korean authorization do not establish U.S. approval. The older proposed 2026 BLA must be reconfirmed before using a near-term launch forecast.",
+      "patch": {"phase_regulatory_status": "Phase 3 completed; overall primary and secondary endpoints missed; U.S. filing/approval timing unconfirmed"},
+      "sources": ["https://corestemchemon.com/eng/pr/media.html?bmain=view&search=%26page%3D1&uid=132", "https://clinicaltrials.gov/study/NCT04745299"]
+    },
+    {
+      "asset_id": "dff1c0e0-4fa2-414a-bc14-9ebda2ed259a",
+      "reason": "Mesoblast reported receiving a BLA filing number and requesting modular review for rexlemestrocel-L in LVAD-associated gastrointestinal bleeding. Neither step establishes an accepted or approved BLA. Do not borrow the low-back-pain asset's approval forecast; heart-failure launch timing still needs confirmation.",
+      "sources": ["https://www.sec.gov/Archives/edgar/data/1345099/000134509926000081/meso-20260630.htm"]
+    },
+    {
+      "asset_id": "e1f3ed8b-8553-4826-92b8-d3f0bb5f6d66",
+      "reason": "RESTEM announced first dosing in Phase 2/3 IIMPACT in February 2026; it separately runs earlier studies in other indications. Trial clearance/dosing is not commercial approval, and a U.S. launch window was not established in the reviewed sponsor updates.",
+      "patch": {"phase_regulatory_status": "Phase 2/3 IIMPACT in idiopathic inflammatory myopathy; first patient dosed February 2026"},
+      "sources": ["https://www.globenewswire.com/de/news-release/2026/02/03/3231472/0/en/RESTEM-Announces-First-Patient-Dosed-in-the-Phase-2-3-IIMPACT-Study-of-Restem-L-in-Idiopathic-Inflammatory-Myopathy.html"]
+    },
+    {
+      "asset_id": "e3c5084c-c6af-43bc-af85-0ffbb92e317d",
+      "reason": "AVMEL-1 maps to AV-MEL-1 melanoma study NCT03743298, Phase 1 with registry status UNKNOWN. AIVITA's different AV-GBM-1 Phase 3 study cannot support this record's Phase III label or launch forecast. Obtain current melanoma-program confirmation.",
+      "patch": {"phase_regulatory_status": "AV-MEL-1 Phase 1 melanoma study; registry status unknown; current program needs confirmation"},
+      "sources": ["https://clinicaltrials.gov/study/NCT03743298", "https://aivitabiomedical.com/news/aivita-biomedical-completes-phase-1-study-of-personalized-covid-19-vaccine-candidate-av-covid-19/"]
+    },
+    {
+      "asset_id": "e7151a1f-bf57-41e5-ad41-828687b66a5f",
+      "reason": "AbbVie/REGENXBIO sura-vec has a pivotal subretinal wet-AMD program and separate suprachoroidal programs. The August sponsor update's clinical/BLA milestones do not independently establish a U.S. launch date. Keep indication and route-specific forecasts separate.",
+      "sources": ["https://regenxbio.gcs-web.com/news-releases/news-release-details/regenxbio-reports-second-quarter-2026-financial-results-and", "https://clinicaltrials.gov/study/NCT05407636"]
+    },
+    {
+      "asset_id": "c751fdd7-9a5d-4782-9d53-4774d57e702c",
+      "reason": "September 9 sponsor announcement confirms FDA acceptance and filing of MOGENRY/MCO-010 BLA. This supersedes the tracker Phase III-only label. The reviewed primary release does not state an exact PDUFA or launch date; do not invent one. Separately reconcile the announced InspiroGene distribution relationship with CRM rather than assuming closed-won.",
+      "patch": {"phase_regulatory_status": "BLA accepted and filed by FDA; sponsor announcement September 9, 2026; not yet approved"},
+      "sources": ["https://nanostherapeutics.com/2026/09/09/nanoscope-therapeutics-announces-u-s-food-and-drug-administration-acceptance-of-biologics-license-application-for-mogenry-for-the-treatment-of-retinitis-pigmentosa-with-severe-vision-loss/", "https://nanostherapeutics.com/2026/05/27/nanoscope-therapeutics-selects-inspirogene-by-mckesson-to-support-distribution-of-novel-retinal-therapy/"]
+    },
+    {
+      "asset_id": "473f3fe0-28b2-499c-9e5c-337e542f92bd",
+      "reason": "September 23 sponsor release confirms complete enrollment in U.S. ASTRA Phase 3 AURN001. This supersedes the tracker Phase II label. Japan Vyznova availability is not U.S. approval; the release does not establish a U.S. commercial launch date.",
+      "patch": {"phase_regulatory_status": "U.S. ASTRA Phase 3 AURN001 enrollment completed September 23, 2026; Japan availability is separate"},
+      "sources": ["https://aurionbiotech.com/2026/09/23/aurion-biotech-completes-enrollment-in-pivotal-astra-phase-3-study-advancing-aurn001-toward-potential-new-treatment-for-corneal-edema-secondary-to-corneal-endothelial-dysfunction/"]
+    }
+  ]
+}

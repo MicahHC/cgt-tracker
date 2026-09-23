@@ -313,7 +313,7 @@ SCORING SUBSCORES (0-5 integers, required if you emit any signal):
 
 HARD-CAP FLAGS (booleans):
   clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path
-  IMPORTANT: timeline_over_24_months is a legacy field name. Set it FALSE only when a Tier-1 / Priority-1 U.S. commercialization event is supported within 18 months. Set it TRUE when the asset is outside 18 months or the timeline is not proven.
+  Set timeline_over_24_months TRUE only when a cited U.S. commercialization forecast is beyond 24 months. Set it FALSE for supported Priority 1 and Priority 2 launch windows. Unknown timing is uncertainty, not proof of a launch beyond 24 months. Do not use trial completion, BLA filing or approval dates as launch dates.
 
 SOURCE HIERARCHY: Tier 1 = IR, press releases, SEC, FDA, ClinicalTrials.gov (PREFER). Tier 2 = investor decks, conference, publications. Tier 3 = Fierce Biotech, Endpoints, STAT.
 
@@ -459,15 +459,27 @@ async function applyAndGate(
     signal_type: out.signals[0]?.signal_type,
   });
 
-  if (!mat.is_material) return { material: false, scoreUpdated: false };
+  const changed = asset.regulatory_score !== nextSubscores.regulatory ||
+    asset.commercial_infrastructure_score !== nextSubscores.commercial_infrastructure ||
+    asset.market_attractiveness_score !== nextSubscores.market_attractiveness ||
+    asset.clinical_hold !== nextFlags.clinical_hold ||
+    asset.no_manufacturing_pathway !== nextFlags.no_manufacturing_pathway ||
+    asset.timeline_over_24_months !== nextFlags.timeline_over_24_months ||
+    asset.no_us_path !== nextFlags.no_us_path ||
+    asset.final_commercial_score !== scored.final_commercial_score ||
+    asset.commercial_priority_tier !== scored.commercial_priority_tier;
+  if (!changed && !mat.is_material) return { material: false, scoreUpdated: false };
 
-  await supabase
-    .from("cgt_signals")
-    .update({ is_material: true, materiality_reasons: mat.reasons })
-    .eq("agent_run_id", runId)
-    .eq("asset_id", asset.id);
+  if (mat.is_material) {
+    const { error: signalError } = await supabase
+      .from("cgt_signals")
+      .update({ is_material: true, materiality_reasons: mat.reasons })
+      .eq("agent_run_id", runId)
+      .eq("asset_id", asset.id);
+    if (signalError) throw new Error(`mark signals material: ${signalError.message}`);
+  }
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("cgt_assets")
     .update({
       regulatory_score: nextSubscores.regulatory,
@@ -483,8 +495,9 @@ async function applyAndGate(
       updated_at: new Date().toISOString(),
     })
     .eq("id", asset.id);
+  if (updateError) throw new Error(`update asset ${asset.id}: ${updateError.message}`);
 
-  await supabase.from("cgt_score_history").insert({
+  const { error: historyError } = await supabase.from("cgt_score_history").insert({
     asset_id: asset.id,
     week_label: weekLabel,
     regulatory_score: nextSubscores.regulatory,
@@ -495,6 +508,8 @@ async function applyAndGate(
     final_commercial_score: scored.final_commercial_score ?? 0,
     commercial_priority_tier: scored.commercial_priority_tier,
   });
+  if (historyError) throw new Error(`append score history: ${historyError.message}`);
+  if (!mat.is_material) return { material: false, scoreUpdated: changed };
 
   // Change-log: one row per changed field.
   const changes: Array<{ field: string; prev: unknown; next: unknown }> = [];
@@ -539,7 +554,7 @@ async function applyAndGate(
     });
   }
 
-  return { material: true, scoreUpdated: true };
+  return { material: true, scoreUpdated: changed };
 }
 
 // ---------- Tier change rationale ----------
@@ -571,9 +586,6 @@ function tierChangeRationale(
 
   if (newTier === "Tier 2") {
     const base = `Priority 2 set - source-reviewed U.S. launch target is beyond 18 months and within 24 months. The target remains conditional.`;
-    if (prevTier && !prevFlags.timeline_over_24_months && newFlags.timeline_over_24_months) {
-      return base + " Timeline estimate was revised this week outside the 18-month Priority 1 window.";
-    }
     if (!prevTier || prevTier === "Excluded") {
       return base + " (Initial tier assignment from re-evaluation of the U.S. path and launch timeline.)";
     }

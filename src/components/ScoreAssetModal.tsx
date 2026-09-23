@@ -401,7 +401,7 @@ export function ScoreAssetModal({ asset, existingSources, onClose, onSaved }: Pr
                   onChange={v => setField('no_manufacturing_flag', v)}
                 />
                 <FlagRow
-                  label="Outside 18-Month Priority 1 Window"
+                  label="U.S. Launch Beyond 24 Months"
                   caption="If yes, commercial score is capped at 50."
                   value={form.timeline_flag}
                   onChange={v => setField('timeline_flag', v)}

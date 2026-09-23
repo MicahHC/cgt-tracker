@@ -14,8 +14,8 @@ import { assessLaunch, type LaunchAsset } from './commercialization.ts';
  *     - clinical_hold           → cap 30
  *     - no_manufacturing_pathway → cap 40
  *     - timeline_over_24_months → cap 50
- *       Legacy column name. Business meaning is now:
- *       not proven to commercialize within 18 months.
+ *       Applies only when a source-supported U.S. launch is outside 24 months.
+ *       Missing evidence is tracked for review, not asserted as >24 months.
  *     - no_us_path              → excluded entirely (final = null)
  *
  *   Commercial priority (independent from score caps):
