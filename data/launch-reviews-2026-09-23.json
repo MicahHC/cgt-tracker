@@ -1,0 +1,175 @@
+{
+  "reviewed_at": "2026-09-23",
+  "scope": "Launch-timing evidence review, not full clinical or commercial-score revalidation. Missing entries are unverified, not disqualified therapies.",
+  "reviews": [
+    {
+      "asset_id": "0ec6fb27-ca23-4173-b2e9-1f836f544415",
+      "launch_target": "2027H1",
+      "reason": "Company targets first-half U.S. launch; September BLA acceptance updates the regulatory milestone. Approval remains pending.",
+      "patch": {"phase_regulatory_status": "BLA accepted; Priority Review; PDUFA March 10, 2027", "pdufa_date": "2027-03-10"},
+      "sources": ["https://ir.intelliatx.com/node/12826", "https://ir.intelliatx.com/node/12886"]
+    },
+    {
+      "asset_id": "7124428f-90b5-49d0-b22e-54483cd79fa7",
+      "reason": "Mixed Lonvo-z / Nex-z record cannot share one launch forecast. Use the separate lonvoguran record for HAE; nex-z is a different ATTR program.",
+      "sources": ["https://ir.intelliatx.com/node/12826"]
+    },
+    {
+      "asset_id": "0fabaacc-84a7-422f-a8f5-46d6d84d2411",
+      "launch_target": "2026",
+      "reason": "Gilead states potential launch this year and accepted BLA with December target action date. Arcellx is now a Gilead subsidiary; parent-account routing requires CRM review.",
+      "patch": {"phase_regulatory_status": "BLA accepted; PDUFA December 23, 2026", "pdufa_date": "2026-12-23"},
+      "sources": ["https://www.gilead.com/news/news-details/2026/gilead-sciences-to-acquire-arcellx-to-maximize-long-term-potential-of-anito-cel", "https://www.gilead.com/news/news-details/2026/gilead-sciences-completes-acquisition-of-arcellx-ahead-of-potential-commercial-launch-of-anito-cel"]
+    },
+    {
+      "asset_id": "15be67af-8162-4e6c-a14d-c9bec2d4dad4",
+      "launch_target": "2027",
+      "reason": "August update explicitly targets potential launch for stiff person syndrome. Do not apply this timing to the separate myasthenia gravis trial.",
+      "patch": {"phase_regulatory_status": "SPS registrational Phase 2; rolling BLA underway; completion targeted Q4 2026", "lead_indication": "Stiff person syndrome"},
+      "sources": ["https://ir.kyvernatx.com/news-releases/news-release-details/kyverna-therapeutics-reports-pipeline-progress-and-second"]
+    },
+    {
+      "asset_id": "305e4e2e-5e9a-40e5-a39e-41bd3c0bef21",
+      "launch_target": "2027",
+      "reason": "Company states planned commercial launch, conditional on approval. September update still targets pre-BLA meeting and filing initiation before year end, not accepted BLA.",
+      "sources": ["https://engene.com/engene-reports-second-quarter-2026-financial-results-and-provides-business-update/", "https://engene.com/engene-reports-third-quarter-2026-financial-results-and-provides-business-update/"]
+    },
+    {
+      "asset_id": "3dd0372a-0cbd-45f6-b3a7-21d23e12560e",
+      "launch_target": "2027",
+      "reason": "Sponsor explicitly states potential U.S./EU launch target after reacquiring bota-vec; not an approval claim.",
+      "sources": ["https://investors.meiragtx.com/news-releases/news-release-details/meiragtx-announces-acquisition-botaretigene-sparoparvovec-bota", "https://investors.meiragtx.com/news-releases/news-release-details/meiragtx-announces-400-million-strategic-investment-oberland"]
+    },
+    {
+      "asset_id": "b561c444-5b04-454b-8a4e-c919ea26761e",
+      "launch_target": "2028H1",
+      "reason": "Annual report targets early U.S. launch for AAV2-hAQP1. Early year is conservatively bounded at June end, not invented as a specific day. Trial and approval dependencies remain.",
+      "sources": ["https://investors.meiragtx.com/static-files/67a46bf3-f0a5-4e0b-ac14-8bd2ad07dfdd"]
+    },
+    {
+      "asset_id": "7743a415-3608-401b-a224-1c98f64f7ae9",
+      "launch_target": "2027",
+      "reason": "September sponsor launch target supersedes the older tracker estimate and later GlobalData estimate. U.S. BLA planning is supported separately. Phase 1/2 status does not preclude a near-term regulatory path.",
+      "patch": {"phase_regulatory_status": "Phase 1/2 BEACON; U.S. BLA planned as early as year-end 2026"},
+      "sources": ["https://investors.beamtx.com/news-releases/news-release-details/beam-therapeutics-appoints-eric-foster-chief-commercial-officer", "https://investors.beamtx.com/news-releases/news-release-details/beam-therapeutics-announces-publication-beacon-phase-12-data"]
+    },
+    {
+      "asset_id": "f32900cf-59ac-46f8-998d-761194f03b7a",
+      "launch_target": "2027",
+      "reason": "Sponsor targets potential U.S. launch in localized prostate cancer with BLA planned Q4 2026. Does not establish launch timing for NSCLC.",
+      "sources": ["https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-reports-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "a32d8b5f-4698-4cbc-84d5-058ee5c5914e",
+      "reason": "Duplicate CAN-2409 prostate record; use the aglatimagene besadenovec record for audience qualification.",
+      "sources": ["https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-reports-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "f26da867-4193-408c-bbc7-7f3311946607",
+      "launch_target": "2027",
+      "reason": "Company-stated launch year is supported by the latest August update targeting second-half approval and manufacturing of intended commercial supply. Conditional on successful filing and approval.",
+      "patch": {"phase_regulatory_status": "Pivotal primary endpoint met; BLA initiation planned Q3 2026; potential approval H2 2027"},
+      "sources": ["https://ir.regenxbio.com/news-releases/news-release-details/regenxbio-reports-first-quarter-2025-financial-results-and/", "https://ir.regenxbio.com/node/13891/html"]
+    },
+    {
+      "asset_id": "efd00876-c190-48f1-b530-08e388dc6ec3",
+      "launch_target": "2026",
+      "reason": "Sponsor stated potential market introduction this year; FDA review is now extended to November. Keep conditional target and explicitly flag delay risk, not an approved product.",
+      "patch": {"phase_regulatory_status": "BLA under FDA review; PDUFA extended to November 22, 2026", "pdufa_date": "2026-11-22"},
+      "sources": ["https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target", "https://www.capricor.com/investors/news-events/press-releases/detail/329/capricor-therapeutics-reports-third-quarter-2025-financial"]
+    },
+    {
+      "asset_id": "a1eed1ed-2f8e-481c-ab13-9666362189ad",
+      "launch_target": "2026Q4",
+      "reason": "Approved is not the same as commercially available. August company update expects commercial availability and patient onboarding in the fourth quarter.",
+      "patch": {"phase_regulatory_status": "FDA approved March 26, 2026; commercial availability planned Q4 2026", "segment": "Late Stage"},
+      "sources": ["https://www.fda.gov/vaccines-blood-biologics/kresladi", "https://ir.rocketpharma.com/news-releases/news-release-details/rocket-pharmaceuticals-reports-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "f2811049-7502-4542-b895-6551bcc862fc",
+      "launch_target": "2026-10-17 to 2026-11-16",
+      "reason": "FAYUVI approved September 17; sponsor expects shipping to qualified centers within 30-60 days. Date range is calculated from that stated interval, not a guaranteed shipment date.",
+      "patch": {"phase_regulatory_status": "FDA full approval September 17, 2026; commercial shipment pending", "pdufa_date": null},
+      "sources": ["https://ir.ultragenyx.com/news-releases/news-release-details/ultragenyx-announces-approval-fayuvitm-gene-therapy-first-ever", "https://www.fda.gov/media/194921/download"]
+    },
+    {
+      "asset_id": "5151398f-8632-4943-a14d-5ea3f89298e8",
+      "reason": "GENGLYCOS is FDA-approved, not pre-registration. Exact current first-commercial-shipment timing still requires confirmation; company qualifies separately through FAYUVI.",
+      "patch": {"phase_regulatory_status": "FDA accelerated approval August 19, 2026; commercial availability timing to verify"},
+      "sources": ["https://www.globenewswire.com/news-release/2026/08/19/3348019/20739/en/ultragenyx-announces-u-s-fda-approval-of-genglycos-gene-therapy-the-first-ever-fda-approved-treatment-designed-to-treat-the-underlying-cause-of-glycogen-storage-disease-type-ia-gsd.html", "https://www.fda.gov/media/194583/download"]
+    },
+    {
+      "asset_id": "fa002727-f1f9-4b51-8f77-40b193667841",
+      "reason": "Astellas announced a strategic halt of AT132. The previous Phase III / near-term launch entry is not supported.",
+      "patch": {"phase_regulatory_status": "Development strategically halted; company announcement April 27, 2026"},
+      "sources": ["https://newsroom.astellas.com/2026-04-27-notice-regarding-impairment-loss-and-extraordinary-losses-in-non-consolidated-financial-results-j-gaap"]
+    },
+    {
+      "asset_id": "9233d3c3-3332-44c6-8ae5-7e3e2d5d483f",
+      "reason": "Sponsor expected pivotal enrollment completion in Q1 2029. The tracker and export's 2027 launch estimate lacks support and precedes that milestone.",
+      "sources": ["https://investors.imunon.com/news-releases/news-release-details/imunon-reports-first-quarter-2026-financial-results-and-provides", "https://investors.imunon.com/news-releases/news-release-details/imunon-reports-second-quarter-2026-financial-results-and"]
+    },
+    {
+      "asset_id": "4d73d3ee-cb80-4701-ade0-cae916932174",
+      "reason": "September release now targets market entry in 2028 rather than the older specific date. Whole-year guidance crosses the 24-month cutoff; U.S. launch quarter requires confirmation.",
+      "sources": ["https://novadip.com/press-releases/novadip-secures-e10-4-million-financing-to-complete-pivotal-phase-3-trial/"]
+    },
+    {
+      "asset_id": "94bb5f80-a440-4240-8ee8-504c32bbd31d",
+      "reason": "September pivotal data are positive and rolling BLA initiation is planned later this year. This does not validate the tracker October launch or independently confirm the export's later forecast.",
+      "patch": {"phase_regulatory_status": "Positive pivotal VISTA results; rolling BLA initiation planned later in 2026; not FDA-approved"},
+      "sources": ["https://www.beacontx.com/news-and-events/beacon-therapeutics-reports-positive-topline-data-from-the-pivotal-vista-trial-of-laru-zova-for-the-treatment-of-x-linked-retinitis-pigmentosa-xlrp/"]
+    },
+    {
+      "asset_id": "c751fdd7-9a5d-4782-9d53-4774d57e702c",
+      "reason": "Manufacturing and distribution agreements support readiness, not the October launch date. Sponsor announced an InspiroGene agreement: reconcile against CRM before targeting; do not infer closed-won status from press coverage alone.",
+      "sources": ["https://nanostherapeutics.com/2026/07/07/catalent-and-nanoscope-therapeutics-expand-partnership-to-support-late-phase-development-and-commercial-supply-of-lead-optogenetic-gene-therapy-mco-010/", "https://nanostherapeutics.com/2026/05/27/nanoscope-therapeutics-selects-inspirogene-by-mckesson-to-support-distribution-of-novel-retinal-therapy/"]
+    },
+    {
+      "asset_id": "90b75eab-332c-4ade-8efa-289e75cb3f7b",
+      "reason": "August sponsor update ties rolling BLA to Q1 2027 topline results. The tracker claim of a rolling BLA in Q3 2026 is stale; launch timing must be revalidated against the new sequence.",
+      "patch": {"phase_regulatory_status": "Phase 3 enrollment complete; topline expected Q1 2027; rolling BLA tied to topline data"},
+      "sources": ["https://ocugen.gcs-web.com/news-releases/news-release-details/ocugen-provides-business-update-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "7bd36137-b95c-4f8a-96d0-efabebe145f0",
+      "reason": "Sponsor planned first pivotal Phase 3 enrollment in H2 2026. This does not support a specific launch inside 24 months; export and tracker dates conflict.",
+      "sources": ["https://www.neuronatherapeutics.com/news/press-releases/042226/"]
+    },
+    {
+      "asset_id": "3ef50090-f1d8-476f-87ac-487c3b2b1d44",
+      "reason": "ATSN-101 has completed Phase 1/2 and a global pivotal study is planned; the old launch estimate is not source-validated.",
+      "sources": ["https://www.atsenatx.com/programs/lca1/"]
+    },
+    {
+      "asset_id": "d2d422a4-7fd9-461f-9f27-248eed5cf73b",
+      "reason": "Pivotal trial activity confirmed, but this source does not establish the specific U.S. launch window.",
+      "sources": ["https://www.atsenatx.com/programs/pipeline/"]
+    },
+    {
+      "asset_id": "473f3fe0-28b2-499c-9e5c-337e542f92bd",
+      "reason": "Vyznova Japan availability must not be confused with U.S. launch. U.S. AURN001 entered Phase 3; no validated U.S. launch date in the reviewed release.",
+      "sources": ["https://aurionbiotech.com/2026/04/08/aurion-biotech-doses-first-patients-in-astra-phase-3-study-evaluating-aurn001-in-patients-with-corneal-edema-secondary-to-corneal-endothelial-dysfunction/"]
+    },
+    {
+      "asset_id": "8383317b-a622-45bc-b944-3ab1e5127616",
+      "reason": "Sponsor targets BLA submission in H2 2027 for lymphatic malformations. A filing is not a confirmed launch; indication and CGT scope also require review.",
+      "sources": ["https://ir.protaratx.com/news-releases/news-release-details/protara-therapeutics-announces-second-quarter-2026-financial"]
+    },
+    {
+      "asset_id": "f25c0bfa-c8d0-49b5-beb1-3c55ad05b54f",
+      "reason": "First Phase 3 treatment reported January 2026; the release confirms investigational status, not a U.S. launch window.",
+      "sources": ["https://www.discgenics.com/news-posts/discgenics-treats-first-patients-in-phase-3-clinical-trial-of-idct-rebonuputemcel-for-symptomatic-mild-to-moderate-lumbar-degenerative-disc-disease"]
+    },
+    {
+      "asset_id": "e9e9645b-5d6d-4f51-8771-8fd431bb7de4",
+      "reason": "Company identifies IOV-LUN-202 as a Phase 2 LN-145 trial. Marketed melanoma lifileucel does not validate launch timing for this lung cancer asset/indication.",
+      "sources": ["https://www.iovance.com/clinical-trials/"]
+    },
+    {
+      "asset_id": "c118d71f-cb11-4a88-80af-be9758941221",
+      "reason": "Phase 2 data presentation confirms clinical activity, not commercialization within 24 months; dates conflict with export.",
+      "sources": ["https://obsidiantx.com/news-releases/obsidian-therapeutics-to-present-obx-115-phase-2-clinical-data-in-advanced-melanoma-in-oral-presentation-at-2026-asco-annual-meeting/"]
+    }
+  ]
+}

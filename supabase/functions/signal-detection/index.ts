@@ -50,6 +50,7 @@ interface AssetWithCompany {
   company_id: string;
   company_name: string;
   asset_name: string;
+  segment: string | null;
   lead_indication: string | null;
   phase_regulatory_status: string | null;
   // Hard-cap flags (match DB exactly)
@@ -224,7 +225,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
   const { data, error } = await supabase
     .from("cgt_assets")
     .select(`
-      id, company_id, asset_name, lead_indication, phase_regulatory_status,
+      id, company_id, asset_name, segment, lead_indication, phase_regulatory_status,
       clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path,
       manufacturing_status, manufacturing_pathway,
       us_commercialization_window, likely_us_launch_within_24_months,
@@ -240,6 +241,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     company_id: row.company_id,
     company_name: row.cgt_companies.company_name,
     asset_name: row.asset_name,
+    segment: row.segment,
     lead_indication: row.lead_indication,
     phase_regulatory_status: row.phase_regulatory_status,
     clinical_hold: row.clinical_hold ?? false,
@@ -447,7 +449,7 @@ async function applyAndGate(
 ): Promise<{ material: boolean; scoreUpdated: boolean }> {
   const nextSubscores = out.current_subscores as Subscores;
   const nextFlags: HardCapFlags = out.current_flags!;
-  const scored = computeScoring(nextSubscores, nextFlags);
+  const scored = computeScoring(nextSubscores, nextFlags, asset);
 
   const mat = evaluateMateriality({
     prev_final_commercial_score: asset.final_commercial_score,
@@ -568,7 +570,7 @@ function tierChangeRationale(
   }
 
   if (newTier === "Tier 2") {
-    const base = `Commercial tier set to Tier 2 — asset has a U.S. path but is not proven to commercialize within 18 months.`;
+    const base = `Priority 2 set - source-reviewed U.S. launch target is beyond 18 months and within 24 months. The target remains conditional.`;
     if (prevTier && !prevFlags.timeline_over_24_months && newFlags.timeline_over_24_months) {
       return base + " Timeline estimate was revised this week outside the 18-month Priority 1 window.";
     }
@@ -578,7 +580,7 @@ function tierChangeRationale(
     return base + " (Tier rule re-evaluated against current U.S. path and launch timeline; no underlying flag change recorded.)";
   }
 
-  return `Commercial tier reassigned to ${newTier}.`;
+  return `Watchlist - no qualifying source-reviewed U.S. launch window within 24 months. This is not proof that commercialization cannot occur.`;
 }
 
 // ---------- Utils ----------

@@ -1,3 +1,5 @@
+import { assessLaunch, type LaunchAsset } from './commercialization.ts';
+
 /**
  * CGT scoring module — single source of truth for commercial readiness,
  * hard caps, and tier assignment.
@@ -16,11 +18,10 @@
  *       not proven to commercialize within 18 months.
  *     - no_us_path              → excluded entirely (final = null)
  *
- *   Commercial priority:
- *     - Tier 1 / Priority 1 if the asset is likely to commercialize in the
- *       next 18 months (i.e., legacy timeline_over_24_months = false AND
- *       no_us_path = false)
- *     - Tier 2 otherwise
+ *   Commercial priority (independent from score caps):
+ *     - Tier 1: source-reviewed U.S. launch target within 18 months.
+ *     - Tier 2: source-reviewed U.S. launch target beyond 18 through 24 months.
+ *     - Watchlist: missing/unreviewed, expired, marketed or outside the window.
  *     - Excluded if no_us_path = true
  */
 
@@ -39,7 +40,7 @@ export interface HardCapFlags {
   no_us_path: boolean;
 }
 
-export type Tier = "Tier 1" | "Tier 2" | "Excluded";
+export type Tier = "Tier 1" | "Tier 2" | "Watchlist" | "Excluded";
 
 export interface CapResult {
   final_score: number | null; // null = excluded
@@ -113,25 +114,25 @@ export function applyHardCaps(raw: number, flags: HardCapFlags): CapResult {
 }
 
 /**
- * Commercial priority tier — driven by the 18-month commercialization window,
+ * Commercial priority tier — driven by reviewed rolling launch windows,
  * NOT by score. Score is used for prioritization within a tier.
  */
-export function assignCommercialTier(flags: HardCapFlags): Tier {
+export function assignCommercialTier(flags: HardCapFlags, asset?: LaunchAsset): Tier {
   if (flags.no_us_path) return "Excluded";
-  if (flags.timeline_over_24_months) return "Tier 2";
-  return "Tier 1";
+  const priority = assessLaunch({ ...asset, ...flags }).priority;
+  return priority === 'Priority 1' ? 'Tier 1' : priority === 'Priority 2' ? 'Tier 2' : 'Watchlist';
 }
 
 /**
  * End-to-end: subscores + flags → all outputs ready to persist.
  */
-export function computeScoring(s: Subscores, flags: HardCapFlags): ScoringOutput {
+export function computeScoring(s: Subscores, flags: HardCapFlags, asset?: LaunchAsset): ScoringOutput {
   const raw = computeCommercialReadinessRaw(s);
   const capped = applyHardCaps(raw, flags);
   return {
     raw_commercial_score: raw,
     final_commercial_score: capped.final_score,
-    commercial_priority_tier: assignCommercialTier(flags),
+    commercial_priority_tier: assignCommercialTier(flags, asset),
     cap_applied: capped.cap_applied,
   };
 }

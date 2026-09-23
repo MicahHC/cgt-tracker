@@ -46,6 +46,7 @@ interface AssetWithCompany {
   company_id: string;
   company_name: string;
   asset_name: string;
+  segment: string | null;
   lead_indication: string | null;
   phase_regulatory_status: string | null;
   clinical_hold: boolean;
@@ -156,7 +157,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
   const { data, error } = await supabase
     .from("cgt_assets")
     .select(`
-      id, company_id, asset_name, lead_indication, phase_regulatory_status,
+      id, company_id, asset_name, segment, lead_indication, phase_regulatory_status,
       clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path,
       manufacturing_status, manufacturing_pathway,
       us_commercialization_window, likely_us_launch_within_24_months,
@@ -171,6 +172,7 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     company_id: r.company_id,
     company_name: r.cgt_companies.company_name,
     asset_name: r.asset_name,
+    segment: r.segment,
     lead_indication: r.lead_indication,
     phase_regulatory_status: r.phase_regulatory_status,
     clinical_hold: r.clinical_hold ?? false,
@@ -291,7 +293,7 @@ async function applyAndPersist(
   runId: string,
   monthLabel: string
 ): Promise<boolean> {
-  const scored = computeScoring(out.subscores, out.flags);
+  const scored = computeScoring(out.subscores, out.flags, asset);
 
   const mat = evaluateMateriality({
     prev_final_commercial_score: asset.final_commercial_score,

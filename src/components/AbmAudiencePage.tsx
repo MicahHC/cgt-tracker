@@ -5,7 +5,7 @@ import { AudienceMember, audienceCounts } from '../lib/audienceCounts';
 import { loadAudiences } from '../lib/loadAudiences';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 
-const CANONICAL_SEGMENTS = ['Late Stage', 'Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'On Market', 'Closed Won', 'Consultants'];
+const CANONICAL_SEGMENTS = ['Late Stage', 'Priority 1', 'Priority 2', 'Launch Timing Review', 'ATC', 'Early Stage', 'On Market', 'Closed Won', 'Consultants'];
 const CSV_HEADERS = ['Name', 'Country', 'Domain'];
 
 function csvCell(value: string | null | undefined): string {
@@ -89,7 +89,7 @@ export function AbmAudiencePage() {
 
   const segments = useMemo(() => {
     const found = new Set(members.map(m => m.audience_segment).filter(Boolean));
-    const ordered = CANONICAL_SEGMENTS.filter(s => found.has(s) || s === 'Closed Won');
+    const ordered = CANONICAL_SEGMENTS.filter(s => found.has(s) || ['Late Stage', 'Priority 1', 'Priority 2', 'Closed Won'].includes(s));
     const extras = Array.from(found).filter(s => !CANONICAL_SEGMENTS.includes(s)).sort();
     return [...ordered, ...extras];
   }, [members]);
@@ -169,8 +169,11 @@ export function AbmAudiencePage() {
           Late Stage means a company with a tracked CGT launch expected within the next 24 months, regardless of clinical phase.
           Priority 1 is within 18 months; Priority 2 is beyond 18 and within 24 months.
           Each account takes its highest qualifying priority. Closed Won accounts are suppressed.
-          These lists use recorded launch estimates; global forecasts are identified below and require U.S. timing validation.
+          Priority audiences require source-reviewed U.S. launch targets. Unverified forecasts do not qualify. Targets remain conditional, not guaranteed launches.
         </p>
+        {(counts['Launch Timing Review'] || 0) > 0 && <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          {counts['Launch Timing Review']} accounts need launch-timing resolution. Priority counts show the source-supported subset, not a complete estimate of the market. Review these accounts before treating the audience as exhaustive.
+        </p>}
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">

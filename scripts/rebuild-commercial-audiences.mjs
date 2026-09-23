@@ -16,7 +16,7 @@ async function all(table) {
   }
 }
 const [companies, assets, members, clients] = await Promise.all(['cgt_companies', 'cgt_assets', 'cgt_abm_audience_members', 'cgt_abm_client_domains'].map(all));
-const managed = new Set(['Priority 1', 'Priority 2', 'Late Stage']);
+const managed = new Set(['Priority 1', 'Priority 2', 'Late Stage', 'Launch Timing Review']);
 const now = new Date();
 const desired = buildCommercialAudiences(companies, assets, members, clients, now).filter(m => managed.has(m.audience_segment) && !m.is_client);
 const key = m => `${m.domain.toLowerCase()}:${m.audience_segment}`;
