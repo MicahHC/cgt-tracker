@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
-import { AudienceMember, ClientAccount, normalizeAudiences } from './audienceCounts';
+import { AudienceMember, ClientAccount } from './audienceCounts';
+import { buildCommercialAudiences } from './buildCommercialAudiences';
+import { CgtAsset, CgtCompany } from '../types/database';
 
 async function loadAll<T>(table: string, fields: string): Promise<T[]> {
   const rows: T[] = [];
@@ -12,9 +14,11 @@ async function loadAll<T>(table: string, fields: string): Promise<T[]> {
 }
 
 export async function loadAudiences(): Promise<AudienceMember[]> {
-  const [members, clients] = await Promise.all([
+  const [members, clients, companies, assets] = await Promise.all([
     loadAll<AudienceMember>('cgt_abm_audience_members', 'id, account_name, country, domain, audience_segment, is_client'),
     loadAll<ClientAccount>('cgt_abm_client_domains', 'account_name, domain'),
+    loadAll<CgtCompany>('cgt_companies', '*'),
+    loadAll<CgtAsset>('cgt_assets', '*'),
   ]);
-  return normalizeAudiences(members, clients).sort((a, b) => a.account_name.localeCompare(b.account_name));
+  return buildCommercialAudiences(companies, assets, members, clients).sort((a, b) => a.account_name.localeCompare(b.account_name));
 }

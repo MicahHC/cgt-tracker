@@ -5,7 +5,7 @@ import { AudienceMember, audienceCounts } from '../lib/audienceCounts';
 import { loadAudiences } from '../lib/loadAudiences';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 
-const CANONICAL_SEGMENTS = ['Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'Late Stage', 'On Market', 'Closed Won', 'Consultants'];
+const CANONICAL_SEGMENTS = ['Late Stage', 'Priority 1', 'Priority 2', 'ATC', 'Early Stage', 'On Market', 'Closed Won', 'Consultants'];
 const CSV_HEADERS = ['Name', 'Country', 'Domain'];
 
 function csvCell(value: string | null | undefined): string {
@@ -67,7 +67,7 @@ function segmentRingAccent(seg: string): string {
 export function AbmAudiencePage() {
   const [members, setMembers] = useState<AudienceMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<string>('Late Stage');
   const [search, setSearch] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -85,7 +85,7 @@ export function AbmAudiencePage() {
   }
 
   useEffect(() => { load(); }, []);
-  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains'], () => load());
+  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains', 'cgt_assets', 'cgt_companies'], () => load());
 
   const segments = useMemo(() => {
     const found = new Set(members.map(m => m.audience_segment).filter(Boolean));
@@ -116,13 +116,15 @@ export function AbmAudiencePage() {
   async function handleToggleClient(member: AudienceMember) {
     setBusyId(member.id);
     try {
-      const { error } = await supabase
-        .from('cgt_abm_audience_members')
-        .update({ is_client: !member.is_client })
-        .eq('id', member.id);
+      const { error } = member.id.startsWith('derived:')
+        ? await supabase.from('cgt_abm_audience_members').insert({
+          account_name: member.account_name, domain: member.domain, country: member.country,
+          audience_segment: member.audience_segment, is_client: !member.is_client,
+        })
+        : await supabase.from('cgt_abm_audience_members').update({ is_client: !member.is_client }).eq('id', member.id);
       if (!error) {
         await load();
-      }
+      } else setError('Could not save the client flag. Please retry.');
     } finally {
       setBusyId(null);
     }
@@ -162,12 +164,12 @@ export function AbmAudiencePage() {
           <Layers className="w-3 h-3" />
           ABM Audience
         </span>
-        <h1 className="prestige-section-title mt-3">Target audience lists</h1>
+        <h1 className="prestige-section-title mt-3">Late Stage audience</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-3xl">
-          The primary target account universe is organized by commercial priority: Priority 1 means a tracked
-          therapy is expected to commercialize within 18 months; Priority 2 means relevant but not yet inside
-          that Priority 1 window. Phase buckets remain available as secondary reference lists. Accounts
-          flagged as clients move into Closed Won and are suppressed from spend while engagement is still tracked.
+          Late Stage means a company with a tracked CGT launch expected within the next 24 months, regardless of clinical phase.
+          Priority 1 is within 18 months; Priority 2 is beyond 18 and within 24 months.
+          Each account takes its highest qualifying priority. Closed Won accounts are suppressed.
+          These lists use recorded launch estimates; global forecasts are identified below and require U.S. timing validation.
         </p>
       </header>
 
@@ -195,7 +197,7 @@ export function AbmAudiencePage() {
           >
             <div className="text-xs font-bold uppercase tracking-widest text-slate-600">{seg}</div>
             <div className="text-3xl font-bold mt-1 text-slate-900">{counts[seg] || 0}</div>
-            <div className="text-xs text-slate-400 mt-0.5">accounts</div>
+            <div className="text-xs text-slate-400 mt-0.5">{seg === 'Priority 1' || seg === 'Priority 2' ? 'within Late Stage' : 'accounts'}</div>
           </button>
         ))}
       </div>
@@ -251,7 +253,7 @@ export function AbmAudiencePage() {
           )}
           {!loading && visible.map(member => (
             <div key={member.id} className="px-6 py-3 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
                 <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                 <span className="text-sm font-medium text-slate-900 truncate">{member.account_name}</span>
                 {member.audience_segment && (
@@ -259,6 +261,8 @@ export function AbmAudiencePage() {
                     {member.audience_segment}
                   </span>
                 )}
+                {member.audience_segment === 'Late Stage' && member.priority_label && <span className="text-xs font-semibold text-teal-700">{member.priority_label}</span>}
+                {member.launch_evidence && <p className="basis-full text-xs text-slate-500">{member.launch_evidence}</p>}
               </div>
               <div className="flex items-center gap-4 text-xs flex-shrink-0">
                 {member.domain && (

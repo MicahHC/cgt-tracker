@@ -84,7 +84,7 @@ export function AssetDetail({ assetId, onBack }: Props) {
   const breakdown = hasInputs ? computed : {
     rawCommercial: asset.raw_commercial_score ?? asset.final_commercial_score ?? 0,
     finalCommercial: asset.final_commercial_score ?? 0,
-    commercialTier: asset.commercial_priority_tier ?? computed.commercialTier,
+    commercialTier: computed.commercialTier,
     caps: computed.caps,
   };
   const lockedByOther = asset.lock_status === 'In Progress' && asset.locked_by !== user?.id;

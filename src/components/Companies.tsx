@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
-import { CgtAsset, CgtAssetSource, CgtCompany } from '../types/database';
+import { CgtAsset, CgtAssetSource, CgtCompany, Tier } from '../types/database';
 import { Building2, Plus, ExternalLink, Search, ChevronRight, X, Save, Gauge, ArrowUpDown, Filter } from 'lucide-react';
 import { SegmentBadge, TierBadge } from './ui/Badge';
+import { companyPriority } from '../lib/commercialization';
 import { ScoreAssetModal } from './ScoreAssetModal';
 import { NewCompanyScoreModal } from './NewCompanyScoreModal';
 
@@ -76,12 +77,9 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
     const scores = own.map(a => (a[scoreField] as number) ?? 0).filter(s => s > 0);
     const topScore = scores.length ? Math.max(...scores) : null;
     const topAsset = own.slice().sort((a, b) => ((b[scoreField] as number) ?? 0) - ((a[scoreField] as number) ?? 0))[0];
-    const topTier = c.status?.toLowerCase() === 'excluded' ? 'Excluded' : own
-      .filter(a => !a.no_us_path && a.segment !== 'On-Market')
-      .map(a => a.commercial_priority_tier)
-      .filter(tier => tier && tier !== 'Excluded')
-      .sort((a, b) => (tierRank[b || ''] ?? 0) - (tierRank[a || ''] ?? 0))[0] || null;
-    const tier1 = own.filter(a => !a.no_us_path && a.segment !== 'On-Market' && a.commercial_priority_tier === 'Tier 1').length;
+    const priority = companyPriority(own);
+    const topTier: Tier = c.status?.toLowerCase() === 'excluded' ? 'Excluded' : priority === 'Priority 1' ? 'Tier 1' : priority === 'Priority 2' ? 'Tier 2' : 'Watchlist';
+    const tier1 = own.filter(a => companyPriority([a]) === 'Priority 1').length;
     const topSegment = topAsset?.segment || (own[0]?.segment ?? '');
     const anyHold = own.some(a => a.clinical_hold);
     const topPhase = own.length
@@ -96,7 +94,8 @@ export function Companies({ onOpenAsset, canEdit }: Props) {
       c.company_name.toLowerCase().includes(search.toLowerCase()) ||
       (c.parent_company || '').toLowerCase().includes(search.toLowerCase())
     )) return false;
-    if (segmentFilter !== 'all' && r.topSegment !== segmentFilter) return false;
+    if (segmentFilter === 'Late Stage' && r.topTier !== 'Tier 1' && r.topTier !== 'Tier 2') return false;
+    if (segmentFilter !== 'all' && segmentFilter !== 'Late Stage' && r.topSegment !== segmentFilter) return false;
     if (tierFilter !== 'all' && r.topTier !== tierFilter) return false;
     if (phaseFilter !== 'all' && r.topPhase !== phaseFilter) return false;
     if (statusFilter === 'active' && r.anyHold) return false;

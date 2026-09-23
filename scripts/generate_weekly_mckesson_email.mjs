@@ -435,6 +435,8 @@ async function buildEmail(week) {
     '',
     'Hi team,',
     '',
+    'Current audience definition: Late Stage means expected CGT commercialization within 24 months. Priority 1 is within 18 months; Priority 2 is beyond 18 and within 24 months. Closed Won accounts are suppressed. Historical movements below retain the classification recorded in that run; the live audience reflects current launch windows.',
+    '',
     `Here are the main CGT tracker movements from the latest weekly run (${getWeekRange(targetWeek)}). I focused this note on assets that changed audience priority or moved materially in commercial readiness score.`,
     '',
     'Activation-relevant movers:',

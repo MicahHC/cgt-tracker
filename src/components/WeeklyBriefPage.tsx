@@ -959,8 +959,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             </span>
             <h2 className="prestige-section-title mt-3">Priority movement</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-              Priority 1 means a U.S. commercialization window inside 18 months. Priority 2 means relevant CGT opportunity,
-              but not yet proven inside that active commercialization window.
+              Late Stage means an expected commercialization within 24 months. Priority 1 is within 18 months;
+              Priority 2 is beyond 18 and within 24 months. Historical movements below retain the rules and evidence recorded at the time;
+              use the Late Stage audience for current membership.
             </p>
           </header>
           <div className="prestige-card overflow-hidden">

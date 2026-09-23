@@ -1,4 +1,5 @@
 import { CgtAsset, Tier } from '../types/database';
+import { assessLaunch, LaunchAsset } from './commercialization';
 
 export interface ScoreBreakdown {
   rawCommercial: number;
@@ -38,11 +39,11 @@ export function calculateCommercialReadiness(asset: Pick<CgtAsset,
   return { raw, final, caps };
 }
 
-export function assignCommercialTier(asset: Pick<CgtAsset, 'no_us_path' | 'timeline_over_24_months' | 'segment'>): Tier | null {
+export function assignCommercialTier(asset: LaunchAsset): Tier | null {
   if (asset.segment === 'On-Market') return null;
   if (asset.no_us_path) return 'Excluded';
-  if (!asset.timeline_over_24_months) return 'Tier 1';
-  return asset.segment === 'Late Stage' ? 'Tier 2' : 'Watchlist';
+  const priority = assessLaunch(asset).priority;
+  return priority === 'Priority 1' ? 'Tier 1' : priority === 'Priority 2' ? 'Tier 2' : 'Watchlist';
 }
 
 export function computeAllScores(asset: CgtAsset): ScoreBreakdown {

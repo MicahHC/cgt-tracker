@@ -40,7 +40,7 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   }, []);
 
   useRealtimeRefresh(['cgt_assets', 'cgt_companies', 'cgt_change_log', 'cgt_score_history'], () => load());
-  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains'], refreshAudiences);
+  useRealtimeRefresh(['cgt_abm_audience_members', 'cgt_abm_client_domains', 'cgt_assets', 'cgt_companies'], refreshAudiences);
 
   async function load() {
     const [{ data: assetData }, { data: companyData, count: cCount }, { data: changes }] = await Promise.all([
@@ -114,15 +114,16 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Kpi label="Total companies" value={companyCount} icon={Package} color="slate" onClick={() => onNavigate('companies')} />
-        <Kpi label="Late Stage" value={lateStageCompanies} icon={Target} color="teal" onClick={() => onNavigate('companies')} sub={`${lateStage.length} assets`} />
+        <Kpi label="Clinical late-stage companies" value={lateStageCompanies} icon={Target} color="teal" onClick={() => onNavigate('companies')} sub={`${lateStage.length} assets; clinical phase only`} />
         <Kpi label="Early Stage" value={earlyStageCompanies} icon={FlaskConical} color="sky" onClick={() => onNavigate('companies')} sub={`${earlyStage.length} assets`} />
         <Kpi label="On-Market" value={onMarketCompanies} icon={ShoppingBag} color="emerald" onClick={() => onNavigate('companies')} sub={`${onMarket.length} assets`} />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {!audienceError && priorityCounts && <>
+          <Kpi label="Late Stage audience" value={priorityCounts['Late Stage'] || 0} icon={Target} color="teal" onClick={() => onNavigate('abmaudience')} sub="Expected launch within 24 months" />
           <Kpi label="Priority 1 accounts" value={priorityCounts['Priority 1'] || 0} icon={Target} color="emerald" onClick={() => onNavigate('abmaudience')} sub="Within 18 months; closed won excluded" />
-          <Kpi label="Priority 2 accounts" value={priorityCounts['Priority 2'] || 0} icon={Target} color="blue" onClick={() => onNavigate('abmaudience')} sub="Outside Priority 1; closed won excluded" />
+          <Kpi label="Priority 2 accounts" value={priorityCounts['Priority 2'] || 0} icon={Target} color="blue" onClick={() => onNavigate('abmaudience')} sub="Beyond 18, within 24 months; closed won excluded" />
         </>}
         {audienceError && <div role="alert" className="text-sm text-red-700">Audience counts unavailable. <button className="underline" onClick={refreshAudiences}>Retry</button></div>}
         {!audienceError && !priorityCounts && <p className="text-sm text-slate-500">Loading audience counts...</p>}

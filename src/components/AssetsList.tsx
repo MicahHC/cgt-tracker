@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { assignCommercialTier } from '../lib/scoring';
 import { supabase } from '../lib/supabase';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtAssetWithCompany, CgtCompany, Segment, Tier } from '../types/database';
@@ -42,7 +43,7 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
     ]);
     const companyMap: Record<string, CgtCompany> = {};
     (companyData as CgtCompany[] | null)?.forEach(c => { companyMap[c.id] = c; });
-    const enriched = ((assetData as CgtAsset[] | null) || []).map(a => ({ ...a, company: companyMap[a.company_id] }));
+    const enriched = ((assetData as CgtAsset[] | null) || []).map(a => ({ ...a, commercial_priority_tier: assignCommercialTier(a), company: companyMap[a.company_id] }));
     setAssets(enriched);
     setLoading(false);
   }
@@ -54,7 +55,8 @@ export function AssetsList({ onOpenAsset, onCreateAsset, canEdit }: AssetsListPr
         const hay = `${a.asset_name} ${a.company?.company_name || ''} ${a.lead_indication} ${a.target_indication} ${a.modality}`.toLowerCase();
         if (!hay.includes(s)) return false;
       }
-      if (segment !== 'all' && a.segment !== segment) return false;
+      if (segment === 'Late Stage' && a.commercial_priority_tier !== 'Tier 1' && a.commercial_priority_tier !== 'Tier 2') return false;
+      if (segment !== 'all' && segment !== 'Late Stage' && a.segment !== segment) return false;
       if (commercialTier !== 'all' && a.commercial_priority_tier !== commercialTier) return false;
       if (mfg !== 'all' && a.manufacturing_status !== mfg) return false;
       if (confidence !== 'all' && a.confidence_level !== confidence) return false;

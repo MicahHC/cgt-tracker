@@ -12,7 +12,7 @@ export function Badge({ children, className = '' }: { children: ReactNode; class
 
 export function TierBadge({ tier }: { tier: Tier | null | undefined }) {
   if (!tier) return <Badge className="bg-slate-50 text-slate-400 border-slate-200">Unscored</Badge>;
-  return <Badge className={tierColor(tier)}>{tier}</Badge>;
+  return <Badge className={tierColor(tier)}>{tier === 'Tier 1' ? 'Priority 1' : tier === 'Tier 2' ? 'Priority 2' : tier}</Badge>;
 }
 
 export function SegmentBadge({ segment }: { segment: string }) {

@@ -5,6 +5,8 @@ export type AudienceMember = {
   domain: string;
   audience_segment: string;
   is_client: boolean;
+  priority_label?: string;
+  launch_evidence?: string;
 };
 
 export type ClientAccount = { account_name: string; domain: string };
