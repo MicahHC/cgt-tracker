@@ -1,0 +1,5089 @@
+{
+  "checked_at": "2026-09-23T21:54:41.306Z",
+  "limitation": "Registry search results are leads only. Verify exact product, sponsor, indication and U.S. sites before changing phase. Study dates are never launch dates.",
+  "rows": [
+    {
+      "asset_id": "4a5ae448-3a3d-464b-8871-c35ef324fd2b",
+      "company": "4D Molecular Therapeutics Inc",
+      "therapy": "4D-150 (wAMD) / 4D-310",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "fe48c238-0cc0-4250-9f93-885f7317a838",
+      "company": "4D Molecular Therapeutics Inc",
+      "therapy": "zunibergene rocparvovec",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "aa63e726-6933-44df-a0c2-d83d4e0d78e0",
+      "company": "AbbVie Inc",
+      "therapy": "Allergan Gene Therapy (Ocular)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "e7151a1f-bf57-41e5-ad41-828687b66a5f",
+      "company": "AbbVie Inc",
+      "therapy": "surabgene lomparvovec (surabgene lomparvovec [INN])",
+      "studies": [
+        {
+          "nct_id": "NCT05407636",
+          "title": "Pivotal 2 Study of RGX-314 Gene Therapy in Participants With nAMD",
+          "sponsor": "AbbVie",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-03",
+          "interventions": [
+            "ABBV-RGX-314 Dose 1",
+            "ABBV-RGX-314 Dose 2",
+            "Aflibercept (EYLEA®)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05407636"
+        },
+        {
+          "nct_id": "NCT07007065",
+          "title": "Study to Assess the Injection Burden, Adverse Events, Change in Disease Activity, and Long-Term Preservation of Visual Acuity of Surabgene Lomparvovec in Adult Participants With Neovascular Age-Related Macular Degeneration (nAMD)",
+          "sponsor": "AbbVie",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-15",
+          "interventions": [
+            "Surabgene Lomparvovec (ABBV-RGX-314)",
+            "Ranibizumab Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07007065"
+        },
+        {
+          "nct_id": "NCT07592273",
+          "title": "Surabgene Lomparvovec Administered in the Suprachoroidal Space in Adult Participants With Diabetic Retinopathy Without Center-Involved Diabetic Macular Edema",
+          "sponsor": "AbbVie",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "Surabgene Lomparvovec",
+            "Sham",
+            "Topical Steroid",
+            "Artificial Tears"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07592273"
+        },
+        {
+          "nct_id": "NCT04704921",
+          "title": "Pivotal 1 Study of ABBV-RGX-314 (Also Known as RGX-314) Gene Therapy Administered Via Subretinal Delivery One Time in Participants With nAMD",
+          "sponsor": "AbbVie",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-04-28",
+          "interventions": [
+            "ABBV-RGX-314",
+            "ABBV-RGX-314",
+            "Ranibizumab (LUCENTIS®)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04704921"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "8c824667-a8b2-4857-8ee5-a8a27d639f7d",
+      "company": "Adverum Biotechnologies Inc",
+      "therapy": "ixoberogene soroparvovec",
+      "studies": [
+        {
+          "nct_id": "NCT04418427",
+          "title": "ADVM-022 Intravitreal Gene Therapy for DME",
+          "sponsor": "Adverum Biotechnologies, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-07-10",
+          "interventions": [
+            "6E11 vg/eye of ADVM-022",
+            "2E11 vg/eye of ADVM-022",
+            "Aflibercept"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04418427"
+        },
+        {
+          "nct_id": "NCT07630649",
+          "title": "Ixoberogene Soroparvovec (Ixo-vec) Contralateral Dosing Study in Participants With Neovascular Age-related Macular Degeneration",
+          "sponsor": "Adverum Biotechnologies, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-05",
+          "interventions": [
+            "Ixo-vec"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07630649"
+        },
+        {
+          "nct_id": "NCT06856577",
+          "title": "Efficacy and Safety Study of Ixoberogene Soroparvovec (Ixo-vec) in Participants With Neovascular Age-Related Macular Degeneration",
+          "sponsor": "Adverum Biotechnologies, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-05-22",
+          "interventions": [
+            "Ixo-vec",
+            "Aflibercept"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06856577"
+        },
+        {
+          "nct_id": "NCT04645212",
+          "title": "Long-term Study of ADVM-022 in Neovascular (Wet) AMD [OPTIC-EXT]",
+          "sponsor": "Adverum Biotechnologies, Inc.",
+          "phase": [],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-02-10",
+          "interventions": [
+            "ADVM-022"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04645212"
+        },
+        {
+          "nct_id": "NCT07482176",
+          "title": "Efficacy and Safety Study of Ixoberogene Soroparvovec (Ixo-vec) in Participants With Neovascular Age-related Macular Degeneration (AQUARIUS)",
+          "sponsor": "Adverum Biotechnologies, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-15",
+          "interventions": [
+            "Ixo-vec",
+            "Aflibercept"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07482176"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "2d1b5395-880a-4f44-a4bc-91ad9c2d81d6",
+      "company": "AiVita Biomedical Inc",
+      "therapy": "DC Vaccine Programs",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "87e2c708-9053-437a-958f-c68c27c5b0bd",
+      "company": "Asklepios BioPharmaceutical Inc",
+      "therapy": "AskBio AAV Gene Therapy Programs",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "ffd637e7-54d0-4d8d-9ec5-b1fd4f221fa2",
+      "company": "Astellas Gene Therapies",
+      "therapy": "AT132 / Pompe Program",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "1ee0e435-7bb8-4ed5-b584-fd3661899901",
+      "company": "AstraZeneca Plc",
+      "therapy": "CGT Portfolio",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "d2d422a4-7fd9-461f-9f27-248eed5cf73b",
+      "company": "Atsena Therapeutics Inc",
+      "therapy": "ATSN-201",
+      "studies": [
+        {
+          "nct_id": "NCT05878860",
+          "title": "ATSN-201 Gene Therapy in RS1-Associated X-linked Retinoschisis",
+          "sponsor": "Atsena Therapeutics Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-21",
+          "interventions": [
+            "ATSN-201"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05878860"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "b6aae878-8af2-49f7-b8d3-deaed01d5cde",
+      "company": "Aurion Biotech",
+      "therapy": "(neltependocel + Y-27632) (neltependocel [INN])",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "f183560a-ca0a-4f84-9cad-e15428789ec0",
+      "company": "Aurion Biotech",
+      "therapy": "AURN001 (Corneal Edema)",
+      "studies": [
+        {
+          "nct_id": "NCT06041256",
+          "title": "A Phase 1/2 Study of AURN001 in Subjects With Corneal Edema Secondary to Corneal Endothelial Dysfunction (ABA-1)",
+          "sponsor": "Aurion Biotech",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-12-17",
+          "interventions": [
+            "AURN001",
+            "Corneal Endothelial Cells",
+            "Y27632"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06041256"
+        },
+        {
+          "nct_id": "NCT06630169",
+          "title": "Study of Cryopreserved AURN001 in Subjects With Corneal Edema Secondary to Corneal Endothelial Dysfunction",
+          "sponsor": "Aurion Biotech",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-01-28",
+          "interventions": [
+            "Cryopreserved AURN001"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06630169"
+        },
+        {
+          "nct_id": "NCT07368959",
+          "title": "AURN001 Efficacy in Participants With Corneal Edema Secondary to Corneal Endothelial Dysfunction",
+          "sponsor": "Aurion Biotech",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-05-22",
+          "interventions": [
+            "Combination Product: AURN001 + Y-27632",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07368959"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "473f3fe0-28b2-499c-9e5c-337e542f92bd",
+      "company": "Aurion Biotech",
+      "therapy": "Vyznova",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "94bb5f80-a440-4240-8ee8-504c32bbd31d",
+      "company": "Beacon Therapeutics Ltd",
+      "therapy": "laruparetigene zovaparvovec",
+      "studies": [
+        {
+          "nct_id": "NCT04850118",
+          "title": "A Clinical Trial Evaluating the Safety and Efficacy of a Single Subretinal Injection of AGTC-501 in Participants With XLRP",
+          "sponsor": "Beacon Therapeutics",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-04-07",
+          "interventions": [
+            "rAAV2tYF-GRK1-hRPGRco",
+            "Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04850118"
+        },
+        {
+          "nct_id": "NCT07174726",
+          "title": "A Phase 2 Open-label Study to Evaluate the Safety of Laruparetigene Zovaparvovec Administered Bilaterally in Male Participants With X-Linked Retinitis Pigmentosa",
+          "sponsor": "Beacon Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-06-25",
+          "interventions": [
+            "Adeno-associated virus vector expressing a human RPGR gene"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07174726"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "5b289282-7e67-4588-bf4b-26edc9e94fbd",
+      "company": "BioCardia Inc",
+      "therapy": "CardiAMP",
+      "studies": [
+        {
+          "nct_id": "NCT03455725",
+          "title": "CardiAMP Cell Therapy Chronic Myocardial Ischemia Trial",
+          "sponsor": "BioCardia, Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-01-06",
+          "interventions": [
+            "CardiAMP Cell Therapy System",
+            "Sham Treatment"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03455725"
+        },
+        {
+          "nct_id": "NCT06258447",
+          "title": "CardiAMP Heart Failure II Trial for Patients With Ischemic Heart Failure With Reduced Ejection Fraction",
+          "sponsor": "BioCardia, Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-02-09",
+          "interventions": [
+            "Autologous bone marrow mononuclear cells processed / delivered using the CardiAMP cell therapy system"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06258447"
+        },
+        {
+          "nct_id": "NCT02438306",
+          "title": "CardiAMP™ Cell Therapy for Heart Failure Trial",
+          "sponsor": "BioCardia, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-09-19",
+          "interventions": [
+            "Autologous cell therapy",
+            "Sham"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02438306"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "471dcae8-56eb-4a91-a1db-27e0640a7699",
+      "company": "Biogen",
+      "therapy": "NightstaRx Ophthalmology Pipeline",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "319e1850-f880-49ff-b972-fcff04b2ab92",
+      "company": "Bioniche Life Sciences Inc",
+      "therapy": "BCG-based Bladder Therapy",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "36beb3cf-ed9f-4fac-9d7c-41295d2d72da",
+      "company": "Biostar Stem Cell Research Institute",
+      "therapy": "JointStem",
+      "studies": [
+        {
+          "nct_id": "NCT02658344",
+          "title": "Clinical Trial to Evaluate Efficacy and Safety of JOINTSTEM in Patients With Degenerative Arthritis",
+          "sponsor": "R-Bio",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-06-05",
+          "interventions": [
+            "JOINTSTEM",
+            "Saline solution"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02658344"
+        },
+        {
+          "nct_id": "NCT04427930",
+          "title": "Follow-up Study for Participants of Jointstem Phase 3 Clinical Trial",
+          "sponsor": "R-Bio",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2023-07-10",
+          "interventions": [
+            "JOINTSTEM"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04427930"
+        },
+        {
+          "nct_id": "NCT03509025",
+          "title": "Follow-up Study for Participants Jointstem Clinical Trial",
+          "sponsor": "R-Bio",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-09-28",
+          "interventions": [
+            "Jointstem"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03509025"
+        },
+        {
+          "nct_id": "NCT03000712",
+          "title": "Investigator Initiated Trial to Evaluate the Efficacy and Safety of Intra-articular Injection of ADMSC Comared to Negative Control After High Tibial Osteotomy in the Osteoarthritis Patients.",
+          "sponsor": "R-Bio",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2021-01-29",
+          "interventions": [
+            "Autologous Adipose Tissue derived MSCs 1x10^8cells/3ml"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03000712"
+        },
+        {
+          "nct_id": "NCT03990805",
+          "title": "A Phase 3 Study to Evaluate the Efficacy and Safety of JointStem in Treatment of Osteoarthritis",
+          "sponsor": "R-Bio",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-09-28",
+          "interventions": [
+            "JOINTSTEM",
+            "saline"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03990805"
+        },
+        {
+          "nct_id": "NCT01300598",
+          "title": "Autologous Adipose Tissue Derived Mesenchymal Stem Cells Transplantation in Patient With Degenerative Arthritis",
+          "sponsor": "R-Bio",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-06-05",
+          "interventions": [
+            "Autologous Adipose Tissue derived MSCs Transplantation"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01300598"
+        },
+        {
+          "nct_id": "NCT02674399",
+          "title": "A Phase 2 Study to Evaluate the Efficacy and Safety of JointStem in Treatment of Osteoarthritis",
+          "sponsor": "Nature Cell Co. Ltd.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2021-08-10",
+          "interventions": [
+            "JointStem",
+            "Synvisc-One"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02674399"
+        },
+        {
+          "nct_id": "NCT04825730",
+          "title": "Follow-up Study for Participants of Jointstem Investigator Initiated Trial by Arthroscopy",
+          "sponsor": "R-Bio",
+          "phase": [
+            "NA"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2022-09-28",
+          "interventions": [
+            "JOINTSTEM"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04825730"
+        },
+        {
+          "nct_id": "NCT04821102",
+          "title": "Investigator Initiated Trial to Evaluate Cartilage Regeneration by Arthroscopy After JOINTSTEM Administration",
+          "sponsor": "R-Bio",
+          "phase": [
+            "NA"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2022-09-28",
+          "interventions": [
+            "JOINTSTEM",
+            "Saline"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04821102"
+        },
+        {
+          "nct_id": "NCT04368806",
+          "title": "A Phase 2b/3a Study to Evaluate the Efficacy and Safety of JointStem in Patients Diagnosed as Knee Osteoarthritis",
+          "sponsor": "Nature Cell Co. Ltd.",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-03",
+          "interventions": [
+            "JointStem",
+            "Placebo Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04368806"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "dd9e8d7e-d9d1-4948-89e5-146fb4accb85",
+      "company": "Biostar Stem Cell Research Institute",
+      "therapy": "Stem Cell Programs",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "6e892826-d043-4662-a272-9233aa2c333b",
+      "company": "BlueRock Therapeutics LP",
+      "therapy": "bemdaneprocel",
+      "studies": [
+        {
+          "nct_id": "NCT06944522",
+          "title": "A Study to Investigate the Efficacy and Safety of Bemdaneprocel in Adults Who Have Parkinson's Disease",
+          "sponsor": "BlueRock Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-04",
+          "interventions": [
+            "bemdaneprocel",
+            "Sham surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06944522"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "74ddcf51-24cf-4623-883f-519b2c30e88c",
+      "company": "BlueRock Therapeutics LP",
+      "therapy": "DA01 (Parkinson's)",
+      "studies": [
+        {
+          "nct_id": "NCT02056275",
+          "title": "A Study of an Oral Nutrition Supplement (ONS) in Children.",
+          "sponsor": "Abbott Nutrition",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2015-03-06",
+          "interventions": [
+            "Nutrition supplement + dietary counseling",
+            "Dietary Counseling"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02056275"
+        },
+        {
+          "nct_id": "NCT04802733",
+          "title": "Phase 1 Safety and Tolerability Study of MSK-DA01 Cell Therapy for Advanced Parkinson's Disease",
+          "sponsor": "BlueRock Therapeutics",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-11-01",
+          "interventions": [
+            "MSK-DA01",
+            "MSK-DA01 Cell Delivery Device"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04802733"
+        },
+        {
+          "nct_id": "NCT06154239",
+          "title": "Screening With Tampons: Evaluating Diagnostic Accuracy and HPV and Assessing Participant Views",
+          "sponsor": "Anne's Day Ltd",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-07-31",
+          "interventions": [
+            "DAYE Diagnostic Tampon",
+            "Vaginal self-swab",
+            "Clinician vaginal swab"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06154239"
+        },
+        {
+          "nct_id": "NCT06821204",
+          "title": "Detection of Pathogenic Bacteria in Make-up Tools",
+          "sponsor": "Ufuk University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-04-24",
+          "interventions": [
+            "Health education group",
+            "control group"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06821204"
+        },
+        {
+          "nct_id": "NCT06944522",
+          "title": "A Study to Investigate the Efficacy and Safety of Bemdaneprocel in Adults Who Have Parkinson's Disease",
+          "sponsor": "BlueRock Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-04",
+          "interventions": [
+            "bemdaneprocel",
+            "Sham surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06944522"
+        },
+        {
+          "nct_id": "NCT05897957",
+          "title": "Continued Evaluation of Patients With Parkinson's Disease Who Previously Received BRT-DA01",
+          "sponsor": "BlueRock Therapeutics",
+          "phase": [],
+          "status": "ENROLLING_BY_INVITATION",
+          "last_update": "2024-04-12",
+          "interventions": [],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05897957"
+        },
+        {
+          "nct_id": "NCT05363046",
+          "title": "Noninterventional Study Evaluating Parkinson's Disease Diary Use",
+          "sponsor": "BlueRock Therapeutics",
+          "phase": [],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2024-07-31",
+          "interventions": [],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05363046"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "db0bee7f-663b-416e-a8f1-4c3b3adf868b",
+      "company": "BrainStorm Cell Therapeutics Inc",
+      "therapy": "NurOwn (ALS)",
+      "studies": [
+        {
+          "nct_id": "NCT04681118",
+          "title": "Expanded Access Protocol: Repeated Administration of Nurown® (Autologous MSC-NTF Cells) for the Treatment of ALS",
+          "sponsor": "Brainstorm-Cell Therapeutics",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2024-04-23",
+          "interventions": [
+            "NurOwn (MSC-NTF cells)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04681118"
+        },
+        {
+          "nct_id": "NCT06973629",
+          "title": "Efficacy and Safety of MSC-NTF (NurOwn) in Participants With Early Symptomatic ALS and Moderate Disease Presentation in ALS (ENDURANCE STUDY)",
+          "sponsor": "Brainstorm-Cell Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2025-05-22",
+          "interventions": [
+            "Debamestrocel - MSC-NTF (NurOwn)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06973629"
+        },
+        {
+          "nct_id": "NCT02017912",
+          "title": "Phase 2, Randomized, Double Blind, Placebo Controlled Multicenter Study of Autologous MSC-NTF Cells in Patients With ALS",
+          "sponsor": "Brainstorm-Cell Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-06-06",
+          "interventions": [
+            "Nurown MSC-NTF cells",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02017912"
+        },
+        {
+          "nct_id": "NCT03280056",
+          "title": "Safety and Efficacy of Repeated Administrations of NurOwn® in ALS Patients",
+          "sponsor": "Brainstorm-Cell Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-02-29",
+          "interventions": [
+            "NurOwn® (MSC-NTF cells)",
+            "Placebo",
+            "Bone Marrow aspiration"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03280056"
+        },
+        {
+          "nct_id": "NCT03799718",
+          "title": "Safety and Efficacy of Repeated Administration of NurOwn (MSC-NTF Cells) in Participants With Progressive MS",
+          "sponsor": "Brainstorm-Cell Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2023-12-04",
+          "interventions": [
+            "NurOwn (MSC-NTF cells)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03799718"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "35237229-66ce-47af-a080-60d100fb5b2e",
+      "company": "BriaCell Therapeutics Corp",
+      "therapy": "Bria-IMT (BriaVax)",
+      "studies": [
+        {
+          "nct_id": "NCT06072612",
+          "title": "Study of the Bria-IMT Regimen and CPI vs Physicians' Choice in Advanced Metastatic Breast Cancer.",
+          "sponsor": "BriaCell Therapeutics Corporation",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-02",
+          "interventions": [
+            "SV-BR-1-GM",
+            "Cyclophosphamide",
+            "Interferon infiltration of the inoculation site",
+            "Retifanlimab",
+            "Treatment of Physician's Choice"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06072612"
+        },
+        {
+          "nct_id": "NCT04418219",
+          "title": "Breast Cancer Vaccine in Combination With Pembrolizumab for Treatment of Persistent, Recurrent, or Metastatic Breast Cancer",
+          "sponsor": "Thomas Jefferson University",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2025-04-29",
+          "interventions": [
+            "Cyclophosphamide",
+            "Allogeneic GM-CSF-secreting Breast Cancer Vaccine SV-BR-1-GM",
+            "Pembrolizumab",
+            "Recombinant Interferon Alpha 2b-like Protein",
+            "Questionnaire Administration",
+            "Quality of Life Assessment"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04418219"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "3b0a205e-77f8-49ea-87b7-172c128dffae",
+      "company": "Bristol-Myers Squibb Co",
+      "therapy": "arlocabtagene autoleucel",
+      "studies": [
+        {
+          "nct_id": "NCT06297226",
+          "title": "Study of Arlocabtagene Autoleucel (BMS-986393) a GPRC5D-directed CAR T Cell Therapy in Adult Participants With Relapsed or Refractory Multiple Myeloma",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-14",
+          "interventions": [
+            "Arlocabtagene Autoleucel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06297226"
+        },
+        {
+          "nct_id": "NCT06615479",
+          "title": "A Study to Compare the Efficacy and Safety of BMS-986393 Versus Standard Regimens in Adult Participants With Relapsed or Refractory and Lenalidomide-exposed Multiple Myeloma (QUINTESSENTIAL-2)",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-15",
+          "interventions": [
+            "BMS-986393",
+            "Cyclophosphamide",
+            "Fludarabine",
+            "Daratumumab",
+            "Pomalidomide",
+            "Dexamethasone",
+            "Carfilzomib"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06615479"
+        },
+        {
+          "nct_id": "NCT06121843",
+          "title": "A Study to Evaluate the Safety, Effectiveness and Tolerable Dose of Arlocabtagene Autoleucel (BMS-986393) in Novel Combinations in Participants With Relapsed and/or Refractory Multiple Myeloma",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-16",
+          "interventions": [
+            "BMS-986393",
+            "Alnuctamab",
+            "Mezigdomide",
+            "Iberdomide",
+            "Elranatamab",
+            "Dexamethasone"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06121843"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "2dd11561-7835-4b8f-b8f4-2c856b4c0f55",
+      "company": "Bristol-Myers Squibb Co",
+      "therapy": "zolacabtagene autoleucel",
+      "studies": [
+        {
+          "nct_id": "NCT07603557",
+          "title": "Study of Zola-cel (BMS-986353), in Participants With Autoimmune Cytopenia (Breakfree-AiCE)",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2026-07-09",
+          "interventions": [
+            "BMS-986353",
+            "Fludarabine Phosphate",
+            "Cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07603557"
+        },
+        {
+          "nct_id": "NCT07015983",
+          "title": "A Study of CC-97540 (BMS-986353 or Zola-cel), CD19-Targeted NEX-T CAR T Cells, in Participants With Active SLE Despite Immunosuppressants (Breakfree-SLE)",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-03",
+          "interventions": [
+            "CC-97540",
+            "Fludarabine",
+            "Cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07015983"
+        },
+        {
+          "nct_id": "NCT07335562",
+          "title": "A Study to Compare the Efficacy and Safety of BMS-986353 (Zolacabtagene- Autoleucel / Zola-cel), CD19-CAR T Cells, Versus Standard of Care in Participants With Active Systemic Sclerosis",
+          "sponsor": "Juno Therapeutics, Inc., a Bristol-Myers Squibb Company",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "BMS-986353",
+            "Fludarabine",
+            "Cyclophosphamide",
+            "Tocilizumab",
+            "Rituximab",
+            "Nintedanib"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07335562"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "74594ffd-6483-48d5-88b1-8fd7c40f8db6",
+      "company": "Cabaletta Bio",
+      "therapy": "Rese-cel (Myositis)",
+      "studies": [
+        {
+          "nct_id": "NCT04422912",
+          "title": "A Phase 1/2, Open-label, Safety and Dosing Study of Autologous CART Cells (Desmoglein 3 Chimeric Autoantibody Receptor T Cells [DSG3-CAART] or CD19-specific Chimeric Antigen Receptor T Cells [CABA-201]) in Subjects With Active, Pemphigus Vulgaris (RESET-PV)",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-05-29",
+          "interventions": [
+            "DSG3-CAART",
+            "CABA-201"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04422912"
+        },
+        {
+          "nct_id": "NCT06154252",
+          "title": "RESET-Myositis: An Open-Label Study to Evaluate the Safety and Efficacy of CABA-201 in Subjects With Active Idiopathic Inflammatory Myopathy or Juvenile Idiopathic Inflammatory Myopathy",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "CABA-201 following preconditioning with fludarabine and cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06154252"
+        },
+        {
+          "nct_id": "NCT06328777",
+          "title": "RESET-SSc: An Open-Label Study to Evaluate the Safety and Efficacy of CABA-201, a CD19-CAR T Cell Therapy, in Subjects With Systemic Sclerosis",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-17",
+          "interventions": [
+            "CABA-201",
+            "CABA-201"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06328777"
+        },
+        {
+          "nct_id": "NCT07006805",
+          "title": "RESET-MS: A Study to Evaluate the Safety and Efficacy of CABA-201 in Participants With Multiple Sclerosis",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2026-06-25",
+          "interventions": [
+            "CABA-201"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07006805"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "ef71fb28-3e3a-4ca8-a58e-42566f67a4cc",
+      "company": "Cabaletta Bio",
+      "therapy": "resecabtagene autoleucel (resecabtagene autoleucel [INN])",
+      "studies": [
+        {
+          "nct_id": "NCT04422912",
+          "title": "A Phase 1/2, Open-label, Safety and Dosing Study of Autologous CART Cells (Desmoglein 3 Chimeric Autoantibody Receptor T Cells [DSG3-CAART] or CD19-specific Chimeric Antigen Receptor T Cells [CABA-201]) in Subjects With Active, Pemphigus Vulgaris (RESET-PV)",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-05-29",
+          "interventions": [
+            "DSG3-CAART",
+            "CABA-201"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04422912"
+        },
+        {
+          "nct_id": "NCT06154252",
+          "title": "RESET-Myositis: An Open-Label Study to Evaluate the Safety and Efficacy of CABA-201 in Subjects With Active Idiopathic Inflammatory Myopathy or Juvenile Idiopathic Inflammatory Myopathy",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "CABA-201 following preconditioning with fludarabine and cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06154252"
+        },
+        {
+          "nct_id": "NCT06328777",
+          "title": "RESET-SSc: An Open-Label Study to Evaluate the Safety and Efficacy of CABA-201, a CD19-CAR T Cell Therapy, in Subjects With Systemic Sclerosis",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-17",
+          "interventions": [
+            "CABA-201",
+            "CABA-201"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06328777"
+        },
+        {
+          "nct_id": "NCT07006805",
+          "title": "RESET-MS: A Study to Evaluate the Safety and Efficacy of CABA-201 in Participants With Multiple Sclerosis",
+          "sponsor": "Cabaletta Bio",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2026-06-25",
+          "interventions": [
+            "CABA-201"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07006805"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "a32d8b5f-4698-4cbc-84d5-058ee5c5914e",
+      "company": "Candel Therapeutics Inc",
+      "therapy": "CAN-2409 (Prostate)",
+      "studies": [
+        {
+          "nct_id": "NCT03131037",
+          "title": "Intratumoral Gene Mediated Cytotoxic Immunotherapy in Patients With Resectable Non-Small Cell Lung Cancer",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-07-11",
+          "interventions": [
+            "CAN-2409 + valacyclovir"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03131037"
+        },
+        {
+          "nct_id": "NCT00589875",
+          "title": "Phase 2a Study of CAN-2409 With Standard Radiation Therapy for Malignant Glioma",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-04-03",
+          "interventions": [
+            "CAN-2409",
+            "Valacyclovir",
+            "Temozolomide",
+            "Radiation therapy"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00589875"
+        },
+        {
+          "nct_id": "NCT01436968",
+          "title": "Phase 3 Study of ProstAtak® Immunotherapy With Standard Radiation Therapy for Localized Prostate Cancer",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-07-30",
+          "interventions": [
+            "Aglatimagene besadenovec + valacyclovir",
+            "Placebo + valacyclovir"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01436968"
+        },
+        {
+          "nct_id": "NCT07332000",
+          "title": "A Biomarker Study in Men With Localized Prostate Cancer Treated With Aglatimagene Besadenovec",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-15",
+          "interventions": [
+            "aglatimagene besadenovec + valacyclovir",
+            "External Beam Radiation Therapy (EBRT)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07332000"
+        },
+        {
+          "nct_id": "NCT02446093",
+          "title": "Neoadjuvant CAN-2409 in Combination With Chemoradiation or SBRT for Borderline Resectable Pancreatic Adenocarcinoma",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2024-01-08",
+          "interventions": [
+            "Aglatimagene besadenovec",
+            "Chemoradiation",
+            "Stereotactic body radiation therapy",
+            "Surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02446093"
+        },
+        {
+          "nct_id": "NCT04495153",
+          "title": "CAN-2409 Plus Prodrug With Standard of Care Immune Checkpoint Inhibitor for Stage III/IV NSCLC",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-08-22",
+          "interventions": [
+            "Aglatimagene besadenovec"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04495153"
+        },
+        {
+          "nct_id": "NCT07660094",
+          "title": "Aglatimagene Besadenovec + Prodrug and Pembrolizumab vs Docetaxel for Stage IV Non-Squamous NSCLC Progressing on Pembrolizumab (AURORA)",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-06-22",
+          "interventions": [
+            "Aglatimagene Besadenovec",
+            "Valacyclovir",
+            "Pembrolizumab",
+            "Docetaxel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07660094"
+        },
+        {
+          "nct_id": "NCT02768363",
+          "title": "Randomized Controlled Trial of CAN-2409 Immunotherapy During Active Surveillance for Prostate Cancer (ULYSSES)",
+          "sponsor": "Candel Therapeutics, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-07-30",
+          "interventions": [
+            "aglatimagene besadenovec",
+            "placebo",
+            "valacyclovir"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02768363"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "3c3b53f2-91b3-4682-b83e-99e290bdb10d",
+      "company": "Cartesian Therapeutics Inc",
+      "therapy": "Descartes-08",
+      "studies": [
+        {
+          "nct_id": "NCT04146051",
+          "title": "Descartes-08 CAR-T Cells in Generalized Myasthenia Gravis (MG)",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-14",
+          "interventions": [
+            "Descartes-08"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04146051"
+        },
+        {
+          "nct_id": "NCT03448978",
+          "title": "Autologous CD8+ T-cells Expressing an Anti-BCMA CAR in Patients With Myeloma",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2024-07-01",
+          "interventions": [
+            "Descartes-08",
+            "Fludarabine",
+            "Cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03448978"
+        },
+        {
+          "nct_id": "NCT06038474",
+          "title": "Descartes-08 for Patients With Systemic Lupus Erythematosus",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-03-27",
+          "interventions": [
+            "Descartes-08"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06038474"
+        },
+        {
+          "nct_id": "NCT04816526",
+          "title": "Descartes-08 Consolidation Treatment in Patients With High-Risk Multiple Myeloma High-Risk Multiple Myeloma Who Have Residual Disease After Induction Therapy",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2024-10-08",
+          "interventions": [
+            "Descartes 08"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04816526"
+        },
+        {
+          "nct_id": "NCT07089121",
+          "title": "Descartes-08 for Children, Adolescents, and Young Adults With Autoimmune Disorders",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-27",
+          "interventions": [
+            "Descartes-08"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07089121"
+        },
+        {
+          "nct_id": "NCT06799247",
+          "title": "Investigating an mRNA CAR T-cell Therapy, Known as Descartes-08, as a Potential Approach to Treat Myasthenia Gravis",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-01",
+          "interventions": [
+            "Decartes-08",
+            "Placebo Drug"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06799247"
+        },
+        {
+          "nct_id": "NCT07391605",
+          "title": "Descartes-08 in Autoantibody Myositis",
+          "sponsor": "Cartesian Therapeutics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-17",
+          "interventions": [
+            "Descartes-08",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07391605"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "b8b964b2-e2c4-45c1-b6d2-dbfaf23e2181",
+      "company": "Castle Creek Biosciences Inc",
+      "therapy": "dabocemagene autoficel",
+      "studies": [
+        {
+          "nct_id": "NCT06892639",
+          "title": "Evaluation of D-Fi for the Treatment of Wounds Due to DEB",
+          "sponsor": "Castle Creek Biosciences, LLC.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-03-13",
+          "interventions": [
+            "D-Fi"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06892639"
+        },
+        {
+          "nct_id": "NCT04213261",
+          "title": "A Study of FCX-007 for Recessive Dystrophic Epidermolysis Bullosa",
+          "sponsor": "Castle Creek Biosciences, LLC.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-03-18",
+          "interventions": [
+            "FCX-007 (dabocemagene autoficel; see below for FCX-007 description)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04213261"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "68af79a2-34b7-48b9-ab7e-a8b05e0b21d1",
+      "company": "Cellectis SA",
+      "therapy": "lasme-cel (UCART22)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "861bd5b8-4c3b-4588-a851-c476bd3f02f9",
+      "company": "CG Oncology Inc",
+      "therapy": "Cretostimogene (NMIBC)",
+      "studies": [
+        {
+          "nct_id": "NCT04452591",
+          "title": "Study of Cretostimogene Given in Patients With Non-Muscle Invasive Bladder Cancer ,Unresponsive to Bacillus-Calmette-Guerin",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-10",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04452591"
+        },
+        {
+          "nct_id": "NCT07283835",
+          "title": "Study of Cretostimogene Given in Patients With Non-Muscle Invasive Bladder Cancer ,Unresponsive to Bacillus-Calmette-Guerin",
+          "sponsor": "Lepu Biopharma Co., Ltd.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-23",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07283835"
+        },
+        {
+          "nct_id": "NCT06443944",
+          "title": "An Expanded Access Program of Cretostimogene Grenadenorepvec for Treatment of NMIBC for Patients Unresponsive to BCG",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [],
+          "status": "AVAILABLE",
+          "last_update": "2026-09-11",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06443944"
+        },
+        {
+          "nct_id": "NCT06111235",
+          "title": "A Study of Adjuvant Cretostimogene Grenadenorepvec for Treatment of Intermediate Risk NMIBC Following TURBT",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-01",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06111235"
+        },
+        {
+          "nct_id": "NCT06567743",
+          "title": "Phase 2 Study to Evaluate Safety and Efficacy of Cretostimogene Grenadenorepvec in High-Risk NMIBC",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-03",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06567743"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "662085f2-08de-4cb9-8050-91718d38503a",
+      "company": "CG Oncology Inc",
+      "therapy": "cretostimogene grenadenorepvec",
+      "studies": [
+        {
+          "nct_id": "NCT04452591",
+          "title": "Study of Cretostimogene Given in Patients With Non-Muscle Invasive Bladder Cancer ,Unresponsive to Bacillus-Calmette-Guerin",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-10",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04452591"
+        },
+        {
+          "nct_id": "NCT07283835",
+          "title": "Study of Cretostimogene Given in Patients With Non-Muscle Invasive Bladder Cancer ,Unresponsive to Bacillus-Calmette-Guerin",
+          "sponsor": "Lepu Biopharma Co., Ltd.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-23",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07283835"
+        },
+        {
+          "nct_id": "NCT06443944",
+          "title": "An Expanded Access Program of Cretostimogene Grenadenorepvec for Treatment of NMIBC for Patients Unresponsive to BCG",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [],
+          "status": "AVAILABLE",
+          "last_update": "2026-09-11",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06443944"
+        },
+        {
+          "nct_id": "NCT06111235",
+          "title": "A Study of Adjuvant Cretostimogene Grenadenorepvec for Treatment of Intermediate Risk NMIBC Following TURBT",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-01",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec",
+            "n-dodecyl-B-D-maltoside"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06111235"
+        },
+        {
+          "nct_id": "NCT06567743",
+          "title": "Phase 2 Study to Evaluate Safety and Efficacy of Cretostimogene Grenadenorepvec in High-Risk NMIBC",
+          "sponsor": "CG Oncology, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-03",
+          "interventions": [
+            "Cretostimogene Grenadenorepvec"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06567743"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "ec04be32-0a96-423b-a564-f9c1751c0353",
+      "company": "Cook MyoSite Inc",
+      "therapy": "iltamiocel",
+      "studies": [
+        {
+          "nct_id": "NCT07429890",
+          "title": "REVIVE Prospective Registry Cohort Study",
+          "sponsor": "University of California, Davis",
+          "phase": [],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2026-06-18",
+          "interventions": [
+            "Other: No Intervention (subjects were previously treated with Iltamiocel). This is a observational study and all participants will be observed with no intervention."
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07429890"
+        },
+        {
+          "nct_id": "NCT01893138",
+          "title": "Autologous Muscle Derived Cells for Female Urinary Sphincter Repair",
+          "sponsor": "Cook MyoSite",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2023-01-05",
+          "interventions": [
+            "Placebo",
+            "Iltamiocel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01893138"
+        },
+        {
+          "nct_id": "NCT05776277",
+          "title": "Iltamiocel Compared to Placebo for Chronic Fecal Incontinence in Females With Obstetric Injury",
+          "sponsor": "Cook MyoSite",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-21",
+          "interventions": [
+            "Iltamiocel",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05776277"
+        },
+        {
+          "nct_id": "NCT01600755",
+          "title": "Autologous Cell Therapy for Treatment of Fecal Incontinence",
+          "sponsor": "Cook MyoSite",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-02-16",
+          "interventions": [
+            "Iltamiocel"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01600755"
+        },
+        {
+          "nct_id": "NCT03104517",
+          "title": "Autologous Muscle Derived Cells Compared to Placebo for Urinary Sphincter Repair in Post-surgical Female Stress Incontinence",
+          "sponsor": "Cook MyoSite",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-03-13",
+          "interventions": [
+            "AMDC-USR (iltamiocel)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03104517"
+        },
+        {
+          "nct_id": "NCT06743620",
+          "title": "Observational Registry for Iltamiocel Compared to Placebo for Urinary Sphincter Repair in Post-surgical Female Stress Incontinence",
+          "sponsor": "Cook MyoSite",
+          "phase": [],
+          "status": "ENROLLING_BY_INVITATION",
+          "last_update": "2026-07-22",
+          "interventions": [
+            "iltamiocel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06743620"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "cc4f96fc-be94-43ff-8404-8934c966b22d",
+      "company": "Cook MyoSite Inc",
+      "therapy": "Myoblast (SUI)",
+      "studies": [
+        {
+          "nct_id": "NCT00768066",
+          "title": "The Transendocardial Autologous Cells (hMSC or hBMC) in Ischemic Heart Failure Trial (TAC-HFT)",
+          "sponsor": "University of Miami",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2015-12-14",
+          "interventions": [
+            "Autologous human mesenchymal cells (hMSCs)",
+            "Autologous human bone marrow cells (hBMCs)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00768066"
+        },
+        {
+          "nct_id": "NCT02196467",
+          "title": "Transplantation of Myoblasts to Duchenne Muscular Dystrophy (DMD) Patients",
+          "sponsor": "CHU de Quebec-Universite Laval",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2021-01-29",
+          "interventions": [
+            "Myoblast transplantation",
+            "Saline injection"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02196467"
+        },
+        {
+          "nct_id": "NCT00773227",
+          "title": "Treatment of Dysphagia in Oculopharyngeal Muscular Dystrophy by Autologous Transplantation of Myoblasts",
+          "sponsor": "Assistance Publique - Hôpitaux de Paris",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2015-11-20",
+          "interventions": [
+            "Autologous myoblasts transplantation and myotomy"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT00773227"
+        },
+        {
+          "nct_id": "NCT03564561",
+          "title": "Natural History of Pompe Disease",
+          "sponsor": "Assistance Publique - Hôpitaux de Paris",
+          "phase": [],
+          "status": "RECRUITING",
+          "last_update": "2024-04-08",
+          "interventions": [],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03564561"
+        },
+        {
+          "nct_id": "NCT03458832",
+          "title": "Clinical Trial Readiness to Solve Barriers to Drug Development in FSHD",
+          "sponsor": "University of Kansas Medical Center",
+          "phase": [],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "FSHD-specific functional rating scale",
+            "Electrical Impedance Myography"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03458832"
+        },
+        {
+          "nct_id": "NCT05194631",
+          "title": "Evaluation of the Regeneration Capacity of Satellite Cells From the Quadriceps Compared to That of the Diaphragm",
+          "sponsor": "University Hospital, Montpellier",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-12-06",
+          "interventions": [
+            "Quadriceps microbiopsy using a Tru-Cut biopsy needle"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05194631"
+        },
+        {
+          "nct_id": "NCT05554653",
+          "title": "Influence of Leucine Enriched Amino Acids on Myofibrillar and Collagen Protein Synthesis",
+          "sponsor": "Daniel Moore",
+          "phase": [
+            "NA"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2023-11-13",
+          "interventions": [
+            "Leucine enriched amino acids",
+            "Carbohydrate Placebo"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05554653"
+        },
+        {
+          "nct_id": "NCT00526253",
+          "title": "To Assess Safety and Efficacy of Myoblast Implantation Into Myocardium Post Myocardial Infarction",
+          "sponsor": "Bioheart, Inc.",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2017-07-21",
+          "interventions": [
+            "MyoCell",
+            "MyoCell",
+            "Hypothermosol"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00526253"
+        },
+        {
+          "nct_id": "NCT00626314",
+          "title": "Study to Assess the Efficacy and Safety of Transplanting Autologous Skeletal Myoblasts, Into Infarcted Heart, Using an Catheter Delivery System",
+          "sponsor": "Mytogen, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2008-02-29",
+          "interventions": [
+            "myoblast",
+            "sham"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00626314"
+        },
+        {
+          "nct_id": "NCT02814110",
+          "title": "Efficacy Safety of Granulocyte Colony-stimulating Factor Treatment Children and Adolescents With Muscular Dystrophy",
+          "sponsor": "Medical University of Bialystok",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2021-02-15",
+          "interventions": [
+            "Granulocyte colony-stimulating factor (Filgrastim)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02814110"
+        },
+        {
+          "nct_id": "NCT05279196",
+          "title": "Biological Variables Associated With the Response to Intensive Training in Athletes",
+          "sponsor": "University Hospital, Montpellier",
+          "phase": [
+            "NA"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2024-09-19",
+          "interventions": [
+            "Quadriceps microbiopsy and blood collection"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05279196"
+        },
+        {
+          "nct_id": "NCT03649698",
+          "title": "Exercise and Nutrition for Healthy AgeiNg",
+          "sponsor": "Universitaire Ziekenhuizen KU Leuven",
+          "phase": [
+            "NA"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2024-06-28",
+          "interventions": [
+            "Home-based training program",
+            "High-quality protein supplement",
+            "Omega-3 fatty acid",
+            "Placebo protein powder",
+            "Placebo omega-3"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03649698"
+        },
+        {
+          "nct_id": "NCT01355133",
+          "title": "Safety and Efficacy Study of Intrasphincteric Autologous Myoblast Injection to Treat Stress Urinary Incontinence",
+          "sponsor": "University Medical Centre Ljubljana",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2011-05-17",
+          "interventions": [
+            "Transurethral intrasphincteric autologous myoblast implantation"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01355133"
+        },
+        {
+          "nct_id": "NCT04448626",
+          "title": "Micro-environment Involvement in Muscle Alteration Induced",
+          "sponsor": "University Hospital, Montpellier",
+          "phase": [],
+          "status": "COMPLETED",
+          "last_update": "2020-06-26",
+          "interventions": [],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04448626"
+        },
+        {
+          "nct_id": "NCT03802279",
+          "title": "Evaluate the Effort Test as a Therapeutic Monitoring Tool in Acute Rhabdomyolyses",
+          "sponsor": "Assistance Publique - Hôpitaux de Paris",
+          "phase": [],
+          "status": "COMPLETED",
+          "last_update": "2025-09-12",
+          "interventions": [
+            "Effort test",
+            "Functional tests on fibroblasts"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03802279"
+        },
+        {
+          "nct_id": "NCT07380308",
+          "title": "\" Development of Primary Cultures of Diaphragmatic Myoblasts for Basic Research Purposes \"",
+          "sponsor": "Assistance Publique - Hôpitaux de Paris",
+          "phase": [],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2026-02-02",
+          "interventions": [
+            "During the surgery planned as part of the routine care of the patient, a part of the tissue sample will be saved in order to carry out the analysis planned for the research."
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07380308"
+        },
+        {
+          "nct_id": "NCT00908622",
+          "title": "Study of the Efficacy of Percutaneous Implantation of Autologous Myoblasts in Patients With Old Infarction",
+          "sponsor": "Clinica Universidad de Navarra, Universidad de Navarra",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2015-09-11",
+          "interventions": [
+            "Percutaneous autologous myoblast implantation",
+            "Cardiac revascularization"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT00908622"
+        },
+        {
+          "nct_id": "NCT05488093",
+          "title": "Evaluation of Mobility in Subjects With Severe Knee Osteoarthritis Who Are to Undergo Total Knee Replacement",
+          "sponsor": "University Hospital, Montpellier",
+          "phase": [
+            "NA"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-14",
+          "interventions": [
+            "X-sens sensor"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05488093"
+        },
+        {
+          "nct_id": "NCT01119820",
+          "title": "Tissue Donation for Myoblast Culture",
+          "sponsor": "University of California, Irvine",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-03-04",
+          "interventions": [
+            "Tissue Donation"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01119820"
+        },
+        {
+          "nct_id": "NCT00050765",
+          "title": "Autologous Cultured Myoblasts (BioWhittaker) Transplanted Via Myocardial Injection",
+          "sponsor": "Bioheart, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2006-03-08",
+          "interventions": [
+            "MyoCell™ Autologous Myoblasts"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00050765"
+        }
+      ],
+      "truncated": true
+    },
+    {
+      "asset_id": "ceaa58eb-def3-4ccc-b471-63318bbec5a4",
+      "company": "Corestemchemon Inc",
+      "therapy": "Neuronata-R",
+      "studies": [
+        {
+          "nct_id": "NCT04745299",
+          "title": "Evaluation the Efficacy and Safety of Mutiple Lenzumestrocel (Neuronata-R® Inj.) Treatment in Patients With ALS",
+          "sponsor": "Corestemchemon, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-04-30",
+          "interventions": [
+            "Lenzumestrocel",
+            "Riluzole",
+            "Placebo Comparator"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04745299"
+        },
+        {
+          "nct_id": "NCT06676423",
+          "title": "Evaluate the Safety of Neuronata-R® Inj. Suspended With HypoTHermosol® FRS (HTS-FRS) in Patients With ALS",
+          "sponsor": "Corestemchemon, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-11-06",
+          "interventions": [
+            "Lenzumestrocel",
+            "Riluzole"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06676423"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "f25c0bfa-c8d0-49b5-beb1-3c55ad05b54f",
+      "company": "DiscGenics Inc",
+      "therapy": "rebonuputemcel",
+      "studies": [
+        {
+          "nct_id": "NCT07254806",
+          "title": "A Study to Evaluate the Effectiveness of IDCT (Intradiscal Cell Therapy) in Subjects With One Level, Symptomatic Mild to Moderate Lumbar Degenerative Disc Disease",
+          "sponsor": "DiscGenics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-23",
+          "interventions": [
+            "IDCT (rebonuputemcel)",
+            "Sham (No Treatment)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07254806"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "37eec6fd-8263-4128-a91f-11746e4661c4",
+      "company": "Dyne Therapeutics",
+      "therapy": "zeleciment basivarsen (Dyne-101)",
+      "studies": [
+        {
+          "nct_id": "NCT07486934",
+          "title": "Efficacy, Safety, and Tolerability of Zeleciment Basivarsen (DYNE-101) in Participants With Myotonic Dystrophy Type 1",
+          "sponsor": "Dyne Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-03",
+          "interventions": [
+            "zeleciment basivarsen (DYNE-101)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07486934"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "b5bc82f9-39f5-4186-a3e7-580189aa6585",
+      "company": "Elpida Therapeutics",
+      "therapy": "Melpida",
+      "studies": [
+        {
+          "nct_id": "NCT06069687",
+          "title": "Administration of MELPIDA to Determine the Safety and Efficacy for Patients With Spastic Paraplegia Type 50",
+          "sponsor": "The Hospital for Sick Children",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-05-14",
+          "interventions": [
+            "MELPIDA"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06069687"
+        },
+        {
+          "nct_id": "NCT05518188",
+          "title": "Melpida: Recombinant Adeno-associated Virus (Serotype 9) Encoding a Codon Optimized Human AP4M1 Transgene (hAP4M1opt)",
+          "sponsor": "Elpida Therapeutics SPC",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-08",
+          "interventions": [
+            "MELPIDA"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05518188"
+        },
+        {
+          "nct_id": "NCT06692712",
+          "title": "Phase 3 Efficacy Study With Concurrent Control of IT MELPIDA in SPG50.Concurrent Controls.",
+          "sponsor": "Elpida Therapeutics SPC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-20",
+          "interventions": [
+            "MELPIDA"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06692712"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "a9947105-7a08-432e-98f2-a74867ab172d",
+      "company": "F. Hoffmann-La Roche Ltd",
+      "therapy": "Spark Therapeutics CGT Pipeline",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "c597426b-841c-41e9-a163-0bfab7d9cb10",
+      "company": "Gameto Inc",
+      "therapy": "Fertilo",
+      "studies": [
+        {
+          "nct_id": "NCT06858111",
+          "title": "Fertilo In Vitro Research Study and Trial",
+          "sponsor": "Gameto, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-02",
+          "interventions": [
+            "Fertilo",
+            "Medicult IVM"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06858111"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "c79ae686-c4ce-4130-afd6-260732c99678",
+      "company": "GenSight Biologics SA",
+      "therapy": "lenadogene nolparvovec (LUMEVOQ)",
+      "studies": [
+        {
+          "nct_id": "NCT02652767",
+          "title": "Efficacy Study of GS010 for the Treatment of Vision Loss up to 6 Months From Onset in LHON Due to the ND4 Mutation",
+          "sponsor": "GenSight Biologics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-03-02",
+          "interventions": [
+            "GS010",
+            "Sham Intravitreal Injection"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02652767"
+        },
+        {
+          "nct_id": "NCT03406104",
+          "title": "RESCUE and REVERSE Long-term Follow-up",
+          "sponsor": "GenSight Biologics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-03-02",
+          "interventions": [
+            "GS010",
+            "Sham Intravitreal Injection"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03406104"
+        },
+        {
+          "nct_id": "NCT07303296",
+          "title": "Efficacy and Safety Study of Bilateral IVT Injection of GS010 at Two Dose Levels in LHON Patients",
+          "sponsor": "GenSight Biologics",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-03-02",
+          "interventions": [
+            "GS010 High dose",
+            "GS010 Low dose"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07303296"
+        },
+        {
+          "nct_id": "NCT02652780",
+          "title": "Efficacy Study of GS010 for Treatment of Vision Loss From 7 Months to 1 Year From Onset in LHON Due to the ND4 Mutation (REVERSE)",
+          "sponsor": "GenSight Biologics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-03-02",
+          "interventions": [
+            "GS010",
+            "Sham Intravitreal Injection"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02652780"
+        },
+        {
+          "nct_id": "NCT03293524",
+          "title": "Efficacy & Safety Study of Bilateral IVT Injection of GS010 in LHON Subjects Due to the ND4 Mutation for up to 1 Year",
+          "sponsor": "GenSight Biologics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-04-16",
+          "interventions": [
+            "GS010",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03293524"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "632980df-98f0-4eb9-9d76-8b5d6d3b0a11",
+      "company": "Grace Science LLC",
+      "therapy": "GS-100",
+      "studies": [
+        {
+          "nct_id": "NCT06199531",
+          "title": "Safety and Efficacy of GS-100 Gene Therapy in Patients With NGLY1 Deficiency",
+          "sponsor": "Grace Science, LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-05-04",
+          "interventions": [
+            "GS-100"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06199531"
+        },
+        {
+          "nct_id": "NCT03021291",
+          "title": "Extension Study of Gelesis100 on Body Weight",
+          "sponsor": "Gelesis, Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2018-02-22",
+          "interventions": [
+            "Gelesis100 (2.25 g)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03021291"
+        },
+        {
+          "nct_id": "NCT02487602",
+          "title": "A Scintigraphic Study to Investigate the Effect of Gelesis100 on Gastric Emptying in Overweight and Obese Subjects",
+          "sponsor": "Gelesis, Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2016-08-23",
+          "interventions": [
+            "Gelesis100",
+            "Placebo"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02487602"
+        },
+        {
+          "nct_id": "NCT02524821",
+          "title": "The Effect of Gelesis100 on the Pharmacokinetics of Metformin",
+          "sponsor": "Gelesis, Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2018-06-26",
+          "interventions": [
+            "Gelesis100",
+            "Metformin"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02524821"
+        },
+        {
+          "nct_id": "NCT06438718",
+          "title": "Spanish Linguistic Validation, Validity and Reliability Test of Frail´BESTest in Elderly Institutionalized Frail People",
+          "sponsor": "Instituto de Investigación Sanitaria Aragón",
+          "phase": [],
+          "status": "COMPLETED",
+          "last_update": "2026-01-02",
+          "interventions": [],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06438718"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "04604157-b76a-4464-bb1e-445085530060",
+      "company": "Grace Science LLC",
+      "therapy": "NGLY1 Gene Therapy",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "27272abf-d19c-411d-8c91-2114393398ee",
+      "company": "Gracell Biotechnologies Inc",
+      "therapy": "FasTCAR Platform",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "a08ff205-7a06-4826-817f-ec0c4d3ceaca",
+      "company": "Hadasit Medical Research",
+      "therapy": "Evarucabgene Autoleucel",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "12cfce3b-fb71-4ab5-b3c4-a62532ad8a26",
+      "company": "Healios K.K.",
+      "therapy": "invimestrocel (HLCM051 / MultiStem)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "cc633493-2b15-4814-b725-8b870f7c5a31",
+      "company": "Helixmith Co Ltd",
+      "therapy": "VM202 (PDN/CLI)",
+      "studies": [
+        {
+          "nct_id": "NCT04087941",
+          "title": "Efficacy and Safety of VM202 in Painful Diabetic Peripheral Neuropathy -The HOPES Trial",
+          "sponsor": "Brigham and Women's Hospital",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2025-11-28",
+          "interventions": [
+            "VM-202"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04087941"
+        },
+        {
+          "nct_id": "NCT02427464",
+          "title": "Phase 3 Gene Therapy for Painful Diabetic Neuropathy",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-09",
+          "interventions": [
+            "Engensis (VM202)",
+            "placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02427464"
+        },
+        {
+          "nct_id": "NCT05361031",
+          "title": "The Safety and Tolerability of Engensis (VM202) in Patients With Charcot-Marie-Tooth Disease Subtype 1A (CMT1A)",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "Engensis (VM202)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05361031"
+        },
+        {
+          "nct_id": "NCT00696124",
+          "title": "Safety Study of Gene Therapy in Treating Critical Leg Ischemia",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "VM202 2 mg",
+            "VM202 4 mg",
+            "VM202 8 mg",
+            "VM202 16 mg"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00696124"
+        },
+        {
+          "nct_id": "NCT01064440",
+          "title": "Safety and Efficacy Study Using Gene Therapy for Critical Limb Ischemia",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "Low Dose VM202",
+            "High Dose VM202",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01064440"
+        },
+        {
+          "nct_id": "NCT04055090",
+          "title": "Extension of Phase 3 Gene Therapy for Painful Diabetic Neuropathy",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-09",
+          "interventions": [
+            "Long-Term Follow-Up of Patients who Received Engensis (VM202)",
+            "Long-Term Follow-Up of Patients who Received Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04055090"
+        },
+        {
+          "nct_id": "NCT01475786",
+          "title": "Safety and Efficacy Study for the Treatment of Painful Diabetic Neuropathy",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "Low Dose: 16 mg Engensis (VM202)",
+            "High Dose: 32 mg Engensis (VM202)",
+            "Control- Placebo (normal saline)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01475786"
+        },
+        {
+          "nct_id": "NCT02563522",
+          "title": "Safety and Efficacy Study of Engensis (VM202) in the Treatment of Chronic Non-Healing Foot Ulcers",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2025-10-09",
+          "interventions": [
+            "Engensis (VM202)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02563522"
+        },
+        {
+          "nct_id": "NCT01002495",
+          "title": "Gene Therapy for the Treatment of Chronic Stable Angina",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2025-09-25",
+          "interventions": [
+            "VM202"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01002495"
+        },
+        {
+          "nct_id": "NCT02039401",
+          "title": "Safety Study of VM202 to Treat Amyotrophic Lateral Sclerosis",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "VM202"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02039401"
+        },
+        {
+          "nct_id": "NCT01002235",
+          "title": "Gene Therapy for Painful Diabetic Neuropathy",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-06",
+          "interventions": [
+            "VM202"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01002235"
+        },
+        {
+          "nct_id": "NCT01422772",
+          "title": "Safety Study of Gene Therapy for Ischemic Heart Disease in Korea",
+          "sponsor": "Helixmith Co., Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-10-03",
+          "interventions": [
+            "VM202-0.5 mg",
+            "VM202-1.0 mg",
+            "VM202-2.0 mg"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01422772"
+        },
+        {
+          "nct_id": "NCT03363165",
+          "title": "Hepatocyte Growth Factor to Improve Functioning in PAD",
+          "sponsor": "Northwestern University",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-05-30",
+          "interventions": [
+            "VM202",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03363165"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "83fe24b9-6d43-4c51-b774-067fbe9c6bea",
+      "company": "Herbert Irving Comprehensive Cancer Center",
+      "therapy": "Columbia Academic Programs",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "ad03d386-63fd-4db7-bdaf-518d5a3a744b",
+      "company": "Hope Biosciences LLC",
+      "therapy": "HB-adMSCs",
+      "studies": [
+        {
+          "nct_id": "NCT04064957",
+          "title": "Individual Patient Expanded Access IND of Hope Biosciences Autologous Adipose-derived Mesenchymal Stem Cells for Spinal Cord Injury",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04064957"
+        },
+        {
+          "nct_id": "NCT07048314",
+          "title": "Stem Cells for Erectile Dysfunction Post RALP",
+          "sponsor": "The Methodist Hospital Research Institute",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-10",
+          "interventions": [
+            "Allogeneic adipose-derived mesenchymal stem cells (HB-adMSCs) at the doctor's office",
+            "Allogeneic adipose-derived mesenchymal stem cells (HB-adMSCs) in the OR",
+            "Placebo in the OR",
+            "Placebo in clinic"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07048314"
+        },
+        {
+          "nct_id": "NCT04029896",
+          "title": "Individual Patient Expanded Access IND of Hope Biosciences Autologous Adipose-derived Mesenchymal Stem Cells for the Treatment of Cerebral Palsy",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04029896"
+        },
+        {
+          "nct_id": "NCT03925649",
+          "title": "Individual Patient Expanded Access IND of Hope Biosciences Autologous Adipose-derived Mesenchymal Stem Cells for Treatment of SCI",
+          "sponsor": "Hope Biosciences LLC",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03925649"
+        },
+        {
+          "nct_id": "NCT06056427",
+          "title": "Intermediate Size Expanded Access Protocol Using Autologous HB-adMSCs for the Treatment of Parkinson's Disease",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB- adMSCs (Hope Biosciences adipose derived mesenchymal stem cells)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06056427"
+        },
+        {
+          "nct_id": "NCT05154851",
+          "title": "HBCMD01- Expanded Access for the Treatment of Congenital Muscular Dystrophy.",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05154851"
+        },
+        {
+          "nct_id": "NCT04798066",
+          "title": "Intermediate Size Expanded Access Protocol for the Treatment of Post-COVID-19 Syndrome",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04798066"
+        },
+        {
+          "nct_id": "NCT04928287",
+          "title": "Randomized, Double-Blind Clinical Trial for Parkinson's Disease (Early and Moderate)",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-04-15",
+          "interventions": [
+            "HB-adMSCs",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04928287"
+        },
+        {
+          "nct_id": "NCT04486001",
+          "title": "Study of Intravenous Administration of Allogeneic Adipose Stem Cells for COVID-19",
+          "sponsor": "Sorrento Therapeutics, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-03-17",
+          "interventions": [
+            "PSC-04"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04486001"
+        },
+        {
+          "nct_id": "NCT06654193",
+          "title": "Allogeneic HB-adMSCs vs Placebo for the Treatment of Acute Kidney Injury",
+          "sponsor": "Hope Biosciences LLC",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-03-04",
+          "interventions": [
+            "Allogeneic HB-adMSCs",
+            "Normal Saline"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06654193"
+        },
+        {
+          "nct_id": "NCT07077746",
+          "title": "HB-adMSCs for the Treatment of Crohn's Disease",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-06",
+          "interventions": [
+            "HB-adMSCs - Hope Biosciences Adipose Derived Mesenchymal Stem Cells",
+            "0.9% sodium chloride"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07077746"
+        },
+        {
+          "nct_id": "NCT07164482",
+          "title": "Intermediate Size Patient Population Expanded Access Protocol to Evaluate HB-adMSCs for the Treatment of Patients With Traumatic or Nontraumatic Brain Injury",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "AVAILABLE",
+          "last_update": "2026-05-19",
+          "interventions": [
+            "HB- adMSCs (Hope Biosciences adipose derived mesenchymal stem cells)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07164482"
+        },
+        {
+          "nct_id": "NCT04527224",
+          "title": "Study to Evaluate the Efficacy and Safety of AstroStem-V in Treatment of COVID-19 Pneumonia",
+          "sponsor": "Nature Cell Co. Ltd.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2023-01-10",
+          "interventions": [
+            "AstroStem-V"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04527224"
+        },
+        {
+          "nct_id": "NCT04907175",
+          "title": "Individual Patient Expanded Access IND of Autologous HB-adMSCs for the Treatment of Systemic Lupus Erythematosus (SLE)",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04907175"
+        },
+        {
+          "nct_id": "NCT04289194",
+          "title": "Clinical Study to Assess the Safety and Preliminary Efficacy of HCR040 in Acute Respiratory Distress Syndrome",
+          "sponsor": "Histocell, S.L.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-02-28",
+          "interventions": [
+            "HCR040 (Phase 1)",
+            "Placebo (Phase 2)",
+            "HCR040 (Phase 2)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04289194"
+        },
+        {
+          "nct_id": "NCT04825613",
+          "title": "\"Individual Patient Expanded Access IND to Treat Primary Lateral Sclerosis\"",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [],
+          "status": "NO_LONGER_AVAILABLE",
+          "last_update": "2025-09-29",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04825613"
+        },
+        {
+          "nct_id": "NCT05126563",
+          "title": "Randomized Double-Blind Phase 2 Study of Allogeneic HB-adMSCs for the Treatment of Chronic Post-COVID-19 Syndrome",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-09-26",
+          "interventions": [
+            "HB-adMSCs (allogeneic)",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05126563"
+        },
+        {
+          "nct_id": "NCT06800404",
+          "title": "\"HB-adMSCs for the Treatment of Patients With Multiple Sclerosis\"",
+          "sponsor": "Hope Biosciences Research Foundation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-11-20",
+          "interventions": [
+            "Autologous HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06800404"
+        },
+        {
+          "nct_id": "NCT05951777",
+          "title": "Autologous Adipose-Derived Mesenchymal Stem Cells for Chronic Traumatic Brain Injury",
+          "sponsor": "Hope Biosciences LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-15",
+          "interventions": [
+            "Autologous HB-adMSCs",
+            "Normal Saline"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05951777"
+        },
+        {
+          "nct_id": "NCT04063215",
+          "title": "A Clinical Trial to Determine the Safety and Efficacy of Hope Biosciences Autologous Mesenchymal Stem Cell Therapy for the Treatment of Traumatic Brain Injury and Hypoxic-Ischemic Encephalopathy",
+          "sponsor": "Hope Biosciences LLC",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-01-15",
+          "interventions": [
+            "HB-adMSCs"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04063215"
+        }
+      ],
+      "truncated": true
+    },
+    {
+      "asset_id": "7c27ea4a-f8e8-42ab-ab52-02e4dbbe0a31",
+      "company": "Hope Biosciences LLC",
+      "therapy": "MSC Platform",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "1840a3e6-3bd2-4e2e-9fef-46165dc4cf06",
+      "company": "iECURE Inc",
+      "therapy": "ECUR-506",
+      "studies": [
+        {
+          "nct_id": "NCT06255782",
+          "title": "An Open-label Study to Investigate ECUR-506 in Male Babies Less Than 9 Months of Age With Neonatal Onset OTC Deficiency",
+          "sponsor": "iECURE, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-12",
+          "interventions": [
+            "ECUR-506"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06255782"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "c5befd8d-6c57-4549-885c-37dd8d01076c",
+      "company": "Immatics NV",
+      "therapy": "IMA203 / SUPRAME",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "4160e1b0-3966-4b5e-989d-6a790b31db88",
+      "company": "Immatics US Inc",
+      "therapy": "WTX-124 / ACTengine",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "9233d3c3-3332-44c6-8ae5-7e3e2d5d483f",
+      "company": "Imunon Inc",
+      "therapy": "IMNN-001",
+      "studies": [
+        {
+          "nct_id": "NCT03393884",
+          "title": "Study of IMNN-001 (Also Known as GEN-1) With NACT for Treatment of Ovarian Cancer (OVATION 2)",
+          "sponsor": "Imunon",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-05-04",
+          "interventions": [
+            "IMNN-001",
+            "Carboplatin",
+            "Paclitaxel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03393884"
+        },
+        {
+          "nct_id": "NCT02480374",
+          "title": "Study of Safety & Biological Activity of IP IMNN-001 (also Known As GEN-1) with Neoadjuvant Chemo in Ovarian Cancer",
+          "sponsor": "Imunon",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-10-02",
+          "interventions": [
+            "IMNN-001"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02480374"
+        },
+        {
+          "nct_id": "NCT06915025",
+          "title": "Phase 3 Trial Evaluating the Safety & Efficacy of IMNN-001 Administered in Combination w/ Standard NACT & Adjuvant Chemotherapy in Newly Diagnosed Patients w/ Advanced EOC, Fallopian Tube or Primary Peritoneal Cancer",
+          "sponsor": "Imunon",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-15",
+          "interventions": [
+            "IMNN-001 (IL-12 Plasmid Formulated with PEG-PEI-Cholesterol Lipopolymer)",
+            "Paclitaxel",
+            "Carboplatin",
+            "Olaparib",
+            "Niraparib"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06915025"
+        },
+        {
+          "nct_id": "NCT05739981",
+          "title": "Phase II IMNN-001 (Also Known as GEN-1) on SLL With BEV and NACT, Newly Diagnosed Advanced Ovarian, Fallopian Tube or Primary Peritoneal Cancer",
+          "sponsor": "Imunon",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-15",
+          "interventions": [
+            "Paclitaxel",
+            "Carboplatin",
+            "Bevacizumab",
+            "IMNN-001"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05739981"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "7124428f-90b5-49d0-b22e-54483cd79fa7",
+      "company": "Intellia Therapeutics Inc",
+      "therapy": "Lonvo-z / Nex-z",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "d30820af-ea09-4f59-b9ac-9f6d1acaad5d",
+      "company": "iTeos Therapeutics",
+      "therapy": "NSCLC Program",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "13ecf2c9-d91f-4dd9-a98c-c570f87d7c02",
+      "company": "Janssen-Cilag Pty Ltd",
+      "therapy": "HIV Gene Therapy",
+      "studies": [
+        {
+          "nct_id": "NCT01787994",
+          "title": "Redirected MazF-CD4 Autologous T Cells for HIV Gene Therapy",
+          "sponsor": "University of Pennsylvania",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-08-30",
+          "interventions": [
+            "Autologous CD4+ T cells genetically modified with a retroviral vector expressing the MazF endoribonuclease gene (MazF-T), given via intravenous infusion."
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01787994"
+        },
+        {
+          "nct_id": "NCT00131560",
+          "title": "Safety and Efficacy of T Cell Genetic Immunotherapy for HIV",
+          "sponsor": "VIRxSYS Corporation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2011-06-08",
+          "interventions": [
+            "VRX496-Modified Autologous T cells"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00131560"
+        },
+        {
+          "nct_id": "NCT00991224",
+          "title": "Redirected High Affinity Gag-Specific Autologous T Cells for HIV Gene Therapy",
+          "sponsor": "University of Pennsylvania",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-10-10",
+          "interventions": [
+            "WT-gag-TCR modified T cells",
+            "α/6-gag-TCR modified T cells",
+            "STI or Drug Holiday"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00991224"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "e9202d4d-62f2-4714-b82f-8db14b5c4d8b",
+      "company": "Kite Pharma Inc",
+      "therapy": "anitocabtagene autoleucel",
+      "studies": [
+        {
+          "nct_id": "NCT06413498",
+          "title": "A Study Comparing Anitocabtagene Autoleucel to Standard of Care Therapy in Participants With Relapsed/ Refractory Multiple Myeloma",
+          "sponsor": "Kite, A Gilead Company",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-29",
+          "interventions": [
+            "Anitocabtagene Autoleucel",
+            "Cyclophosphamide",
+            "Fludarabine",
+            "Pomalidomide",
+            "Bortezomib",
+            "Dexamethasone",
+            "Daratumumab",
+            "Carfilzomib"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06413498"
+        },
+        {
+          "nct_id": "NCT07045909",
+          "title": "Efficacy and Safety of Anitocabtagene Autoleucel in Participants With Newly Diagnosed Multiple Myeloma (GEM-AnitoFIRST)",
+          "sponsor": "PETHEMA Foundation",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2025-08-01",
+          "interventions": [
+            "Daratumumab",
+            "Isatuximab",
+            "Bortezomib",
+            "Lenalidomide",
+            "Cyclophosphamide",
+            "Fludarabine",
+            "Anitocabtagene Autoleucel"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07045909"
+        },
+        {
+          "nct_id": "NCT06626919",
+          "title": "A Phase 1 Study of Anitocabtagene Autoleucel for the Treatment of Subjects With Non-oncology Plasma Cell-related Diseases",
+          "sponsor": "Arcellx, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-02-25",
+          "interventions": [
+            "anito-cel",
+            "Standard Lymphodepletion regimen"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06626919"
+        },
+        {
+          "nct_id": "NCT05396885",
+          "title": "Study of Anitocabtagene-autoleucel in Relapsed or Refractory Multiple Myeloma (iMMagine-1)",
+          "sponsor": "Kite, A Gilead Company",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-02-11",
+          "interventions": [
+            "anitocabtagene-autoleucel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05396885"
+        },
+        {
+          "nct_id": "NCT05041309",
+          "title": "Long-Term Follow-Up Study After Gene-Modified Cell Treatment in Kite Studies",
+          "sponsor": "Kite, A Gilead Company",
+          "phase": [],
+          "status": "ENROLLING_BY_INVITATION",
+          "last_update": "2026-09-21",
+          "interventions": [
+            "Axicabtagene Ciloleucel",
+            "Brexucabtagene Autoleucel",
+            "Anitocabtagene autleucel",
+            "KITE-753",
+            "KITE-197",
+            "KITE-363",
+            "INT2104",
+            "KITE-512",
+            "SPRX001",
+            "SPRX002",
+            "ARC-T Cells"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05041309"
+        },
+        {
+          "nct_id": "NCT04155749",
+          "title": "Study of Anitocabtagene-autoleucel in Participants With Relapsed Refractory Multiple Myeloma",
+          "sponsor": "Kite, A Gilead Company",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-02-11",
+          "interventions": [
+            "anitocabtagene-autoleucel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04155749"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "25a5ac86-b260-440d-8e90-389771ddc22d",
+      "company": "Kolon TissueGene Inc",
+      "therapy": "tonogenchoncel-L (Invossa)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "dfb5f1e6-6a30-4430-9b20-6108b50f24a7",
+      "company": "Krystal Biotech Inc",
+      "therapy": "KB803 (DEB)",
+      "studies": [
+        {
+          "nct_id": "NCT07016750",
+          "title": "A Study Comparing KB803 and Matched Placebo in Patients With Dystrophic Epidermolysis Bullosa",
+          "sponsor": "Krystal Biotech, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-03-12",
+          "interventions": [
+            "KB803",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07016750"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "d50a09a2-57ec-4e55-adfa-ed6594210179",
+      "company": "Lyell Immunopharma Inc",
+      "therapy": "Ronde-cel (R/R LBCL)",
+      "studies": [
+        {
+          "nct_id": "NCT07188558",
+          "title": "A Study to Investigate Ronde-cel Versus Investigator's Choice CD19 CAR T-Cell Therapy",
+          "sponsor": "Lyell Immunopharma, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-04",
+          "interventions": [
+            "rondecabtagene autoleucel",
+            "axicabtagene ciloleucel",
+            "lisocabtagene maraleucel"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07188558"
+        },
+        {
+          "nct_id": "NCT05826535",
+          "title": "Study of Rondecabtagene Autoleucel in Aggressive Large B-Cell Lymphoma",
+          "sponsor": "Lyell Immunopharma, Inc.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-25",
+          "interventions": [
+            "Rondecabtagene autoleucel (ronde-cel)",
+            "Fludarabine",
+            "Cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05826535"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "5a0409dc-5eeb-4fa3-8f61-818c1a6f61d2",
+      "company": "MediPost Co Ltd",
+      "therapy": "Cartistem",
+      "studies": [
+        {
+          "nct_id": "NCT02755376",
+          "title": "Development of Novel Strategy for Treatment of Anterior Cruciate Ligament (ACL) Injury Using Stem Cell",
+          "sponsor": "Samsung Medical Center",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2019-04-10",
+          "interventions": [
+            "Cartistem(TM)",
+            "hyaluronic acid",
+            "ACL reconstruction only"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02755376"
+        },
+        {
+          "nct_id": "NCT02338375",
+          "title": "Safety and Efficacy of Allogenic Umbilical Cord Blood-derived Mesenchymal Stem Cell Product",
+          "sponsor": "Samsung Medical Center",
+          "phase": [
+            "EARLY_PHASE1"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2015-01-14",
+          "interventions": [
+            "Cartistem"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT02338375"
+        },
+        {
+          "nct_id": "NCT01041001",
+          "title": "Study to Compare Efficacy and Safety of Cartistem and Microfracture in Patients With Knee Articular Cartilage Injury",
+          "sponsor": "Medipost Co Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2017-04-20",
+          "interventions": [
+            "Cartistem",
+            "Microfracture treatment"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01041001"
+        },
+        {
+          "nct_id": "NCT07339111",
+          "title": "Phase 3 Pivotal Trial Comparing CARTISTEM® and Surgical Comparator for Knee Cartilage Lesions and Osteoarthritis",
+          "sponsor": "Medipost, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "CARTISTEM® + Debridement",
+            "Debridement"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07339111"
+        },
+        {
+          "nct_id": "NCT01626677",
+          "title": "Follow-Up Study of CARTISTEM® Versus Microfracture for the Treatment of Knee Articular Cartilage Injury or Defect",
+          "sponsor": "Medipost Co Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2017-04-20",
+          "interventions": [
+            "CARTISTEM",
+            "Microfracture"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT01626677"
+        },
+        {
+          "nct_id": "NCT01733186",
+          "title": "Evaluation of Safety and Exploratory Efficacy of CARTISTEM®, a Cell Therapy Product for Articular Cartilage Defects",
+          "sponsor": "Medipost, Inc.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-01-29",
+          "interventions": [
+            "CARTISTEM®"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01733186"
+        },
+        {
+          "nct_id": "NCT04310215",
+          "title": "Efficacy and Safety of Allogenic Stem Cell Product(CARTISTEM®) for Osteochondral Lesion of Talus",
+          "sponsor": "Hyundai Bioland Co., Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-11-29",
+          "interventions": [
+            "CARTISTEM®",
+            "Microfracture"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04310215"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "9a4d0603-d1ab-4302-bb64-14fdebda8bfd",
+      "company": "Mesoblast Ltd",
+      "therapy": "MPC-06ID",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "dff1c0e0-4fa2-414a-bc14-9ebda2ed259a",
+      "company": "Mesoblast Ltd",
+      "therapy": "rexlemestrocel-L (Revascor)",
+      "studies": [
+        {
+          "nct_id": "NCT03079401",
+          "title": "Mesoblast Stem Cell Therapy for Patients With Single Ventricle and Borderline Left Ventricle",
+          "sponsor": "Boston Children's Hospital",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2023-04-21",
+          "interventions": [
+            "MPC; rexlemestrocel-L"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03079401"
+        },
+        {
+          "nct_id": "NCT02412735",
+          "title": "Placebo-controlled Study to Evaluate Rexlemestrocel-L Alone or Combined With Hyaluronic Acid in Participants With Chronic Low Back Pain",
+          "sponsor": "Mesoblast, Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-10-19",
+          "interventions": [
+            "Rexlemestrocel-L",
+            "Rexlemestrocel-L + HA Mixture",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02412735"
+        },
+        {
+          "nct_id": "NCT06325566",
+          "title": "Efficacy and Safety of Rexlemestrocel-L Combined With HA* in Participants With Moderate to Severe Chronic Low Back Pain",
+          "sponsor": "Mesoblast, Ltd.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-06-17",
+          "interventions": [
+            "Rexlemestrocel-L + HA mixture",
+            "Saline"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06325566"
+        },
+        {
+          "nct_id": "NCT02032004",
+          "title": "Efficacy and Safety of Allogeneic Mesenchymal Precursor Cells (Rexlemestrocel-L) for the Treatment of Heart Failure",
+          "sponsor": "Mesoblast, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-03-23",
+          "interventions": [
+            "Rexlemestrocel-L",
+            "Sham Comparator"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02032004"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "e40108cd-b2bd-48a5-94b7-8dbd273ba98c",
+      "company": "Moderna Inc",
+      "therapy": "intismeran autogene (v940)",
+      "studies": [
+        {
+          "nct_id": "NCT06305767",
+          "title": "A Clinical Study of Intismeran Autogene (V940) Treatment and Pembrolizumab in People With Bladder Cancer (V940-005/INTerpath-005)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-01-13",
+          "interventions": [
+            "Pembrolizumab",
+            "Intismeran autogene",
+            "Placebo",
+            "Enfortumab Vedotin",
+            "Surgery (RC plus PLND)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06305767"
+        },
+        {
+          "nct_id": "NCT03313778",
+          "title": "Safety, Tolerability, and Immunogenicity of mRNA-4157 Alone and in Combination in Participants With Solid Tumors",
+          "sponsor": "ModernaTX, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-03",
+          "interventions": [
+            "mRNA-4157",
+            "Pembrolizumab",
+            "SoC Treatment"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03313778"
+        },
+        {
+          "nct_id": "NCT05933577",
+          "title": "A Clinical Study of Intismeran Autogene (V940) Plus Pembrolizumab in People With High-Risk Melanoma (V940-001)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-09-24",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05933577"
+        },
+        {
+          "nct_id": "NCT06623422",
+          "title": "A Study of Pembrolizumab (MK-3475) With or Without Intismeran Autogene (V940) in Participants With Non-small Cell Lung Cancer (V940-009/INTerpath-009)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Pembrolizumab",
+            "Cisplatin",
+            "Carboplatin",
+            "Pemetrexed",
+            "Gemcitabine",
+            "Paclitaxel",
+            "Intismeran autogene",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06623422"
+        },
+        {
+          "nct_id": "NCT06077760",
+          "title": "A Study of Intismeran Autogene (V940) Plus Pembrolizumab (MK-3475) Versus Placebo Plus Pembrolizumab in Participants With Non-small Cell Lung Cancer (V940-002)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06077760"
+        },
+        {
+          "nct_id": "NCT06307431",
+          "title": "A Study of Adjuvant Intismeran Autogene (V940) and Pembrolizumab in Renal Cell Carcinoma (V940-004).",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-13",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06307431"
+        },
+        {
+          "nct_id": "NCT06295809",
+          "title": "A Study of (Neo)Adjuvant Intismeran Autogene (V940) and Pembrolizumab in Cutaneous Squamous Cell Carcinoma (V940-007)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2026-05-08",
+          "interventions": [
+            "Pembrolizumab",
+            "Intismeran autogene",
+            "Surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06295809"
+        },
+        {
+          "nct_id": "NCT07513376",
+          "title": "A Clinical Trial of Adjuvant Intismeran (V940) With or Without Pembrolizumab Coformulated With Berahyaluronidase Alfa (MK-3475A) in High-Risk Stage I Non-Small Cell Lung Cancer (V940-014)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Intismeran",
+            "Pembrolizumab coformulated with berahyaluronidase alfa",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07513376"
+        },
+        {
+          "nct_id": "NCT06833073",
+          "title": "A Clinical Study of Intismeran Autogene (V940) and BCG in People With Bladder Cancer (V940-011/INTerpath-011)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-14",
+          "interventions": [
+            "Intismeran autogene",
+            "BCG"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06833073"
+        },
+        {
+          "nct_id": "NCT06961006",
+          "title": "A Clinical Study of Intismeran Autogene (V940) and Pembrolizumab (MK-3475) in People With Melanoma (V940-012/INTerpath-012)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-02",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06961006"
+        },
+        {
+          "nct_id": "NCT07221474",
+          "title": "A Study of Intismeran Autogene (V940)/Placebo + Pembrolizumab and Chemotherapy in Metastatic Squamous Non-Small Cell Lung Cancer (V940-013)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-21",
+          "interventions": [
+            "Intismeran Autogene",
+            "Pembrolizumab",
+            "Carboplatin",
+            "Paclitaxel",
+            "Nab-paclitaxel",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07221474"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "5678a380-a245-4079-85b5-97bb09a38c7c",
+      "company": "Moderna Inc",
+      "therapy": "mRNA-4157 (INTerpath)",
+      "studies": [
+        {
+          "nct_id": "NCT06305767",
+          "title": "A Clinical Study of Intismeran Autogene (V940) Treatment and Pembrolizumab in People With Bladder Cancer (V940-005/INTerpath-005)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-01-13",
+          "interventions": [
+            "Pembrolizumab",
+            "Intismeran autogene",
+            "Placebo",
+            "Enfortumab Vedotin",
+            "Surgery (RC plus PLND)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06305767"
+        },
+        {
+          "nct_id": "NCT03313778",
+          "title": "Safety, Tolerability, and Immunogenicity of mRNA-4157 Alone and in Combination in Participants With Solid Tumors",
+          "sponsor": "ModernaTX, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-03",
+          "interventions": [
+            "mRNA-4157",
+            "Pembrolizumab",
+            "SoC Treatment"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03313778"
+        },
+        {
+          "nct_id": "NCT05933577",
+          "title": "A Clinical Study of Intismeran Autogene (V940) Plus Pembrolizumab in People With High-Risk Melanoma (V940-001)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-09-24",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05933577"
+        },
+        {
+          "nct_id": "NCT06623422",
+          "title": "A Study of Pembrolizumab (MK-3475) With or Without Intismeran Autogene (V940) in Participants With Non-small Cell Lung Cancer (V940-009/INTerpath-009)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Pembrolizumab",
+            "Cisplatin",
+            "Carboplatin",
+            "Pemetrexed",
+            "Gemcitabine",
+            "Paclitaxel",
+            "Intismeran autogene",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06623422"
+        },
+        {
+          "nct_id": "NCT06077760",
+          "title": "A Study of Intismeran Autogene (V940) Plus Pembrolizumab (MK-3475) Versus Placebo Plus Pembrolizumab in Participants With Non-small Cell Lung Cancer (V940-002)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06077760"
+        },
+        {
+          "nct_id": "NCT06307431",
+          "title": "A Study of Adjuvant Intismeran Autogene (V940) and Pembrolizumab in Renal Cell Carcinoma (V940-004).",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-13",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06307431"
+        },
+        {
+          "nct_id": "NCT06295809",
+          "title": "A Study of (Neo)Adjuvant Intismeran Autogene (V940) and Pembrolizumab in Cutaneous Squamous Cell Carcinoma (V940-007)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2",
+            "PHASE3"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2026-05-08",
+          "interventions": [
+            "Pembrolizumab",
+            "Intismeran autogene",
+            "Surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06295809"
+        },
+        {
+          "nct_id": "NCT07513376",
+          "title": "A Clinical Trial of Adjuvant Intismeran (V940) With or Without Pembrolizumab Coformulated With Berahyaluronidase Alfa (MK-3475A) in High-Risk Stage I Non-Small Cell Lung Cancer (V940-014)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-18",
+          "interventions": [
+            "Intismeran",
+            "Pembrolizumab coformulated with berahyaluronidase alfa",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07513376"
+        },
+        {
+          "nct_id": "NCT06833073",
+          "title": "A Clinical Study of Intismeran Autogene (V940) and BCG in People With Bladder Cancer (V940-011/INTerpath-011)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-14",
+          "interventions": [
+            "Intismeran autogene",
+            "BCG"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06833073"
+        },
+        {
+          "nct_id": "NCT03897881",
+          "title": "An Efficacy Study of Adjuvant Treatment With the Personalized Cancer Vaccine mRNA-4157 and Pembrolizumab in Participants With High-Risk Melanoma (KEYNOTE-942)",
+          "sponsor": "ModernaTX, Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-08",
+          "interventions": [
+            "mRNA-4157",
+            "Pembrolizumab"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03897881"
+        },
+        {
+          "nct_id": "NCT06961006",
+          "title": "A Clinical Study of Intismeran Autogene (V940) and Pembrolizumab (MK-3475) in People With Melanoma (V940-012/INTerpath-012)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-02",
+          "interventions": [
+            "Intismeran autogene",
+            "Pembrolizumab",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06961006"
+        },
+        {
+          "nct_id": "NCT07221474",
+          "title": "A Study of Intismeran Autogene (V940)/Placebo + Pembrolizumab and Chemotherapy in Metastatic Squamous Non-Small Cell Lung Cancer (V940-013)",
+          "sponsor": "Merck Sharp & Dohme LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-21",
+          "interventions": [
+            "Intismeran Autogene",
+            "Pembrolizumab",
+            "Carboplatin",
+            "Paclitaxel",
+            "Nab-paclitaxel",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07221474"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "c751fdd7-9a5d-4782-9d53-4774d57e702c",
+      "company": "Nanoscope Therapeutics Inc",
+      "therapy": "sonpiretigene isteparvovec (MCO-010)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "d7c63140-f4f7-4c8d-8873-f15f31a48a52",
+      "company": "Neurogene Inc",
+      "therapy": "NGN-401",
+      "studies": [
+        {
+          "nct_id": "NCT05898620",
+          "title": "A Novel, Regulated Gene Therapy (NGN-401) Study for Females With Rett Syndrome",
+          "sponsor": "Neurogene Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-06-10",
+          "interventions": [
+            "NGN-401"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05898620"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "7bd36137-b95c-4f8a-96d0-efabebe145f0",
+      "company": "Neurona Therapeutics Inc",
+      "therapy": "rezanecel",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "4d73d3ee-cb80-4701-ade0-cae916932174",
+      "company": "Novadip Biosciences SA",
+      "therapy": "NVD-003",
+      "studies": [
+        {
+          "nct_id": "NCT07112443",
+          "title": "A Study to Assess How Effective and Safe NVD003 is for Treating Patients With Congenital Pseudarthrosis of the Tibia.",
+          "sponsor": "Novadip Biosciences",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-01",
+          "interventions": [
+            "NVD003",
+            "Iliac Crest Bone Graft"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07112443"
+        },
+        {
+          "nct_id": "NCT06335394",
+          "title": "Prospective Study in Adults Evaluating Safety & Efficacy of NVD003 for Bone Reconstruction to Treat Lower Limb Nonunion",
+          "sponsor": "Novadip Biosciences",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2024-03-28",
+          "interventions": [
+            "NVD003"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06335394"
+        },
+        {
+          "nct_id": "NCT05693558",
+          "title": "NVD-003 in the Treatment of Congenital Pseudarthrosis of the Tibia",
+          "sponsor": "Novadip Biosciences",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2024-01-26",
+          "interventions": [
+            "NVD-003, an autologous 3D scaffold free osteogenic graft"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05693558"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "836790eb-b45e-4f01-8e8c-4407b57212f9",
+      "company": "Ocugen Inc",
+      "therapy": "OCU-410",
+      "studies": [
+        {
+          "nct_id": "NCT06018558",
+          "title": "Study to Assess the Safety and Efficacy of OCU410 for Geographic Atrophy",
+          "sponsor": "Ocugen",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-31",
+          "interventions": [
+            "OCU410"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06018558"
+        },
+        {
+          "nct_id": "NCT07770828",
+          "title": "Phase 3 Study to Assess Efficacy, Safety & Tolerability of OCU410 For Geographic Atrophy Secondary to Dry AMD",
+          "sponsor": "Ocugen",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-19",
+          "interventions": [
+            "OCU410"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07770828"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "baf91276-ea9b-4336-a09b-9b29f9f25096",
+      "company": "Opus Genetics Inc",
+      "therapy": "OPGx-LCA5",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "39e69030-a654-4e5e-b544-5c2631bdde93",
+      "company": "Orchard Therapeutics Ltd",
+      "therapy": "azamidugene autotemcel",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "0b91d98b-56a5-4243-82b6-c244815991e8",
+      "company": "Orchard Therapeutics Ltd",
+      "therapy": "Libmeldy / Hurler Program",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "dcb858e4-60b9-40ec-a46e-17cb811482c3",
+      "company": "PolarityBIO Inc",
+      "therapy": "SkinTE",
+      "studies": [
+        {
+          "nct_id": "NCT03881267",
+          "title": "SkinTE® in the Treatment of Venous Leg Wounds",
+          "sponsor": "PolarityTE",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2022-04-04",
+          "interventions": [
+            "Human Autologous Homologous Skin Construct",
+            "Additional Outer Dressing Application",
+            "Fibracol Wound Dressing"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03881267"
+        },
+        {
+          "nct_id": "NCT06140303",
+          "title": "SkinTE® for the Treatment of Wagner 1 Diabetic Foot Ulcers (COVER DFUS II)",
+          "sponsor": "PolarityTE",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-07-11",
+          "interventions": [
+            "SkinTE",
+            "Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06140303"
+        },
+        {
+          "nct_id": "NCT05372809",
+          "title": "Multi-Center, Prospective, Randomized Controlled Trial Evaluating SkinTE® in the Treatment of Wagner 2 DFUs",
+          "sponsor": "PolarityTE",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2024-02-26",
+          "interventions": [
+            "SkinTE",
+            "Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05372809"
+        },
+        {
+          "nct_id": "NCT07222540",
+          "title": "Expanded Access Program Evaluating SkinTE in the Treatment of Wagner 1 Diabetic Foot Ulcers",
+          "sponsor": "PolarityTE",
+          "phase": [],
+          "status": "TEMPORARILY_NOT_AVAILABLE",
+          "last_update": "2025-10-30",
+          "interventions": [
+            "SkinTE"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT07222540"
+        },
+        {
+          "nct_id": "NCT03881254",
+          "title": "SkinTE™ in the Treatment of Diabetic Foot Wounds",
+          "sponsor": "PolarityTE",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2021-08-26",
+          "interventions": [
+            "Human Autologous Homologous Skin Construct",
+            "Additional Outer Dressing Applicaiton",
+            "Offloading",
+            "Fibracol Wound Dressing"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03881254"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "4eb2f305-9705-4976-9134-aafc944810eb",
+      "company": "Prokidney Corp",
+      "therapy": "REACT (CKD)",
+      "studies": [
+        {
+          "nct_id": "NCT00072592",
+          "title": "An Open Label Pilot Study Examining the Use of Rituximab in Patients With Wegener's Granulomatosis Who Have Experienced Disease Relapse on Standard Therapies",
+          "sponsor": "National Institute of Allergy and Infectious Diseases (NIAID)",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2008-03-04",
+          "interventions": [
+            "Rituximab"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT00072592"
+        },
+        {
+          "nct_id": "NCT03570411",
+          "title": "Evaluating the Clinical Utility of the T-SPOT.CMV Assay for the Prediction of CMV Reactivation Among Pediatric Patients Undergoing Hematopoietic Cell Transplant",
+          "sponsor": "St. Jude Children's Research Hospital",
+          "phase": [],
+          "status": "TERMINATED",
+          "last_update": "2019-06-11",
+          "interventions": [
+            "T-SPOT®.CMV Test"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03570411"
+        },
+        {
+          "nct_id": "NCT05904405",
+          "title": "Perceived Quality of Family Planning Counselling",
+          "sponsor": "Assiut University",
+          "phase": [],
+          "status": "UNKNOWN",
+          "last_update": "2023-06-15",
+          "interventions": [
+            "quationaire"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05904405"
+        },
+        {
+          "nct_id": "NCT06790498",
+          "title": "Long-Term Follow-up Study of Participants Exposed to Renal Autologous Cell Therapy Frozen Product",
+          "sponsor": "Prokidney",
+          "phase": [],
+          "status": "ENROLLING_BY_INVITATION",
+          "last_update": "2026-09-17",
+          "interventions": [
+            "Renal Autologous Cell Therapy (REACT)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06790498"
+        },
+        {
+          "nct_id": "NCT01477762",
+          "title": "Cortisol Suppression and Startle Responses in Posttraumatic Stress Disorder (PTSD)",
+          "sponsor": "Emory University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2017-04-18",
+          "interventions": [
+            "Dexamethasone",
+            "Placebo"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT01477762"
+        },
+        {
+          "nct_id": "NCT03320746",
+          "title": "Enhancing Physical Activity and Healthy Aging Among Recent Retirees",
+          "sponsor": "University of Turku",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2020-06-30",
+          "interventions": [
+            "Polar Loop 2 activity tracker"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03320746"
+        },
+        {
+          "nct_id": "NCT04149639",
+          "title": "A Study Investigating the Effectiveness of a LifeSeasons NeuroQ Supplement With Lifestyle Changes to Improve Cognitive Function in Healthy Adults Who Have One or More Risk Factors for Cognitive Decline",
+          "sponsor": "LifeSeasons Inc.",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2021-03-02",
+          "interventions": [
+            "NeuroQ"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04149639"
+        },
+        {
+          "nct_id": "NCT05335395",
+          "title": "SUNRISE CRT: Radio Intervention to Stimulate Early Child Development",
+          "sponsor": "London School of Hygiene and Tropical Medicine",
+          "phase": [
+            "NA"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2022-04-19",
+          "interventions": [
+            "SUNRISE radio campaign"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05335395"
+        },
+        {
+          "nct_id": "NCT03217695",
+          "title": "A Study on the Effect of Mindfulness-based Yoga on Youth With Persistent Concussion Symptoms",
+          "sponsor": "Holland Bloorview Kids Rehabilitation Hospital",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2017-07-14",
+          "interventions": [
+            "Mindfulness-based Yoga Arm"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT03217695"
+        },
+        {
+          "nct_id": "NCT04972773",
+          "title": "Spinal Cord Injury Mental Health Functional Outcomes Improved by Mindfulness",
+          "sponsor": "Queen's University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2023-03-29",
+          "interventions": [
+            "Mindfulness meditation (MM)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04972773"
+        },
+        {
+          "nct_id": "NCT03025139",
+          "title": "Mindfulness Meditation or Survivorship Education in Improving Behavioral Symptoms in Younger Stage 0-III Breast Cancer Survivors (Pathways to Wellness)",
+          "sponsor": "Jonsson Comprehensive Cancer Center",
+          "phase": [
+            "NA"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2022-07-21",
+          "interventions": [
+            "Educational Intervention",
+            "Laboratory Biomarker Analysis",
+            "Meditation Therapy",
+            "Questionnaire Administration"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03025139"
+        },
+        {
+          "nct_id": "NCT06998472",
+          "title": "Evaluation of Pediatric Massage in the Treatment of Allergic Rhinitis in Children",
+          "sponsor": "Taichung Tzu Chi Hospital",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-05-31",
+          "interventions": [
+            "Tuina",
+            "Maintain the original treatment approach"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06998472"
+        },
+        {
+          "nct_id": "NCT05269732",
+          "title": "CBT for Postpartum Depression and Infant Emotion Regulation",
+          "sponsor": "McMaster University",
+          "phase": [
+            "NA"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-07-15",
+          "interventions": [
+            "Group Cognitive Behavioural Therapy (CBT)"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05269732"
+        },
+        {
+          "nct_id": "NCT07209566",
+          "title": "A Research Study Exploring How Musculoskeletal Function and the Autonomic Nervous System Relate to Visceral Pain in Women With and Without Dysmenorrhea (Painful Periods).",
+          "sponsor": "Azusa Pacific University",
+          "phase": [
+            "NA"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2025-10-07",
+          "interventions": [
+            "Visceral Pain Stimulus"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07209566"
+        },
+        {
+          "nct_id": "NCT06296537",
+          "title": "Effectiveness of Balance Training and Dynamic Neuromuscular Stabilization Training in Amateur Athletes with Chronic Ankle Instability",
+          "sponsor": "Medipol University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-12-19",
+          "interventions": [
+            "Dynamic Neuromuscular Stabilization Training (DNS)",
+            "Balance Training",
+            "Conventional Training"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06296537"
+        },
+        {
+          "nct_id": "NCT06557707",
+          "title": "Cardiovascular Health & Early Stress",
+          "sponsor": "Virginia Commonwealth University",
+          "phase": [],
+          "status": "COMPLETED",
+          "last_update": "2026-09-14",
+          "interventions": [
+            "Childhood stress"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06557707"
+        },
+        {
+          "nct_id": "NCT05814588",
+          "title": "Anodal Transcranial Direct Current Stimulation and Cognition in Stroke",
+          "sponsor": "Riphah International University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2023-12-20",
+          "interventions": [
+            "Anodal TDCS",
+            "Sham Anodal TDCS"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT05814588"
+        },
+        {
+          "nct_id": "NCT05096273",
+          "title": "Retraining and Control Therapy (ReACT): Sense of Control and Symptom Expectations as Targets of a Treatment for PNES",
+          "sponsor": "University of Alabama at Birmingham",
+          "phase": [
+            "NA"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-08-26",
+          "interventions": [
+            "ReACT"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05096273"
+        },
+        {
+          "nct_id": "NCT06522451",
+          "title": "Effects of Conventional Physical Therapy With and Without Cuevas Medek Exercises in Developmental Delay",
+          "sponsor": "Riphah International University",
+          "phase": [
+            "NA"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2024-10-29",
+          "interventions": [
+            "conventional physical therapy",
+            "Conventional physical therapy along with cuevas medek exercises"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06522451"
+        },
+        {
+          "nct_id": "NCT06143319",
+          "title": "Structural White and Gray Matter Correlates of Impaired Muscle Control and Deficient Pain Processing",
+          "sponsor": "University Ghent",
+          "phase": [],
+          "status": "COMPLETED",
+          "last_update": "2023-11-22",
+          "interventions": [],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06143319"
+        }
+      ],
+      "truncated": true
+    },
+    {
+      "asset_id": "813fb650-300e-4773-b392-e1232f25c4d8",
+      "company": "Prokidney Corp",
+      "therapy": "rilparencel",
+      "studies": [
+        {
+          "nct_id": "NCT02836574",
+          "title": "A Study of Renal Autologous Cell Therapy (REACT) in Type 2 Diabetics With Chronic Kidney Disease",
+          "sponsor": "Prokidney",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2025-08-24",
+          "interventions": [
+            "Renal Autologous Cell Therapy (REACT)",
+            "Renal Biopsy"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02836574"
+        },
+        {
+          "nct_id": "NCT05099770",
+          "title": "Proact: A Study of REACT in Subjects With Type 2 Diabetes Mellitus and Chronic Kidney Disease",
+          "sponsor": "Prokidney",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-11",
+          "interventions": [
+            "Renal Autologous Cell Therapy (REACT/ rilparencel)",
+            "Sham Comparator"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05099770"
+        },
+        {
+          "nct_id": "NCT05018416",
+          "title": "Renal Autologous Cell Therapy (REACT) in Subjects With Type 1 or 2 Diabetes and Chronic Kidney Disease (REGEN-007)",
+          "sponsor": "Prokidney",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-03-13",
+          "interventions": [
+            "Renal Autologous Cell Therapy (REACT)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05018416"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "acc6491a-43b3-4e6b-9051-1f55f29771c3",
+      "company": "Rarity PBC",
+      "therapy": "simoladagene autotemcel",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "56fe9cbb-305c-404f-973b-de97ea1dfb6f",
+      "company": "Rarity PBC",
+      "therapy": "Simolodagene Autotemcel",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "7582aa22-286d-45ad-a2e6-4971918531bc",
+      "company": "Ray Therapeutics Inc",
+      "therapy": "RTX-015",
+      "studies": [
+        {
+          "nct_id": "NCT06460844",
+          "title": "Study to Evaluate Safety of RTx-015 Injection in Retinitis Pigmentosa or Choroideremia Patients (ENVISION)",
+          "sponsor": "Ray Therapeutics, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-02-20",
+          "interventions": [
+            "RTx-015"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06460844"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "30b78b67-f281-451a-bd05-9e48053ed2ae",
+      "company": "Regeneron Pharmaceuticals Inc",
+      "therapy": "ziclumeran",
+      "studies": [
+        {
+          "nct_id": "NCT06672237",
+          "title": "A Phase 3 Study of NTLA-2001 in ATTRv-PN",
+          "sponsor": "Intellia Therapeutics",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-04-16",
+          "interventions": [
+            "nexiguran ziclumeran",
+            "Normal Saline as Placebo"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT06672237"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "ac4d2c6f-4c7f-4104-8df0-fe652728285f",
+      "company": "RegenETP Inc",
+      "therapy": "Regenerative Platform",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "9561cf9d-977c-42e6-bf11-c6d9207bbd59",
+      "company": "RHEACELL GmbH & Co KG",
+      "therapy": "Amesanar",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "bce63a06-1c9a-4c09-8e9f-becc328ce2f2",
+      "company": "RHEACELL GmbH & Co KG",
+      "therapy": "Ebesanar",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "110596f0-32c1-45e1-8a3d-26d8ba813950",
+      "company": "RHEACELL GmbH & Co KG",
+      "therapy": "VLU Cell Therapy",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "858508c0-f078-4749-8f56-dd4ad3213345",
+      "company": "Rocket Pharmaceuticals Inc",
+      "therapy": "mozafancogene autotemcel (Fanskya)",
+      "studies": [
+        {
+          "nct_id": "NCT07527975",
+          "title": "Long-Term Follow-up: Phase I/II Clinical Study to Evaluate the Safety and Efficacy of the Infusion of RP-L102",
+          "sponsor": "Rocket Pharmaceuticals Inc.",
+          "phase": [],
+          "status": "ENROLLING_BY_INVITATION",
+          "last_update": "2026-04-14",
+          "interventions": [
+            "RP-L102"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07527975"
+        },
+        {
+          "nct_id": "NCT03814408",
+          "title": "A Clinical Trial to Evaluate the Safety of RP-L102 in Pediatric Subjects With Fanconi Anemia Subtype A",
+          "sponsor": "Rocket Pharmaceuticals Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2020-11-24",
+          "interventions": [
+            "RP-L102"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03814408"
+        },
+        {
+          "nct_id": "NCT04069533",
+          "title": "Lentiviral-mediated Gene Therapy for Pediatric Patients With Fanconi Anemia Subtype A",
+          "sponsor": "Rocket Pharmaceuticals Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "UNKNOWN",
+          "last_update": "2024-05-22",
+          "interventions": [
+            "RP-L102"
+          ],
+          "us_site": false,
+          "source": "https://clinicaltrials.gov/study/NCT04069533"
+        },
+        {
+          "nct_id": "NCT04248439",
+          "title": "Gene Therapy for Fanconi Anemia, Complementation Group A",
+          "sponsor": "Rocket Pharmaceuticals Inc.",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2025-12-22",
+          "interventions": [
+            "RP-L102"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04248439"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "072f1fa4-98a9-404e-8ddb-9e2ec3fc3b51",
+      "company": "Sarepta Therapeutics Inc",
+      "therapy": "bidridistrogene xeboparvovec",
+      "studies": [
+        {
+          "nct_id": "NCT06246513",
+          "title": "A Trial to Learn More About an Experimental Gene Therapy Called Bidridistrogene Xeboparvovec (SRP-9003) as a Possible Treatment for Limb Girdle Muscular Dystrophy 2E/R4",
+          "sponsor": "Sarepta Therapeutics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-03-02",
+          "interventions": [
+            "SRP-9003",
+            "Glucocorticoid"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06246513"
+        },
+        {
+          "nct_id": "NCT03652259",
+          "title": "Gene Delivery Clinical Trial of SRP-9003 (Bidridistrogene Xeboparvovec) for Participants With Limb-Girdle Muscular Dystrophy, Type 2E (LGMD2E) (Beta-Sarcoglycan Deficiency)",
+          "sponsor": "Sarepta Therapeutics, Inc.",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2026-01-20",
+          "interventions": [
+            "SRP-9003"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03652259"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "193fcd8b-f5fe-419d-b317-575395d0173f",
+      "company": "Sarepta Therapeutics Inc",
+      "therapy": "SRP-9005",
+      "studies": [
+        {
+          "nct_id": "NCT06952686",
+          "title": "A Study of SRP-9005 in Limb Girdle Muscular Dystrophy Type 2C/R5 Pediatric and Adult Participants",
+          "sponsor": "Sarepta Therapeutics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "WITHDRAWN",
+          "last_update": "2025-08-06",
+          "interventions": [
+            "SRP-9005",
+            "Corticosteroid"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06952686"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "13087908-4746-4d47-a4d3-46788370a349",
+      "company": "Spur Therapeutics Ltd",
+      "therapy": "avigbagene parvec",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "96eb1a4b-211f-466d-aaa9-8f9da5849460",
+      "company": "Taysha Gene Therapies Inc",
+      "therapy": "lonimecgene renparvovec (TSHA-102)",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "dd7f8c01-e661-48b8-8ce6-63874800728d",
+      "company": "Throne Biotechnologies Inc",
+      "therapy": "Stem Cell T1D",
+      "studies": [],
+      "truncated": false
+    },
+    {
+      "asset_id": "fb80aabb-bc71-46e2-aca8-0b1dcaebe984",
+      "company": "TScan Therapeutics Inc",
+      "therapy": "TSC-101",
+      "studies": [
+        {
+          "nct_id": "NCT07702578",
+          "title": "A Study of T-Cell Receptor Engineered Donor T Cells in Subjects Undergoing Allogeneic Peripheral Blood Stem Cell Transplantation",
+          "sponsor": "TScan Therapeutics, Inc.",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-22",
+          "interventions": [
+            "TSC-101",
+            "Control"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT07702578"
+        },
+        {
+          "nct_id": "NCT05473910",
+          "title": "A Phase 1/3 Study of T-Cell Receptor Engineered Donor T Cells in Subjects Undergoing Allogeneic Peripheral Blood Stem Cell Transplantation",
+          "sponsor": "TScan Therapeutics, Inc.",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-07-21",
+          "interventions": [
+            "SOC + TSC-101",
+            "Control",
+            "SOC + TSC-100"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05473910"
+        },
+        {
+          "nct_id": "NCT06976736",
+          "title": "A Long Term Follow-up Study of TScan TCR-T Products",
+          "sponsor": "TScan Therapeutics, Inc.",
+          "phase": [],
+          "status": "RECRUITING",
+          "last_update": "2025-09-10",
+          "interventions": [
+            "Observational"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06976736"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "3d1264b8-a764-473a-bdb6-362c23010321",
+      "company": "Ultragenyx Pharmaceutical Inc",
+      "therapy": "avalotcagene ontaparvovec (DTX301)",
+      "studies": [
+        {
+          "nct_id": "NCT05345171",
+          "title": "Clinical Study of DTX301 AAV-Mediated Gene Transfer for Ornithine Transcarbamylase (OTC) Deficiency",
+          "sponsor": "Ultragenyx Pharmaceutical Inc",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-09-09",
+          "interventions": [
+            "DTX301",
+            "Placebo",
+            "Oral Corticosteroids",
+            "Placebo for oral corticosteroids",
+            "Sodium Acetate"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05345171"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "fe054944-de77-4235-a7a3-c3135e118887",
+      "company": "Ultragenyx Pharmaceutical Inc",
+      "therapy": "rivunatpagene miziparvovec",
+      "studies": [
+        {
+          "nct_id": "NCT04884815",
+          "title": "A Phase 1/2/3 Study of UX701 Gene Therapy in Adults With Wilson Disease",
+          "sponsor": "Ultragenyx Pharmaceutical Inc",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-06-15",
+          "interventions": [
+            "UX701",
+            "Standard of Care (SOC)"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04884815"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "24200632-3c9d-408e-8e69-fc36fbeadc4a",
+      "company": "University of California Los Angeles",
+      "therapy": "Academic CGT Programs",
+      "studies": [],
+      "note": "Composite or generic name; manual sponsor/product identity review required"
+    },
+    {
+      "asset_id": "384dc3b6-17c8-4220-b7b3-756972fbc4a2",
+      "company": "US WorldMeds LLC",
+      "therapy": "letetresgene autoleucel",
+      "studies": [
+        {
+          "nct_id": "NCT03709706",
+          "title": "Pilot Immunotherapy Study With Letetresgene Autoleucel (Lete-cel, GSK3377794)T-cells in New York Esophageal Squamous Cell Carcinoma-1 (NY-ESO-1)/ LAGE-1a-positive Advanced Non-small Cell Lung Cancer (NSCLC) Either Alone or in Combination With Pembrolizumab",
+          "sponsor": "GlaxoSmithKline",
+          "phase": [
+            "PHASE1",
+            "PHASE2"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2024-02-23",
+          "interventions": [
+            "Lete-cel",
+            "Pembrolizumab"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03709706"
+        },
+        {
+          "nct_id": "NCT03168438",
+          "title": "Letetresgene Autoleucel Engineered T Cells Alone and in Combination With Pembrolizumab in NY-ESO-1 Positive Multiple Myeloma",
+          "sponsor": "GlaxoSmithKline",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "TERMINATED",
+          "last_update": "2022-01-11",
+          "interventions": [
+            "Letetresgene autoleucel",
+            "Letetresgene autoleucel with pembrolizumab",
+            "Fludarabine",
+            "Cyclophosphamide",
+            "Pembrolizumab"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03168438"
+        },
+        {
+          "nct_id": "NCT03967223",
+          "title": "Master Protocol to Assess the Safety and Antitumor Activity of Genetically Engineered T Cells in NY-ESO-1 and/or LAGE-1a Positive Solid Tumors",
+          "sponsor": "USWM CT, LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "ACTIVE_NOT_RECRUITING",
+          "last_update": "2026-08-11",
+          "interventions": [
+            "Letetresgene autoleucel (lete-cel, GSK3377794)",
+            "Fludarabine",
+            "Cyclophosphamide"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT03967223"
+        },
+        {
+          "nct_id": "NCT05993299",
+          "title": "Study to Evaluate Safety and Antitumor Activity of Lete-Cel (GSK3377794) in HLA-A2+ Participants With NY-ESO-1 Positive Previously Untreated Advanced (Metastatic or Unresectable) Synovial Sarcoma and Myxoid/Round Cell Liposarcoma",
+          "sponsor": "USWM, LLC (dba US WorldMeds)",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-09-02",
+          "interventions": [
+            "Letetresgene autoleucel",
+            "Cyclophosphamide",
+            "Fludarabine"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT05993299"
+        },
+        {
+          "nct_id": "NCT02588612",
+          "title": "Letetresgene Autoleucel Engineered T Cells in NY-ESO -1 Positive Advanced Non-Small Cell Lung Cancer (NSCLC)",
+          "sponsor": "GlaxoSmithKline",
+          "phase": [
+            "PHASE1"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2021-09-05",
+          "interventions": [
+            "letetresgene autoleucel (GSK3377794)",
+            "Cyclophosphamide",
+            "Fludarabine"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02588612"
+        },
+        {
+          "nct_id": "NCT02992743",
+          "title": "Letetresgene Autoleucel Engineered T Cells in NY-ESO-1 Positive Participants With Advanced Myxoid/ Round Cell Liposarcoma",
+          "sponsor": "GlaxoSmithKline",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2023-04-11",
+          "interventions": [
+            "letetresgene autoleucel (GSK3377794)",
+            "Cyclophosphamide",
+            "Fludarabine"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02992743"
+        },
+        {
+          "nct_id": "NCT06703346",
+          "title": "Study to Evaluate Safety and Antitumor Activity of Lete-Cel (GSK3377794) in HLA-A2+ Participants With NY-ESO-1 Positive Previously Treated Advanced (Metastatic or Unresectable) Synovial Sarcoma or Myxoid/Round Cell Liposarcoma",
+          "sponsor": "USWM CT, LLC",
+          "phase": [
+            "PHASE2"
+          ],
+          "status": "COMPLETED",
+          "last_update": "2026-08-13",
+          "interventions": [
+            "Letetresgene autoleucel (Lete-Cel (GSK3377794))",
+            "Cyclophosphamide",
+            "Fludarabine"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06703346"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "24498809-3f3f-42c0-9ca0-732615a24a68",
+      "company": "Vaccinogen Inc",
+      "therapy": "OncoVAX",
+      "studies": [
+        {
+          "nct_id": "NCT02448173",
+          "title": "A Multicenter Study of Active Specific Immunotherapy With OncoVax® in Patients With Stage II Colon Cancer",
+          "sponsor": "Vaccinogen Inc",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "NOT_YET_RECRUITING",
+          "last_update": "2026-02-02",
+          "interventions": [
+            "OncoVAX and Surgery",
+            "Surgery"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT02448173"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "3b422058-38bd-4115-be4f-8c88eed0d93e",
+      "company": "Vertex Pharmaceuticals",
+      "therapy": "zimislecel",
+      "studies": [
+        {
+          "nct_id": "NCT06832410",
+          "title": "An Efficacy, Safety, and Tolerability Study of VX-880 in Participants With Type 1 Diabetes With a Kidney Transplant",
+          "sponsor": "Vertex Pharmaceuticals Incorporated",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-03-23",
+          "interventions": [
+            "Biological/Vaccine"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT06832410"
+        },
+        {
+          "nct_id": "NCT04786262",
+          "title": "A Safety, Tolerability, and Efficacy Study of VX-880 and VX-017 in Participants With Type 1 Diabetes",
+          "sponsor": "Vertex Pharmaceuticals Incorporated",
+          "phase": [
+            "PHASE3"
+          ],
+          "status": "RECRUITING",
+          "last_update": "2026-09-01",
+          "interventions": [
+            "VX-880",
+            "VX-017"
+          ],
+          "us_site": true,
+          "source": "https://clinicaltrials.gov/study/NCT04786262"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "asset_id": "dff2fdba-df4e-4885-bd83-26e3f3d41260",
+      "company": "Xalud Therapeutics Inc",
+      "therapy": "IT-140 (OA Pain)",
+      "studies": [],
+      "truncated": false
+    }
+  ]
+}

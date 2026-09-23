@@ -1,0 +1,63 @@
+{
+  "reviewed_at": "2026-09-23",
+  "corrections": [
+    {
+      "asset_id": "36ffabcc-e8b4-403e-9262-125775709427",
+      "reason": "DNL310 is AVLAYAH (tividenofusp alfa-eknm), an enzyme replacement therapy rather than cell/gene therapy. FDA approved it March 24, 2026, and Denali reported its U.S. commercial launch underway with patients treated in May. It is not an investigational Phase 3 CGT launch target.",
+      "sources": [
+        "https://www.fda.gov/news-events/press-announcements/fda-approves-drug-treat-neurologic-manifestations-hunter-syndrome",
+        "https://investors.denalitherapeutics.com/node/11666"
+      ],
+      "source_dates": ["2026-03-25", "2026-05-07"],
+      "patch": {
+        "asset_name": "tividenofusp alfa-eknm (AVLAYAH; DNL310)",
+        "modality": "Enzyme replacement therapy (outside CGT scope)",
+        "segment": "On-Market",
+        "phase_regulatory_status": "FDA accelerated approval March 24, 2026; U.S. commercial launch underway",
+        "filing_status": "Approved",
+        "us_commercialization_window": "On-market; FDA approved March 24, 2026; outside CGT scope",
+        "likely_us_launch_within_24_months": "No - already launched",
+        "timeline_over_24_months": false
+      }
+    },
+    {
+      "asset_id": "4a5ae448-3a3d-464b-8871-c35ef324fd2b",
+      "reason": "This row combines 4D-150 and 4D-310, which already have separate generic-name records in the tracker. 4D-150 remains in Phase 3 with 2027 topline readouts; the sponsor says its products are not FDA-approved. The claimed accepted BLA and rolling filing are unsupported for this composite row. Do not use it as a distinct launch candidate.",
+      "sources": [
+        "https://ir.4dmoleculartherapeutics.com/news-releases/news-release-details/4dmt-reports-second-quarter-2026-financial-results-operational",
+        "https://ir.4dmoleculartherapeutics.com/news-releases/news-release-details/4dmt-receives-fda-regenerative-medicine-advanced-therapy-rmat"
+      ],
+      "source_dates": ["2026-08-13", "2023-12-21"],
+      "patch": {
+        "phase_regulatory_status": "Duplicate composite record: 4D-150 Phase 3; 4D-310 separate early-stage asset; no accepted BLA",
+        "filing_status": "Not filed",
+        "fda_designations": "4D-150: RMAT; 4D-310: separate program",
+        "us_commercialization_window": "Unverified U.S. launch timing; composite record; use separate asset rows",
+        "likely_us_launch_within_24_months": "Uncertain",
+        "timeline_over_24_months": false
+      }
+    },
+    {
+      "asset_id": "7582aa22-286d-45ad-a2e6-4971918531bc",
+      "reason": "Ray's current pipeline and ClinicalTrials.gov NCT06460844 identify RTx-015 as an active Phase 1 optogenetic gene-therapy study, not Phase III. FDA RMAT designation does not change the clinical phase. The imported October 2028 global launch date is not a verified U.S. commercial target.",
+      "sources": [
+        "https://clinicaltrials.gov/study/NCT06460844",
+        "https://raytherapeutics.com/ray-therapeutics-receives-fda-regenerative-medicine-advanced-therapy-rmat-designation-for-rtx-015-in-retinitis-pigmentosa/"
+      ],
+      "source_dates": ["2026-02-20", "2026-04-01"],
+      "patch": {
+        "asset_name": "RTx-015",
+        "segment": "Early Stage",
+        "phase_regulatory_status": "Phase 1 ENVISION (NCT06460844), active not recruiting",
+        "filing_status": "Investigational Phase 1",
+        "fda_designations": "RMAT (retinitis pigmentosa)",
+        "clinicaltrials_gov_id": "NCT06460844",
+        "key_upcoming_catalyst": "Phase 1 ENVISION follow-up; no verified launch target",
+        "catalyst_date": null,
+        "us_commercialization_window": "Unverified U.S. launch timing; imported global date not source-confirmed",
+        "likely_us_launch_within_24_months": "Uncertain",
+        "timeline_over_24_months": false
+      }
+    }
+  ]
+}
