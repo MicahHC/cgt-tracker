@@ -15,6 +15,7 @@ export function directEvidenceUrl(value: string | null | undefined): string | nu
     if (url.protocol !== 'https:') return null;
     const host = url.hostname.toLowerCase();
     if (host.endsWith('.supabase.co') || host.endsWith('.vercel.app') || host === 'cgtscore.com') return null;
+    if (url.pathname === '/' && !url.search) return null;
     return url.toString();
   } catch {
     return null;
