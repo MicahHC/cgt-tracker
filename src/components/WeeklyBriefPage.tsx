@@ -13,7 +13,7 @@ import { briefSignature, markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
 import { formatTrackerWeekLabel, getTrackerWeekRange, recentTrackerWeeks } from '../lib/weekLabels';
-import { focusAudience, focusAudiences, isEarlyToLateMove } from '../lib/weeklyBriefFocus';
+import { directEvidenceUrl, focusAudience, focusAudiences, isEarlyToLateMove } from '../lib/weeklyBriefFocus';
 import { assessLaunch } from '../lib/commercialization';
 import { loadAudiences } from '../lib/loadAudiences';
 import type { AudienceMember } from '../lib/audienceCounts';
@@ -774,9 +774,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                   {change.field_changed === 'segment' ? 'Clinical stage advanced' : 'Entered Late Stage launch audience'}
                   {change.field_changed === 'segment' && !assessLaunch(assetById.get(change.asset_id) || {}).priority ? ' · U.S. launch timing not verified' : ''}
                 </p>
-                <p className="text-sm text-slate-600 mt-1">{priorityDisplayCopy(change.why_it_matters) || 'Launch-window qualification changed; review the asset record.'}</p>
-                {change.source_url ? (
-                  <a href={change.source_url} target="_blank" rel="noreferrer" className="text-xs text-teal-700 hover:underline">View source</a>
+                <p className="text-sm text-slate-600 mt-1">{directEvidenceUrl(change.source_url) ? priorityDisplayCopy(change.why_it_matters) : 'Movement is logged, but its explanation has no direct source attached.'}</p>
+                {directEvidenceUrl(change.source_url) ? (
+                  <a href={directEvidenceUrl(change.source_url)!} target="_blank" rel="noreferrer" className="text-xs text-teal-700 hover:underline">View source</a>
                 ) : (
                   <p className="text-xs text-amber-700 mt-1">No direct source attached to this movement; verify before sharing.</p>
                 )}
@@ -829,18 +829,22 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                         <span className="text-slate-400 line-through">{formatChangeValue(c.field_changed, c.previous_value)}</span>{' '}
                         <span className="text-slate-900 font-medium">→ {formatChangeValue(c.field_changed, c.new_value)}</span>
                       </div>
-                      {c.why_it_matters && <div className="text-sm text-slate-600 mt-2 leading-relaxed">{priorityDisplayCopy(c.why_it_matters)}</div>}
+                      <div className="text-sm text-slate-600 mt-2 leading-relaxed">
+                        {directEvidenceUrl(c.source_url)
+                          ? priorityDisplayCopy(c.why_it_matters) || 'Review the cited document for the reason behind this change.'
+                          : 'The tracker logged this change, but the explanation has no direct source attached. Verify it before sharing or acting.'}
+                      </div>
                     </div>
                     <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-slate-500">
                       <div>{new Date(c.created_at).toLocaleDateString()}</div>
                       <div className="flex items-center gap-2">
-                        <ConfidenceBadge level={c.confidence_level} />
-                        {c.source_url && (
-                          <a href={c.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-teal-600 hover:underline">
+                        {directEvidenceUrl(c.source_url) && <ConfidenceBadge level={c.confidence_level} />}
+                        {directEvidenceUrl(c.source_url) && (
+                          <a href={directEvidenceUrl(c.source_url)!} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-teal-600 hover:underline">
                             Source <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
-                        {!c.source_url && <span className="text-amber-700">Source not attached</span>}
+                        {!directEvidenceUrl(c.source_url) && <span className="text-amber-700">Direct source not attached</span>}
                       </div>
                     </div>
                   </div>
@@ -1094,8 +1098,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                     <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
                       <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Why it moved</div>
                       <div className="text-sm text-slate-700 mt-1 leading-relaxed">
-                        {reason?.source_url
-                          ? priorityDisplayCopy(reason.why_it_matters) || 'Review the cited source and launch window before acting.'
+                        {directEvidenceUrl(reason?.source_url)
+                          ? priorityDisplayCopy(reason?.why_it_matters) || 'Review the cited source and launch window before acting.'
                           : 'No direct source is attached to this priority change. Treat the reason as unverified until the launch window is reviewed.'}
                       </div>
                     </div>
@@ -1103,8 +1107,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                       <div className="text-[10px] font-semibold uppercase tracking-widest text-teal-700">Score impact</div>
                       <div className="text-sm text-teal-900 mt-1 leading-relaxed">
                         {reason?.score_impact_explanation || `Commercial score ${s.prev_final ?? '—'} to ${s.final_commercial_score}.`}
-                        {reason?.source_url && (
-                          <a href={reason.source_url} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-teal-700 font-semibold hover:underline">
+                        {directEvidenceUrl(reason?.source_url) && (
+                          <a href={directEvidenceUrl(reason?.source_url)!} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-teal-700 font-semibold hover:underline">
                             Source <ExternalLink className="w-3 h-3" />
                           </a>
                         )}

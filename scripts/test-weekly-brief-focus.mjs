@@ -32,4 +32,7 @@ assert.deepEqual(focus.focusAudiences(reviewed, ['ATC'], now), ['ATC', 'Late Sta
 assert.equal(focus.focusAudience(undefined, ['ATC'], now), 'ATC');
 assert.equal(focus.focusAudience({ segment: 'On-Market' }, [], now), 'On Market');
 assert.equal(focus.focusAudience({ segment: 'Early Stage' }, [], now), null);
+assert.equal(focus.directEvidenceUrl('https://clinicaltrials.gov/study/NCT12345678'), 'https://clinicaltrials.gov/study/NCT12345678');
+assert.equal(focus.directEvidenceUrl('https://dbnmnorholzehkppwvap.supabase.co/functions/v1/fetch-openfda-data'), null);
+assert.equal(focus.directEvidenceUrl('not-a-url'), null);
 console.log('Weekly brief tests passed: ISO weeks, month-label exclusion, source-reviewed promotions, and audience focus.');
