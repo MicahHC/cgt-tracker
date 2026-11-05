@@ -145,22 +145,6 @@ function isFreshEngagementBriefForWeek(brief: EngagementBriefRow | null | undefi
   return generatedAt >= start.getTime() && generatedAt <= end.getTime();
 }
 
-function fallbackPriorityReason(tier: Tier | null | undefined): string {
-  if (tier === 'Tier 1') {
-    return 'Moved into Priority 1 because the asset is treated as having a U.S. path and a commercialization window inside 18 months.';
-  }
-  if (tier === 'Tier 2') {
-    return 'Moved into Priority 2 because a source-reviewed U.S. launch target falls beyond 18 months but within 24 months.';
-  }
-  if (tier === 'Watchlist') {
-    return 'Moved to Watchlist because it still needs confirmation on launch timing, U.S. path, or commercial readiness before it belongs in an active ABM audience.';
-  }
-  if (tier === 'Deprioritized') {
-    return 'Moved to Deprioritized because the latest profile does not support active commercialization targeting.';
-  }
-  return 'Priority changed based on the latest score snapshot and tracker rules.';
-}
-
 function segmentColor(seg: AbmAudienceSegment | string): string {
   switch (seg) {
     case 'ATC': return 'bg-violet-50 text-violet-700 border-violet-200';
@@ -501,11 +485,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     });
   }, [tierChanges, changes]);
 
-  const criticalChanges = useMemo(() => {
-    return focusedChanges.filter(c => /tier|segment|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(c.field_changed || ''));
-  }, [focusedChanges]);
-
-  const priorityChanges = criticalChanges.length > 0 ? criticalChanges : focusedChanges;
+  const priorityChanges = [...focusedChanges].sort((a, b) => {
+    const critical = (field: string | null | undefined) => /tier|segment|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(field || '');
+    return Number(critical(b.field_changed)) - Number(critical(a.field_changed));
+  });
   const activeAbmRows = useMemo(() => abmRows.filter(row => !isSuppressedAbmRow(row)), [abmRows]);
   const suppressedAbmCount = abmRows.filter(row => !row.is_total && isSuppressedAbmRow(row)).length;
 
@@ -857,6 +840,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                             Source <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
+                        {!c.source_url && <span className="text-amber-700">Source not attached</span>}
                       </div>
                     </div>
                   </div>
@@ -1110,7 +1094,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                     <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
                       <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Why it moved</div>
                       <div className="text-sm text-slate-700 mt-1 leading-relaxed">
-                        {priorityDisplayCopy(reason?.why_it_matters) || fallbackPriorityReason(s.commercial_priority_tier)}
+                        {reason?.source_url
+                          ? priorityDisplayCopy(reason.why_it_matters) || 'Review the cited source and launch window before acting.'
+                          : 'No direct source is attached to this priority change. Treat the reason as unverified until the launch window is reviewed.'}
                       </div>
                     </div>
                     <div className="rounded-lg bg-teal-50/60 border border-teal-100 px-3 py-2">
