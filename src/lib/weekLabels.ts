@@ -1,4 +1,23 @@
-const TRACKER_WEEK_PATTERN = /^(\d{4})-W(\d{1,2})$/;
+const TRACKER_WEEK_PATTERN = /^(\d{4})-W(\d{2})$/;
+
+export function trackerWeekLabel(date: Date): string {
+  const thursday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  thursday.setUTCDate(thursday.getUTCDate() + 4 - (thursday.getUTCDay() || 7));
+  const year = thursday.getUTCFullYear();
+  const yearStart = new Date(Date.UTC(year, 0, 1));
+  const week = Math.ceil(((thursday.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${year}-W${String(week).padStart(2, '0')}`;
+}
+
+export function recentTrackerWeeks(date = new Date(), count = 12): string[] {
+  const monday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() || 7) + 1);
+  return Array.from({ length: count }, (_, index) => {
+    const current = new Date(monday);
+    current.setUTCDate(current.getUTCDate() - index * 7);
+    return trackerWeekLabel(current);
+  });
+}
 
 export function formatTrackerWeekLabel(label: string | null | undefined): string {
   const range = getTrackerWeekRange(label);
@@ -19,51 +38,35 @@ export function getTrackerWeekRange(label: string | null | undefined): { start: 
 
   const year = Number(match[1]);
   const week = Number(match[2]);
-  if (!Number.isInteger(year) || !Number.isInteger(week) || week < 1 || week > 53) return null;
-
-  const jan1 = new Date(year, 0, 1);
-  const dec31 = new Date(year, 11, 31);
-  const startOffset = Math.max(0, 7 * week - 7 - jan1.getDay());
-  const endOffset = Math.min(dayOfYear(dec31) - 1, 7 * week - jan1.getDay() - 1);
-
-  if (startOffset > endOffset) return null;
-
-  return {
-    start: addDays(jan1, startOffset),
-    end: addDays(jan1, endOffset),
-  };
-}
-
-function dayOfYear(date: Date): number {
-  const start = new Date(date.getFullYear(), 0, 1);
-  return Math.floor((date.getTime() - start.getTime()) / 86400000) + 1;
-}
-
-function addDays(date: Date, days: number): Date {
-  const next = new Date(date);
-  next.setDate(date.getDate() + days);
-  return next;
+  if (week < 1 || week > 53) return null;
+  const januaryFourth = new Date(Date.UTC(year, 0, 4));
+  const start = new Date(januaryFourth);
+  start.setUTCDate(start.getUTCDate() - (start.getUTCDay() || 7) + 1 + (week - 1) * 7);
+  if (trackerWeekLabel(start) !== label) return null;
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 6);
+  return { start, end };
 }
 
 function formatDateRange(start: Date, end: Date): string {
-  const sameYear = start.getFullYear() === end.getFullYear();
-  const sameMonth = sameYear && start.getMonth() === end.getMonth();
+  const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
+  const sameMonth = sameYear && start.getUTCMonth() === end.getUTCMonth();
 
   if (sameMonth) {
-    return `${formatMonthDay(start)}-${end.getDate()}, ${end.getFullYear()}`;
+    return `${formatMonthDay(start)}-${end.getUTCDate()}, ${end.getUTCFullYear()}`;
   }
 
   if (sameYear) {
-    return `${formatMonthDay(start)}-${formatMonthDay(end)}, ${end.getFullYear()}`;
+    return `${formatMonthDay(start)}-${formatMonthDay(end)}, ${end.getUTCFullYear()}`;
   }
 
   return `${formatMonthDayYear(start)}-${formatMonthDayYear(end)}`;
 }
 
 function formatMonthDay(date: Date): string {
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 function formatMonthDayYear(date: Date): string {
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }

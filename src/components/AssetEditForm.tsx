@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { computeAllScores, REGULATORY_RUBRIC, COMMERCIAL_INFRA_RUBRIC, MARKET_ATTRACTIVENESS_RUBRIC } from '../lib/scoring';
 import { SEGMENTS, MANUFACTURING_STATUSES, MANUFACTURING_PATHWAYS, COMMERCIAL_BUILDOUTS, LIKELY_LAUNCH_18, CONFIDENCE_LEVELS } from '../lib/constants';
 import { X, Save, Loader2, Info } from 'lucide-react';
+import { trackerWeekLabel } from '../lib/weekLabels';
 
 interface Props {
   asset?: CgtAsset;
@@ -48,6 +49,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
 
   const preview = computeAllScores({
     ...(asset || {}),
+    ...form,
     regulatory_score: form.regulatory_score ?? 0,
     commercial_infrastructure_score: form.commercial_infrastructure_score ?? 0,
     market_attractiveness_score: form.market_attractiveness_score ?? 0,
@@ -86,6 +88,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           'regulatory_score', 'commercial_infrastructure_score', 'market_attractiveness_score',
           'clinical_hold', 'no_manufacturing_pathway',
           'timeline_over_24_months', 'no_us_path', 'segment', 'phase_regulatory_status',
+          'us_commercialization_window',
           'latest_material_update', 'key_upcoming_catalyst', 'catalyst_date',
         ];
         const logs = changedFields
@@ -93,6 +96,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
           .map(k => ({
             asset_id: asset.id,
             run_date: new Date().toISOString().slice(0, 10),
+            update_week: trackerWeekLabel(new Date()),
             agent_id: user?.id,
             change_type: 'edit',
             field_changed: String(k),
@@ -101,8 +105,23 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
             why_it_matters: '',
             confidence_level: (form.confidence_level as string) || 'Medium',
           }));
+        if (asset.commercial_priority_tier !== preview.commercialTier) {
+          logs.push({
+            asset_id: asset.id,
+            run_date: new Date().toISOString().slice(0, 10),
+            update_week: trackerWeekLabel(new Date()),
+            agent_id: user?.id,
+            change_type: 'edit',
+            field_changed: 'commercial_priority_tier',
+            previous_value: asset.commercial_priority_tier || '',
+            new_value: preview.commercialTier || '',
+            why_it_matters: 'Commercial priority recalculated from the reviewed U.S. launch window and current asset flags.',
+            confidence_level: (form.confidence_level as string) || 'Medium',
+          });
+        }
         if (logs.length) {
-          await supabase.from('cgt_change_log').insert(logs);
+          const { error: logError } = await supabase.from('cgt_change_log').insert(logs);
+          if (logError) throw logError;
         }
       } else {
         const { data: created, error: insErr } = await supabase
@@ -117,7 +136,7 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
       if (savedId) {
         await supabase.from('cgt_score_history').insert({
           asset_id: savedId,
-          week_label: weekLabel(new Date()),
+          week_label: trackerWeekLabel(new Date()),
           regulatory_score: form.regulatory_score ?? 0,
           commercial_infrastructure_score: form.commercial_infrastructure_score ?? 0,
           market_attractiveness_score: form.market_attractiveness_score ?? 0,
@@ -227,12 +246,6 @@ export function AssetEditForm({ asset, initialCompanyId, onCancel, onSaved }: Pr
       </div>
     </div>
   );
-}
-
-function weekLabel(d: Date) {
-  const onejan = new Date(d.getFullYear(), 0, 1);
-  const week = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-  return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
 }
 
 function Input({ label, value, onChange, type = 'text', required }: { label: string; value?: string | null; onChange: (v: string) => void; type?: string; required?: boolean }) {

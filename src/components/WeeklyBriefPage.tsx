@@ -12,7 +12,11 @@ import { ConfidenceBadge } from './ui/Badge';
 import { briefSignature, markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
-import { formatTrackerWeekLabel, getTrackerWeekRange } from '../lib/weekLabels';
+import { formatTrackerWeekLabel, getTrackerWeekRange, recentTrackerWeeks } from '../lib/weekLabels';
+import { focusAudience, focusAudiences, isEarlyToLateMove } from '../lib/weeklyBriefFocus';
+import { assessLaunch } from '../lib/commercialization';
+import { loadAudiences } from '../lib/loadAudiences';
+import type { AudienceMember } from '../lib/audienceCounts';
 import { useBriefData, type BriefContent, type Segment as BriefSegment, type AccountBehavior } from './AbmEngagementBrief';
 import { isSuppressedAbmRow } from '../lib/abmSuppression';
 
@@ -48,6 +52,10 @@ interface AssetContext {
   company_id: string;
   company_name: string;
   asset_name: string;
+  segment: string;
+  us_commercialization_window: string;
+  clinical_hold: boolean;
+  no_us_path: boolean;
   modality: string;
   lead_indication: string;
   target_indication: string;
@@ -130,9 +138,9 @@ function isFreshEngagementBriefForWeek(brief: EngagementBriefRow | null | undefi
   if (!range || Number.isNaN(generatedAt)) return false;
 
   const start = new Date(range.start);
-  start.setHours(0, 0, 0, 0);
+  start.setUTCHours(0, 0, 0, 0);
   const end = new Date(range.end);
-  end.setHours(23, 59, 59, 999);
+  end.setUTCHours(23, 59, 59, 999);
 
   return generatedAt >= start.getTime() && generatedAt <= end.getTime();
 }
@@ -172,55 +180,33 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const [runs, setRuns] = useState<RunSummary | null>(null);
   const [abmRows, setAbmRows] = useState<CgtAbmWeeklyEngagement[]>([]);
   const [assetContext, setAssetContext] = useState<AssetContext[]>([]);
+  const [audienceMembers, setAudienceMembers] = useState<AudienceMember[]>([]);
+  const [audienceError, setAudienceError] = useState(false);
+  const [weekLoadError, setWeekLoadError] = useState(false);
   const [uploadingAbm, setUploadingAbm] = useState(false);
   const [abmUploadMessage, setAbmUploadMessage] = useState<string | null>(null);
   const [abmUploadError, setAbmUploadError] = useState<string | null>(null);
   const [uploadSegment, setUploadSegment] = useState<AbmAudienceSegment>('');
+  const [showLegacyEngagement, setShowLegacyEngagement] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const briefData = useBriefData();
 
   useEffect(() => {
     (async () => {
-      const [{ data: changeWeeks }, { data: scoreWeeks }, { data: abmWeeks }] = await Promise.all([
+      const weeks = recentTrackerWeeks(new Date(), 16);
+      const currentWeek = weeks[0];
+      const [{ count: changes }, { count: scores }] = await Promise.all([
         supabase
           .from('cgt_change_log')
-          .select('update_week, created_at')
-          .not('update_week', 'is', null)
-          .order('created_at', { ascending: false })
-          .limit(250),
+          .select('id', { count: 'exact', head: true })
+          .eq('update_week', currentWeek),
         supabase
           .from('cgt_score_history')
-          .select('week_label, recorded_at')
-          .not('week_label', 'is', null)
-          .order('recorded_at', { ascending: false })
-          .limit(250),
-        supabase
-          .from('cgt_abm_weekly_engagement')
-          .select('week_label, created_at')
-          .not('week_label', 'is', null)
-          .order('created_at', { ascending: false })
-          .limit(250),
+          .select('id', { count: 'exact', head: true })
+          .eq('week_label', currentWeek),
       ]);
-
-      const latestByWeek = new Map<string, number>();
-      for (const row of (changeWeeks as any[]) || []) {
-        if (!row.update_week) continue;
-        latestByWeek.set(row.update_week, Math.max(latestByWeek.get(row.update_week) || 0, Date.parse(row.created_at || '') || 0));
-      }
-      for (const row of (scoreWeeks as any[]) || []) {
-        if (!row.week_label) continue;
-        latestByWeek.set(row.week_label, Math.max(latestByWeek.get(row.week_label) || 0, Date.parse(row.recorded_at || '') || 0));
-      }
-      for (const row of (abmWeeks as any[]) || []) {
-        if (!row.week_label) continue;
-        latestByWeek.set(row.week_label, Math.max(latestByWeek.get(row.week_label) || 0, Date.parse(row.created_at || '') || 0));
-      }
-      const weeks = Array.from(latestByWeek.entries())
-        .sort((a, b) => b[1] - a[1])
-        .map(([label]) => label);
       setAvailableWeeks(weeks);
-      if (weeks.length > 0) setWeek(weeks[0]);
-      else setLoading(false);
+      setWeek((changes || scores) ? currentWeek : weeks[1]);
     })();
   }, []);
 
@@ -254,6 +240,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
   async function loadWeek(w: string) {
     setLoading(true);
+    setWeekLoadError(false);
 
     const changesQ = supabase
       .from('cgt_change_log')
@@ -276,7 +263,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     const assetContextQ = supabase
       .from('cgt_assets')
       .select(`
-        id, company_id, asset_name, modality, lead_indication, target_indication,
+        id, company_id, asset_name, segment, us_commercialization_window, clinical_hold, no_us_path,
+        modality, lead_indication, target_indication,
         phase_regulatory_status, likely_us_launch_within_24_months, commercial_buildout_status,
         final_commercial_score,
         commercial_priority_tier, key_upcoming_catalyst, catalyst_date,
@@ -284,12 +272,18 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       `)
       .order('final_commercial_score', { ascending: false });
 
-    const [{ data: changeData }, { data: scoreData }, { data: abmData }, { data: assetData }] = await Promise.all([
+    const [{ data: changeData, error: changeError }, { data: scoreData, error: scoreError }, { data: abmData }, { data: assetData, error: assetError }, audienceResult] = await Promise.all([
       changesQ,
       scoresQ,
       abmQ,
       assetContextQ,
+      loadAudiences().then(members => ({ members, error: false })).catch(() => ({ members: [] as AudienceMember[], error: true })),
     ]);
+    if (changeError || scoreError || assetError) {
+      setWeekLoadError(true);
+      setLoading(false);
+      return;
+    }
 
     const mappedChanges: ChangeRow[] = ((changeData as any[]) || []).map(r => ({
       ...r,
@@ -308,6 +302,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       company_id: r.company_id,
       company_name: r.cgt_companies?.company_name || '',
       asset_name: r.asset_name,
+      segment: r.segment || '',
+      us_commercialization_window: r.us_commercialization_window || '',
+      clinical_hold: !!r.clinical_hold,
+      no_us_path: !!r.no_us_path,
       modality: r.modality || '',
       lead_indication: r.lead_indication || '',
       target_indication: r.target_indication || '',
@@ -345,6 +343,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     setScores(mappedScores);
     setAbmRows(((abmData as CgtAbmWeeklyEngagement[] | null) || []));
     setAssetContext(mappedAssets);
+    setAudienceMembers(audienceResult.members);
+    setAudienceError(audienceResult.error);
 
     const { data: runData } = await supabase
       .from('cgt_agent_runs')
@@ -363,7 +363,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       scoreUpdates: rs.reduce((a, r) => a + (r.score_updates || 0), 0),
       latestFinishedAt: rs.map(r => r.finished_at).filter(Boolean).sort().slice(-1)[0] || null,
     };
-    setRuns(summary);
+    setRuns(rs.length ? summary : null);
 
     const latestDataAt = [
       ...mappedChanges.map(c => c.created_at),
@@ -412,24 +412,79 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return Array.from(latestByAsset.values());
   }, [scores]);
 
+  const assetById = useMemo(() => new Map(assetContext.map(asset => [asset.id, asset])), [assetContext]);
+  const audiencesByCompany = useMemo(() => {
+    const byCompany = new Map<string, Set<string>>();
+    for (const member of audienceMembers) {
+      const key = normalizeAccountName(member.account_name);
+      if (!key) continue;
+      const audiences = byCompany.get(key) || new Set<string>();
+      audiences.add(member.is_client ? 'Closed Won' : member.audience_segment);
+      byCompany.set(key, audiences);
+    }
+    return byCompany;
+  }, [audienceMembers]);
+
+  const audienceForAsset = (asset: AssetContext | undefined) => {
+    if (!asset) return null;
+    const memberships = audiencesByCompany.get(normalizeAccountName(asset.company_name)) || new Set<string>();
+    if (memberships.has('Closed Won')) return null;
+    return focusAudience(asset, memberships);
+  };
+
+  const earlyLateMoves = useMemo(() => changes.filter(change => {
+    const asset = assetById.get(change.asset_id);
+    if (asset && audiencesByCompany.get(normalizeAccountName(asset.company_name))?.has('Closed Won')) return false;
+    return isEarlyToLateMove(change, asset);
+  }), [changes, assetById, audiencesByCompany]);
+
+  const focusedChanges = useMemo(() => changes.filter(change =>
+    !!audienceForAsset(assetById.get(change.asset_id)) || earlyLateMoves.some(move => move.id === change.id)
+  ), [changes, assetById, audiencesByCompany, earlyLateMoves]);
+
+  const focusedScores = useMemo(() => latestScores.filter(score =>
+    !!audienceForAsset(assetById.get(score.asset_id))
+  ), [latestScores, assetById, audiencesByCompany]);
+
+  const focusCounts = useMemo(() => {
+    const byAudience = { ATC: new Set<string>(), 'Late Stage': new Set<string>(), 'On Market': new Set<string>() };
+    for (const change of focusedChanges) {
+      const asset = assetById.get(change.asset_id);
+      if (!asset) continue;
+      const memberships = audiencesByCompany.get(normalizeAccountName(asset.company_name)) || new Set<string>();
+      if (memberships.has('Closed Won')) continue;
+      for (const audience of focusAudiences(asset, memberships)) byAudience[audience].add(asset.company_id);
+    }
+    return {
+      ATC: byAudience.ATC.size,
+      'Late Stage': byAudience['Late Stage'].size,
+      'On Market': byAudience['On Market'].size,
+    };
+  }, [focusedChanges, assetById, audiencesByCompany]);
+
   const topMovers = useMemo(() => {
-    return [...latestScores]
+    return [...focusedScores]
       .filter(s => s.prev_final != null)
       .map(s => ({ ...s, delta: (s.final_commercial_score || 0) - (s.prev_final || 0) }))
       .filter(s => Math.abs(s.delta) > 0)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
       .slice(0, 8);
-  }, [latestScores]);
+  }, [focusedScores]);
 
   const flatScoresCount = useMemo(() => {
-    return latestScores.filter(s => s.prev_final != null && (s.final_commercial_score || 0) - (s.prev_final || 0) === 0).length;
-  }, [latestScores]);
+    return focusedScores.filter(s => s.prev_final != null && (s.final_commercial_score || 0) - (s.prev_final || 0) === 0).length;
+  }, [focusedScores]);
 
   const tierChanges = useMemo(() => {
-    return latestScores.filter(s =>
-      (s.prev_commercial_tier && s.prev_commercial_tier !== s.commercial_priority_tier)
-    );
-  }, [latestScores]);
+    return focusedScores.filter(score => {
+      const asset = assetById.get(score.asset_id);
+      if (!asset) return false;
+      const priority = assessLaunch(asset).priority;
+      const expectedTier = priority === 'Priority 1' ? 'Tier 1' : priority === 'Priority 2' ? 'Tier 2' : null;
+      return expectedTier === score.commercial_priority_tier &&
+        !!score.prev_commercial_tier && score.prev_commercial_tier !== score.commercial_priority_tier;
+    });
+  }, [focusedScores, assetById]);
 
   const tierChangeDetails = useMemo(() => {
     return tierChanges.map(score => {
@@ -447,10 +502,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   }, [tierChanges, changes]);
 
   const criticalChanges = useMemo(() => {
-    return changes.filter(c => /tier|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(c.field_changed || ''));
-  }, [changes]);
+    return focusedChanges.filter(c => /tier|segment|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(c.field_changed || ''));
+  }, [focusedChanges]);
 
-  const priorityChanges = criticalChanges.length > 0 ? criticalChanges : changes;
+  const priorityChanges = criticalChanges.length > 0 ? criticalChanges : focusedChanges;
   const activeAbmRows = useMemo(() => abmRows.filter(row => !isSuppressedAbmRow(row)), [abmRows]);
   const suppressedAbmCount = abmRows.filter(row => !row.is_total && isSuppressedAbmRow(row)).length;
 
@@ -553,6 +608,10 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     );
   }
 
+  if (weekLoadError) {
+    return <div className="rounded-xl border border-rose-200 bg-rose-50 p-8 text-rose-900">Weekly tracker data could not be loaded. Please retry before using this brief for decisions.</div>;
+  }
+
   const generatedLabel = (() => {
     const ts = runs?.latestFinishedAt;
     if (ts) {
@@ -593,6 +652,14 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </select>
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-end">
+          <button
+            type="button"
+            onClick={() => setShowLegacyEngagement(value => !value)}
+            className="text-xs text-slate-500 hover:text-slate-800 underline"
+          >
+            {showLegacyEngagement ? 'Hide legacy campaign data' : 'Show legacy campaign data'}
+          </button>
+          {showLegacyEngagement && <>
           <select
             value={uploadSegment}
             onChange={e => setUploadSegment(e.target.value as AbmAudienceSegment)}
@@ -620,6 +687,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               }}
             />
           </label>
+          </>}
           <button
             onClick={() => window.print()}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
@@ -649,21 +717,19 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             The week in <span className="prestige-gradient-text">cell &amp; gene therapy</span>
           </h1>
           <p className="text-base md:text-lg text-white/70 mt-5 max-w-2xl mx-auto leading-relaxed">
-            {showAudienceEngagementBrief || abmTotal
-              ? 'Market movement, scoring updates, and ABM audience engagement in one view.'
-              : 'Market movement and scoring updates in one view.'}
+            Market movement and commercial-readiness changes across ATCs, Late Stage, and On-Market therapies. Open each cited source before acting.
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-6 md:gap-10 flex-wrap">
-            {changes.length > 0 && (
+            {focusedChanges.length > 0 && (
               <>
-                <HeroMetric value={changes.length} label="Changes logged" />
+                <HeroMetric value={focusedChanges.length} label="Relevant changes" />
                 <div className="prestige-divider-vert hidden md:block" />
               </>
             )}
-            {scores.length > 0 && (
+            {focusedScores.length > 0 && (
               <>
-                <HeroMetric value={scores.length} label="Score updates" />
+                <HeroMetric value={focusedScores.length} label="Relevant score updates" />
                 <div className="prestige-divider-vert hidden md:block" />
               </>
             )}
@@ -673,24 +739,79 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                 <div className="prestige-divider-vert hidden md:block" />
               </>
             )}
-            {showAudienceEngagementBrief && (
+            {showLegacyEngagement && showAudienceEngagementBrief && (
               <HeroMetric value={audienceOnSiteCount} label="Accounts on site" sub={briefData.brief ? briefData.brief.view_window : undefined} />
             )}
           </div>
 
           <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
-            Latest data update: {generatedLabel} · Tracker code {week}
+            Latest data update: {generatedLabel} · Reporting week {week}
           </div>
         </div>
       </section>
 
+      <section className="reveal reveal-delay-1">
+        <header className="mb-6">
+          <span className="prestige-eyebrow prestige-eyebrow-light">Audience watch</span>
+          <h2 className="prestige-section-title mt-3">Where to focus this week</h2>
+          <p className="text-sm text-slate-500 mt-2 max-w-2xl">
+            Material updates in ATCs, companies with a source-reviewed U.S. launch target within 24 months, and therapies already on market.
+            Closed Won accounts are excluded from account targeting.
+          </p>
+        </header>
+        {audienceError && (
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 mb-4">
+            Audience memberships could not be loaded. ATC and Closed Won matching is incomplete; do not use this brief for targeting until the lists load.
+          </p>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Stat label="ATCs with changes" value={focusCounts.ATC} icon={Building2} color="amber" />
+          <Stat label="Late Stage with changes" value={focusCounts['Late Stage']} icon={Target} color="teal" />
+          <Stat label="On-Market with changes" value={focusCounts['On Market']} icon={Activity} color="blue" />
+        </div>
+        {focusedChanges.length === 0 && (
+          <p className="text-sm text-slate-500 mt-4">No material changes were logged for these audiences in this reporting week. This is not confirmation that every account was reviewed.</p>
+        )}
+      </section>
+
+      <section className="reveal reveal-delay-1">
+        <header className="mb-5">
+          <span className="prestige-eyebrow prestige-eyebrow-light">Audience movement</span>
+          <h2 className="prestige-section-title mt-3">Early Stage → Late Stage</h2>
+          <p className="text-sm text-slate-500 mt-2">Clinical stage advances and verified moves into the 24-month launch audience are shown separately. Phase 3 alone does not qualify an account for Late Stage ABM.</p>
+        </header>
+        {earlyLateMoves.length ? (
+          <div className="prestige-card divide-y divide-slate-100">
+            {earlyLateMoves.map(change => (
+              <div key={change.id} className="px-6 py-4">
+                <button onClick={() => onOpenAsset(change.asset_id)} className="text-sm font-semibold text-slate-900 hover:text-teal-700">
+                  {change.company_name} · {change.asset_name}
+                </button>
+                <p className="text-xs font-semibold text-teal-700 mt-1">
+                  {change.field_changed === 'segment' ? 'Clinical stage advanced' : 'Entered Late Stage launch audience'}
+                  {change.field_changed === 'segment' && !assessLaunch(assetById.get(change.asset_id) || {}).priority ? ' · U.S. launch timing not verified' : ''}
+                </p>
+                <p className="text-sm text-slate-600 mt-1">{priorityDisplayCopy(change.why_it_matters) || 'Launch-window qualification changed; review the asset record.'}</p>
+                {change.source_url ? (
+                  <a href={change.source_url} target="_blank" rel="noreferrer" className="text-xs text-teal-700 hover:underline">View source</a>
+                ) : (
+                  <p className="text-xs text-amber-700 mt-1">No direct source attached to this movement; verify before sharing.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-500">No Early-to-Late clinical or verified launch-audience move was logged this week.</p>
+        )}
+      </section>
+
       {/* ABM Audience Engagement Intelligence */}
-      {showAudienceEngagementBrief && briefData.brief && (
+      {showLegacyEngagement && showAudienceEngagementBrief && briefData.brief && (
         <EngagementBriefSection brief={briefData.brief} spotlights={briefData.spotlights} />
       )}
 
       {/* Highlights · Top Priority Changes — only if there's data */}
-      {changes.length > 0 && (
+      {focusedChanges.length > 0 && (
       <section className="reveal reveal-delay-1">
         <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
           <div>
@@ -698,13 +819,13 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
               <Sparkles className="w-3 h-3" />
               Highlights
             </span>
-            <h2 className="prestige-section-title mt-3">Top priority changes</h2>
+            <h2 className="prestige-section-title mt-3">Material changes in focus audiences</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-xl leading-relaxed">
-              The changes most likely to move a thesis this week: audience-priority shifts, phase moves, filings, PDUFA dates, and regulatory signals.
+              ATC, Late Stage, and On-Market updates first; phase moves, filings, FDA decisions, manufacturing, and commercial readiness where logged.
             </p>
           </div>
           <div className="text-xs font-medium text-slate-500 tracking-wide uppercase">
-            Showing {Math.min(priorityChanges.length, 20)} of {changes.length}
+            Showing {Math.min(priorityChanges.length, 20)} of {focusedChanges.length}
           </div>
         </header>
 
@@ -747,35 +868,35 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       )}
 
       {/* Metrics Grid — only show when there's market data */}
-      {(changes.length > 0 || scores.length > 0 || (runs?.total ?? 0) > 0) && (
+      {(focusedChanges.length > 0 || focusedScores.length > 0 || (runs?.total ?? 0) > 0) && (
       <section className="reveal reveal-delay-2">
         <header className="mb-6">
           <span className="prestige-eyebrow prestige-eyebrow-light">Summary</span>
           <h2 className="prestige-section-title mt-3">By the numbers</h2>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Stat label="Changes logged" value={changes.length} icon={ClipboardList} color="teal" />
-          <Stat label="Score updates" value={scores.length} icon={TrendingUp} color="blue" />
+          <Stat label="Relevant changes" value={focusedChanges.length} icon={ClipboardList} color="teal" />
+          <Stat label="Relevant score updates" value={focusedScores.length} icon={TrendingUp} color="blue" />
           <Stat
             label="Material signals"
-            value={runs?.materialSignals ?? 0}
+            value={runs?.materialSignals ?? 'Unavailable'}
             icon={Activity}
             color="amber"
             sub={runs ? `${runs.signalsFound} total signals` : undefined}
           />
           <Stat
             label="Agent runs"
-            value={runs?.total ?? 0}
+            value={runs?.total ?? 'Unavailable'}
             icon={CheckCircle2}
             color="slate"
-            sub={runs ? `${runs.succeeded} ok · ${runs.partial} partial · ${runs.failed} failed` : undefined}
+            sub={runs ? `${runs.succeeded} ok · ${runs.partial} partial · ${runs.failed} failed` : 'Run records are not visible to this viewer'}
           />
         </div>
       </section>
       )}
 
       {/* ABM account engagement — only show when CSV data exists */}
-      {abmTotal && (
+      {showLegacyEngagement && abmTotal && (
       <section className="reveal reveal-delay-3">
         <header className="flex items-end justify-between gap-4 mb-6 flex-wrap">
           <div>
@@ -1193,7 +1314,7 @@ function DeltaBadge({ delta }: { delta: number }) {
 
 interface StatProps {
   label: string;
-  value: number;
+  value: number | string;
   icon: typeof ClipboardList;
   color: 'teal' | 'blue' | 'amber' | 'slate';
   sub?: string;
