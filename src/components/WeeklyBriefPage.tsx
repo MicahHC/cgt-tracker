@@ -420,9 +420,12 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return isEarlyToLateMove(change, asset);
   }), [briefChanges, assetById, audiencesByCompany]);
 
-  const focusedChanges = useMemo(() => briefChanges.filter(change =>
-    !!audienceForAsset(assetById.get(change.asset_id)) || earlyLateMoves.some(move => move.id === change.id)
-  ), [briefChanges, assetById, audiencesByCompany, earlyLateMoves]);
+  const focusedChanges = useMemo(() => briefChanges.filter(change => {
+    // Reviewed current-week corrections and regulatory findings must remain
+    // visible even if an ABM audience membership is absent or stale.
+    if (week === currentWeek && isHumanReviewedChange(change)) return true;
+    return !!audienceForAsset(assetById.get(change.asset_id)) || earlyLateMoves.some(move => move.id === change.id);
+  }), [briefChanges, assetById, audiencesByCompany, earlyLateMoves, week, currentWeek]);
 
   const focusedScores = useMemo(() => latestScores.filter(score =>
     !!audienceForAsset(assetById.get(score.asset_id))
