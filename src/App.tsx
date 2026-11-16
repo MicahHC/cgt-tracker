@@ -13,8 +13,14 @@ import { WeeklyBriefPage } from './components/WeeklyBriefPage';
 import { AbmAudiencePage } from './components/AbmAudiencePage';
 import { AdminPage } from './components/AdminPage';
 
+function initialPage(): PageKey {
+  const requested = new URLSearchParams(window.location.search).get('view');
+  const pages: PageKey[] = ['dashboard', 'assets', 'companies', 'scoring', 'changelog', 'scorehistory', 'catalysts', 'weeklybrief', 'abmaudience', 'admin'];
+  return pages.includes(requested as PageKey) ? requested as PageKey : 'dashboard';
+}
+
 function App() {
-  const [page, setPage] = useState<PageKey>('dashboard');
+  const [page, setPage] = useState<PageKey>(initialPage);
   const [openAssetId, setOpenAssetId] = useState<string | null>(null);
   const [creatingAsset, setCreatingAsset] = useState(false);
 
@@ -22,6 +28,10 @@ function App() {
 
   function navigate(p: PageKey) {
     setPage(p);
+    const url = new URL(window.location.href);
+    if (p === 'dashboard') url.searchParams.delete('view');
+    else url.searchParams.set('view', p);
+    window.history.replaceState({}, '', url);
     setOpenAssetId(null);
     setCreatingAsset(false);
   }
