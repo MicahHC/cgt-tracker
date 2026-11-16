@@ -12,7 +12,7 @@ import { ConfidenceBadge } from './ui/Badge';
 import { briefSignature, markWeeklyBriefSeen } from '../lib/weeklyBrief';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { ABM_AUDIENCE_SEGMENTS } from '../lib/constants';
-import { formatTrackerWeekLabel, getTrackerWeekRange, recentTrackerWeeks } from '../lib/weekLabels';
+import { formatTrackerWeekLabel, getTrackerWeekRange, recentTrackerWeeks, trackerWeekLabel } from '../lib/weekLabels';
 import { directEvidenceUrl, focusAudience, focusAudiences, isEarlyToLateMove } from '../lib/weeklyBriefFocus';
 import { assessLaunch } from '../lib/commercialization';
 import { loadAudiences } from '../lib/loadAudiences';
@@ -176,22 +176,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const briefData = useBriefData();
 
   useEffect(() => {
-    (async () => {
-      const weeks = recentTrackerWeeks(new Date(), 16);
-      const currentWeek = weeks[0];
-      const [{ count: changes }, { count: scores }] = await Promise.all([
-        supabase
-          .from('cgt_change_log')
-          .select('id', { count: 'exact', head: true })
-          .eq('update_week', currentWeek),
-        supabase
-          .from('cgt_score_history')
-          .select('id', { count: 'exact', head: true })
-          .eq('week_label', currentWeek),
-      ]);
-      setAvailableWeeks(weeks);
-      setWeek((changes || scores) ? currentWeek : weeks[1]);
-    })();
+    const weeks = recentTrackerWeeks(new Date(), 16);
+    setAvailableWeeks(weeks);
+    setWeek(weeks[0]);
   }, []);
 
   useEffect(() => {
@@ -616,6 +603,8 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return 'data not yet generated';
   })();
   const weekDisplay = formatTrackerWeekLabel(week);
+  const isCurrentWeek = week === trackerWeekLabel(new Date());
+  const hasCurrentWeekResults = changes.length > 0 || scores.length > 0;
 
   return (
     <div ref={rootRef} className="prestige space-y-10" id="weekly-brief-printable">
@@ -694,7 +683,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         <div className="max-w-4xl mx-auto text-center">
           <span className="prestige-eyebrow">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 prestige-dot" />
-            Weekly Brief · {weekDisplay}
+            {isCurrentWeek ? 'Current week · ' : 'Archive · '}{weekDisplay}
           </span>
           <h1 className="prestige-headline mt-6">
             The week in <span className="prestige-gradient-text">cell &amp; gene therapy</span>
@@ -733,6 +722,17 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
         </div>
       </section>
 
+      {isCurrentWeek && (
+        <section className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-5 text-sm text-amber-950">
+          <p className="font-semibold">{hasCurrentWeekResults ? 'Current-week scan results are arriving' : 'No current-week results yet'}</p>
+          <p className="mt-1">
+            {hasCurrentWeekResults
+              ? 'This is a working brief, not a completed market readout. Run coverage is not visible here, so verify cited changes before sharing.'
+              : 'The previous week is available in the selector above. No current-week changes have been written yet; a quiet screen does not mean every company was checked.'}
+          </p>
+        </section>
+      )}
+
       <section className="reveal reveal-delay-1">
         <header className="mb-6">
           <span className="prestige-eyebrow prestige-eyebrow-light">Audience watch</span>
@@ -753,7 +753,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           <Stat label="On-Market with changes" value={focusCounts['On Market']} icon={Activity} color="blue" />
         </div>
         {focusedChanges.length === 0 && (
-          <p className="text-sm text-slate-500 mt-4">No material changes were logged for these audiences in this reporting week. This is not confirmation that every account was reviewed.</p>
+          <p className="text-sm text-slate-500 mt-4">No material changes have been logged for these audiences {isCurrentWeek ? 'yet this week' : 'in this reporting week'}. This is not confirmation that every account was reviewed.</p>
         )}
       </section>
 
