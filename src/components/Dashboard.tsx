@@ -87,7 +87,11 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
     .slice(0, 6);
 
   const companyById = new Map(companies.map(c => [c.id, c]));
-  const trackerAssets = assets.filter(a => a.segment === 'Late Stage' || a.segment === 'On-Market');
+  // This card is a launch-priority view, not a list of every clinical program.
+  // Include only assets that meet the source-reviewed Priority 1/2 rules.
+  const trackerAssets = assets.filter(a =>
+    a.segment === 'Late Stage' && ['Tier 1', 'Tier 2'].includes(a.commercial_priority_tier || '')
+  );
   const trackerByCompany = new Map<string, { company: CgtCompany | undefined; topAsset: CgtAsset; assetCount: number }>();
   for (const a of trackerAssets) {
     if (!a.company_id) continue;
