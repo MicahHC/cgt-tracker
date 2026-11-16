@@ -1,0 +1,41 @@
+name: Weekly CGT Scan
+
+on:
+  # Monday 00:00 UTC is Sunday 5:00 p.m. MST / 6:00 p.m. MDT.
+  # ISO week labeling changes at this boundary, so the brief and scan agree.
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-cgt-scan
+  cancel-in-progress: false
+
+jobs:
+  enqueue:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: https://dbnmnorholzehkppwvap.supabase.co
+      # This is the existing public browser anon key. Database RLS restricts
+      # access; the RPCs themselves only enqueue idempotent weekly work.
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibm1ub3Job2x6ZWhrcHB3dmFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NzYyNzAsImV4cCI6MjA4NTM1MjI3MH0.R6i7hjo5AwklCSsxlIKT7o5tt7BVyV9i2qGG06LeBkw
+    steps:
+      - name: Enqueue current reporting week
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEEK_LABEL="$(date --utc +'%G-W%V')"
+          HEADERS=(-H "apikey: ${SUPABASE_ANON_KEY}" -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" -H 'Content-Type: application/json')
+
+          curl --fail-with-body --silent --show-error \
+            "${HEADERS[@]}" \
+            --data "{\"p_function_name\":\"signal-detection\",\"p_label_field\":\"week_label\",\"p_label_value\":\"${WEEK_LABEL}\"}" \
+            "${SUPABASE_URL}/rest/v1/rpc/trigger_agent_batches"
+
+          curl --fail-with-body --silent --show-error \
+            "${HEADERS[@]}" \
+            --data "{\"p_week_label\":\"${WEEK_LABEL}\"}" \
+            "${SUPABASE_URL}/rest/v1/rpc/trigger_discovery"
