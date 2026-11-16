@@ -10,6 +10,7 @@ import { TierBadge, SegmentBadge } from './ui/Badge';
 import { PageKey } from './Layout';
 import { audienceCounts } from '../lib/audienceCounts';
 import { loadAudiences } from '../lib/loadAudiences';
+import { directEvidenceUrl } from '../lib/weeklyBriefFocus';
 
 interface DashboardProps {
   onNavigate: (page: PageKey) => void;
@@ -20,7 +21,7 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const [assets, setAssets] = useState<CgtAsset[]>([]);
   const [companies, setCompanies] = useState<CgtCompany[]>([]);
   const [companyCount, setCompanyCount] = useState(0);
-  const [recentChanges, setRecentChanges] = useState<Array<{ id: string; asset_id: string; field_changed: string; why_it_matters: string; created_at: string; asset_name?: string }>>([]);
+  const [recentChanges, setRecentChanges] = useState<Array<{ id: string; asset_id: string; field_changed: string; why_it_matters: string; created_at: string; change_type: string; source_url: string; asset_name?: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [priorityCounts, setPriorityCounts] = useState<Record<string, number> | null>(null);
   const [audienceError, setAudienceError] = useState(false);
@@ -48,17 +49,17 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
       supabase.from('cgt_companies').select('*', { count: 'exact' }),
       supabase
         .from('cgt_change_log')
-        .select('id, asset_id, field_changed, why_it_matters, created_at, cgt_assets(asset_name)')
+        .select('id, asset_id, field_changed, why_it_matters, created_at, change_type, source_url, cgt_assets(asset_name)')
         .order('created_at', { ascending: false })
-        .limit(8),
+        .limit(100),
     ]);
     setAssets((assetData as CgtAsset[]) || []);
     setCompanies((companyData as CgtCompany[]) || []);
     setCompanyCount(cCount || 0);
-    setRecentChanges(((changes as any[]) || []).map(c => ({
-      ...c,
-      asset_name: c.cgt_assets?.asset_name,
-    })));
+    setRecentChanges(((changes as any[]) || [])
+      .filter(c => c.change_type?.startsWith('human_reviewed:') && directEvidenceUrl(c.source_url))
+      .slice(0, 8)
+      .map(c => ({ ...c, asset_name: c.cgt_assets?.asset_name })));
     setLoading(false);
   }
 
@@ -80,7 +81,7 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   const sixMonths = new Date(now);
   sixMonths.setMonth(sixMonths.getMonth() + 6);
   const upcoming = assets
-    .filter(a => a.catalyst_date && new Date(a.catalyst_date) >= now && new Date(a.catalyst_date) <= sixMonths)
+    .filter(a => a.catalyst_date && !/global launch|source review/i.test(a.key_upcoming_catalyst || '') && new Date(a.catalyst_date) >= now && new Date(a.catalyst_date) <= sixMonths)
     .sort((a, b) => new Date(a.catalyst_date!).getTime() - new Date(b.catalyst_date!).getTime())
     .slice(0, 6);
 

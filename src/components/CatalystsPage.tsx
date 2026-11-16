@@ -34,7 +34,7 @@ export function CatalystsPage({ onOpenAsset }: Props) {
     const mapped: Row[] = ((data as any[]) || []).map(r => ({
       ...r,
       company_name: r.cgt_companies?.company_name,
-    })).filter(r => r.catalyst_date);
+    })).filter(r => r.catalyst_date && !/global launch|source review/i.test(r.key_upcoming_catalyst || ''));
     setRows(mapped);
     setLoading(false);
   }
