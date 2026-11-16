@@ -50,14 +50,15 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
       supabase
         .from('cgt_change_log')
         .select('id, asset_id, field_changed, why_it_matters, created_at, change_type, source_url, cgt_assets(asset_name)')
+        .like('change_type', 'human_reviewed:%')
         .order('created_at', { ascending: false })
-        .limit(100),
+        .limit(8),
     ]);
     setAssets((assetData as CgtAsset[]) || []);
     setCompanies((companyData as CgtCompany[]) || []);
     setCompanyCount(cCount || 0);
     setRecentChanges(((changes as any[]) || [])
-      .filter(c => c.change_type?.startsWith('human_reviewed:') && directEvidenceUrl(c.source_url))
+      .filter(c => directEvidenceUrl(c.source_url))
       .slice(0, 8)
       .map(c => ({ ...c, asset_name: c.cgt_assets?.asset_name })));
     setLoading(false);

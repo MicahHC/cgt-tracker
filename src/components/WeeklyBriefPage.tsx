@@ -420,6 +420,14 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return isEarlyToLateMove(change, asset);
   }), [briefChanges, assetById, audiencesByCompany]);
 
+  const reviewedAssetIds = useMemo(() => new Set(
+    briefChanges.filter(isHumanReviewedChange).map(change => change.asset_id)
+  ), [briefChanges]);
+
+  const briefScores = useMemo(() => (
+    week === currentWeek ? latestScores.filter(score => reviewedAssetIds.has(score.asset_id)) : latestScores
+  ), [latestScores, week, currentWeek, reviewedAssetIds]);
+
   const focusedChanges = useMemo(() => briefChanges.filter(change => {
     // Reviewed current-week corrections and regulatory findings must remain
     // visible even if an ABM audience membership is absent or stale.
@@ -427,9 +435,9 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return !!audienceForAsset(assetById.get(change.asset_id)) || earlyLateMoves.some(move => move.id === change.id);
   }), [briefChanges, assetById, audiencesByCompany, earlyLateMoves, week, currentWeek]);
 
-  const focusedScores = useMemo(() => latestScores.filter(score =>
+  const focusedScores = useMemo(() => briefScores.filter(score =>
     !!audienceForAsset(assetById.get(score.asset_id))
-  ), [latestScores, assetById, audiencesByCompany]);
+  ), [briefScores, assetById, audiencesByCompany]);
 
   const focusCounts = useMemo(() => {
     const byAudience = { ATC: new Set<string>(), 'Late Stage': new Set<string>(), 'On Market': new Set<string>() };

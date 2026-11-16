@@ -63,29 +63,18 @@ export async function fetchLatestBriefMeta(): Promise<{
   updatedAt: string | null;
   signature: string | null;
 }> {
-  const [{ data: latestChange }, { data: latestScore }] = await Promise.all([
-    supabase
-      .from('cgt_change_log')
-      .select('update_week, created_at')
-      .not('update_week', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(1),
-    supabase
-      .from('cgt_score_history')
-      .select('week_label, recorded_at')
-      .not('week_label', 'is', null)
-      .order('recorded_at', { ascending: false })
-      .limit(1),
-  ]);
+  const { data: latestChange } = await supabase
+    .from('cgt_change_log')
+    .select('update_week, created_at')
+    .like('change_type', 'human_reviewed:%')
+    .not('update_week', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(1);
 
   const candidates = [
     {
       week: ((latestChange as any[] | null)?.[0]?.update_week as string | undefined) || null,
       updatedAt: ((latestChange as any[] | null)?.[0]?.created_at as string | undefined) || null,
-    },
-    {
-      week: ((latestScore as any[] | null)?.[0]?.week_label as string | undefined) || null,
-      updatedAt: ((latestScore as any[] | null)?.[0]?.recorded_at as string | undefined) || null,
     },
   ].filter(c => c.week && c.updatedAt) as { week: string; updatedAt: string }[];
 
@@ -94,19 +83,14 @@ export async function fetchLatestBriefMeta(): Promise<{
     return { latestWeek: null, changeCount: 0, scoreCount: 0, updatedAt: null, signature: null };
   }
 
-  const [{ count: changeCount }, { count: scoreCount }] = await Promise.all([
-    supabase
-      .from('cgt_change_log')
-      .select('id', { count: 'exact', head: true })
-      .eq('update_week', latest.week),
-    supabase
-      .from('cgt_score_history')
-      .select('id', { count: 'exact', head: true })
-      .eq('week_label', latest.week),
-  ]);
+  const { count: changeCount } = await supabase
+    .from('cgt_change_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('update_week', latest.week)
+    .like('change_type', 'human_reviewed:%');
 
   const changes = changeCount || 0;
-  const scores = scoreCount || 0;
+  const scores = 0;
   return {
     latestWeek: latest.week,
     changeCount: changes,
