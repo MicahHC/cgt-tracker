@@ -131,6 +131,10 @@ function priorityDisplayCopy(value: string | null | undefined): string {
     .replace(/\bTier 2\b/g, 'Priority 2');
 }
 
+function isHumanReviewedChange(change: ChangeRow): boolean {
+  return change.change_type.startsWith('human_reviewed:') && !!directEvidenceUrl(change.source_url);
+}
+
 function isFreshEngagementBriefForWeek(brief: EngagementBriefRow | null | undefined, week: string | null | undefined): boolean {
   if (!brief || !week) return false;
   const range = getTrackerWeekRange(week);
@@ -403,15 +407,22 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return focusAudience(asset, memberships);
   };
 
-  const earlyLateMoves = useMemo(() => changes.filter(change => {
+  // The in-progress week is client-facing only after a source review. Older
+  // archived weeks retain their historical records for auditability.
+  const currentWeek = trackerWeekLabel(new Date());
+  const briefChanges = useMemo(() => (
+    week === currentWeek ? changes.filter(isHumanReviewedChange) : changes
+  ), [changes, week, currentWeek]);
+
+  const earlyLateMoves = useMemo(() => briefChanges.filter(change => {
     const asset = assetById.get(change.asset_id);
     if (asset && audiencesByCompany.get(normalizeAccountName(asset.company_name))?.has('Closed Won')) return false;
     return isEarlyToLateMove(change, asset);
-  }), [changes, assetById, audiencesByCompany]);
+  }), [briefChanges, assetById, audiencesByCompany]);
 
-  const focusedChanges = useMemo(() => changes.filter(change =>
+  const focusedChanges = useMemo(() => briefChanges.filter(change =>
     !!audienceForAsset(assetById.get(change.asset_id)) || earlyLateMoves.some(move => move.id === change.id)
-  ), [changes, assetById, audiencesByCompany, earlyLateMoves]);
+  ), [briefChanges, assetById, audiencesByCompany, earlyLateMoves]);
 
   const focusedScores = useMemo(() => latestScores.filter(score =>
     !!audienceForAsset(assetById.get(score.asset_id))
@@ -459,18 +470,18 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
 
   const tierChangeDetails = useMemo(() => {
     return tierChanges.map(score => {
-      const reason = changes.find(change =>
+      const reason = briefChanges.find(change =>
         change.asset_id === score.asset_id &&
         /commercial_priority_tier/i.test(change.field_changed || '') &&
         (!change.previous_value || change.previous_value === score.prev_commercial_tier) &&
         (!change.new_value || change.new_value === score.commercial_priority_tier)
-      ) || changes.find(change =>
+      ) || briefChanges.find(change =>
         change.asset_id === score.asset_id &&
         /commercial_priority_tier/i.test(change.field_changed || '')
       );
       return { score, reason };
     });
-  }, [tierChanges, changes]);
+  }, [tierChanges, briefChanges]);
 
   const priorityChanges = [...focusedChanges].sort((a, b) => {
     const critical = (field: string | null | undefined) => /tier|segment|phase|filing|pdufa|clinical hold|catalyst|regulatory/i.test(field || '');
@@ -603,7 +614,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
     return 'data not yet generated';
   })();
   const weekDisplay = formatTrackerWeekLabel(week);
-  const isCurrentWeek = week === trackerWeekLabel(new Date());
+  const isCurrentWeek = week === currentWeek;
   const hasCurrentWeekResults = changes.length > 0 || scores.length > 0;
 
   return (
@@ -727,7 +738,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           <p className="font-semibold">{hasCurrentWeekResults ? 'Current-week scan results are arriving' : 'No current-week results yet'}</p>
           <p className="mt-1">
             {hasCurrentWeekResults
-              ? 'This is a working brief, not a completed market readout. Run coverage is not visible here, so verify cited changes before sharing.'
+              ? 'This is a working brief, not a completed market readout. Only human-reviewed changes with direct sources appear below; scan coverage is not visible here.'
               : 'The previous week is available in the selector above. No current-week changes have been written yet; a quiet screen does not mean every company was checked.'}
           </p>
         </section>
