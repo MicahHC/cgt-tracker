@@ -52,6 +52,8 @@ interface AssetWithCompany {
   asset_name: string;
   segment: string | null;
   lead_indication: string | null;
+  clinicaltrials_gov_id: string | null;
+  company_website: string | null;
   phase_regulatory_status: string | null;
   // Hard-cap flags (match DB exactly)
   clinical_hold: boolean;
@@ -226,12 +228,13 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     .from("cgt_assets")
     .select(`
       id, company_id, asset_name, segment, lead_indication, phase_regulatory_status,
+      clinicaltrials_gov_id,
       clinical_hold, no_manufacturing_pathway, timeline_over_24_months, no_us_path,
       manufacturing_status, manufacturing_pathway,
       us_commercialization_window, likely_us_launch_within_24_months,
       regulatory_score, commercial_infrastructure_score, market_attractiveness_score,
       final_commercial_score, commercial_priority_tier,
-      cgt_companies!inner(id, company_name)
+      cgt_companies!inner(id, company_name, website)
     `)
     .in("company_id", company_ids);
   if (error) throw new Error(`loadAssets: ${error.message}`);
@@ -243,6 +246,8 @@ async function loadAssets(supabase: SupabaseClient, company_ids: string[]): Prom
     asset_name: row.asset_name,
     segment: row.segment,
     lead_indication: row.lead_indication,
+    clinicaltrials_gov_id: row.clinicaltrials_gov_id,
+    company_website: row.cgt_companies.website,
     phase_regulatory_status: row.phase_regulatory_status,
     clinical_hold: row.clinical_hold ?? false,
     no_manufacturing_pathway: row.no_manufacturing_pathway ?? false,
@@ -266,7 +271,14 @@ async function gatherSources(asset: AssetWithCompany) {
     "Content-Type": "application/json",
     Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
   };
-  const body = JSON.stringify({ companyName: asset.company_name, companyId: asset.company_id });
+  // Drug and indication context prevent company-level results from being
+  // attributed to the wrong therapy when a sponsor has multiple programs.
+  const body = JSON.stringify({
+    companyName: asset.company_name,
+    companyId: asset.company_id,
+    drugName: asset.asset_name,
+    indication: asset.lead_indication,
+  });
 
   const endpoints = [
     { name: "sec_edgar", url: `${functionsBase}/fetch-sec-edgar-data`, tier: 1 },
@@ -279,7 +291,7 @@ async function gatherSources(asset: AssetWithCompany) {
   // returns in FETCH_TIMEOUT_MS is used; the rest is dropped.
   const FETCH_TIMEOUT_MS = 25_000;
 
-  const results = await Promise.allSettled(
+  const apiResults = await Promise.allSettled(
     endpoints.map(async (e) => {
       const ctrl = new AbortController();
       const tid = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
@@ -292,9 +304,140 @@ async function gatherSources(asset: AssetWithCompany) {
       }
     })
   );
-  return results
+  const webResults = await Promise.allSettled([
+    fetchClinicalTrialsRecord(asset),
+    fetchCompanyPressReleases(asset),
+    fetchFdaSiteResults(asset),
+    fetchIndustryCoverage(asset),
+  ]);
+
+  return [
+    ...apiResults
     .filter((r): r is PromiseFulfilledResult<{ name: string; url: string; tier: number; data: unknown }> => r.status === "fulfilled")
-    .map((r) => r.value);
+    .map((r) => r.value),
+    ...webResults
+      .filter((r): r is PromiseFulfilledResult<{ name: string; tier: number; data: unknown }> => r.status === "fulfilled")
+      .map((r) => r.value),
+  ];
+}
+
+type SourceBundle = { name: string; tier: number; data: unknown };
+
+const SOURCE_FETCH_TIMEOUT_MS = 8_000;
+
+async function fetchPage(url: string): Promise<string | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SOURCE_FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "CGT-Intelligence-Monitor/1.0 (+https://cgtscore.com)" },
+      signal: controller.signal,
+    });
+    if (!response.ok) return null;
+    return await response.text();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function stripHtml(value: string): string {
+  return value.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function extractLinks(html: string, base: string, limit = 8): Array<{ title: string; url: string }> {
+  const links: Array<{ title: string; url: string }> = [];
+  const seen = new Set<string>();
+  for (const match of html.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+    const title = stripHtml(match[2]);
+    if (title.length < 12 || !/(press|news|release|trial|fda|approval|clinical|phase|data|filing)/i.test(title)) continue;
+    try {
+      const url = new URL(match[1], base).toString();
+      if (!url.startsWith("https://") || seen.has(url)) continue;
+      seen.add(url);
+      links.push({ title: title.slice(0, 300), url });
+      if (links.length >= limit) break;
+    } catch { /* Ignore malformed links. */ }
+  }
+  return links;
+}
+
+async function fetchClinicalTrialsRecord(asset: AssetWithCompany): Promise<SourceBundle> {
+  const studyId = asset.clinicaltrials_gov_id?.trim();
+  const url = studyId
+    ? `https://clinicaltrials.gov/api/v2/studies/${encodeURIComponent(studyId)}`
+    : `https://clinicaltrials.gov/api/v2/studies?query.intr=${encodeURIComponent(asset.asset_name)}&pageSize=5`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SOURCE_FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { headers: { Accept: "application/json" }, signal: controller.signal });
+    if (!response.ok) throw new Error(`ClinicalTrials.gov HTTP ${response.status}`);
+    const payload = await response.json();
+    const studies = payload.studies ?? [payload];
+    const records = studies.slice(0, 5).map(compactClinicalTrial);
+    return { name: "clinicaltrials_gov", tier: 1, data: { source_url: url, records } };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function compactClinicalTrial(study: Record<string, unknown>) {
+  const protocol = (study.protocolSection ?? {}) as Record<string, any>;
+  const identification = protocol.identificationModule ?? {};
+  const status = protocol.statusModule ?? {};
+  const sponsor = protocol.sponsorCollaboratorsModule?.leadSponsor ?? {};
+  const design = protocol.designModule ?? {};
+  const interventions = protocol.armsInterventionsModule?.interventions ?? [];
+  return {
+    nct_id: identification.nctId ?? null,
+    title: identification.briefTitle ?? null,
+    sponsor: sponsor.name ?? null,
+    phase: design.phases ?? [],
+    status: status.overallStatus ?? null,
+    last_update: status.lastUpdatePostDateStruct?.date ?? null,
+    primary_completion: status.primaryCompletionDateStruct?.date ?? null,
+    interventions: interventions.slice(0, 5).map((item: Record<string, unknown>) => item.name ?? null),
+  };
+}
+
+async function fetchCompanyPressReleases(asset: AssetWithCompany): Promise<SourceBundle> {
+  const rawWebsite = asset.company_website?.trim();
+  if (!rawWebsite) throw new Error("No company website on record");
+  const base = new URL(rawWebsite.startsWith("http") ? rawWebsite : `https://${rawWebsite}`);
+  const candidates = [
+    new URL("/news", base).toString(),
+    new URL("/newsroom", base).toString(),
+    new URL("/press-releases", base).toString(),
+    new URL("/investors/news-events/news-releases", base).toString(),
+  ];
+  const pages = await Promise.all(candidates.map(async (url) => ({ url, html: await fetchPage(url) })));
+  const releases = pages.flatMap(({ url, html }) => html ? extractLinks(html, url) : []).slice(0, 12);
+  if (!releases.length) throw new Error("No press-release index found");
+  return { name: "company_ir", tier: 1, data: { source_url: base.toString(), releases } };
+}
+
+async function fetchFdaSiteResults(asset: AssetWithCompany): Promise<SourceBundle> {
+  const query = `${asset.asset_name} ${asset.company_name}`;
+  const url = `https://www.fda.gov/search?s=${encodeURIComponent(query)}`;
+  const html = await fetchPage(url);
+  if (!html) throw new Error("FDA site search unavailable");
+  const results = extractLinks(html, url).filter((link) => new URL(link.url).hostname.endsWith("fda.gov"));
+  if (!results.length) throw new Error("No FDA site results");
+  return { name: "fda_communications", tier: 1, data: { source_url: url, results } };
+}
+
+async function fetchIndustryCoverage(asset: AssetWithCompany): Promise<SourceBundle> {
+  const query = encodeURIComponent(`${asset.company_name} ${asset.asset_name}`);
+  const searches = [
+    `https://www.fiercebiotech.com/search?search_api_fulltext=${query}`,
+    `https://endpoints.news/search?q=${query}`,
+    `https://www.statnews.com/?s=${query}`,
+  ];
+  const pages = await Promise.all(searches.map(async (url) => ({ url, html: await fetchPage(url) })));
+  const coverage = pages.flatMap(({ url, html }) => html ? extractLinks(html, url, 4) : []).slice(0, 8);
+  if (!coverage.length) throw new Error("No industry coverage found");
+  return { name: "industry_coverage", tier: 3, data: { coverage } };
 }
 
 // ---------- Claude ----------
