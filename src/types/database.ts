@@ -202,6 +202,61 @@ export interface CgtAbmAudienceMember {
   enriched_at: string | null;
 }
 
+export interface CgtMarketSnapshotRun {
+  id: string;
+  snapshot_week: string;
+  status: 'running' | 'succeeded' | 'partial' | 'failed';
+  source_queries: unknown[];
+  studies_discovered: number;
+  studies_stored: number;
+  coverage_status: 'complete' | 'partial' | 'unknown';
+  error: string;
+  started_at: string;
+  completed_at: string | null;
+}
+
+export interface CgtTrialMarketSnapshot {
+  id: string;
+  snapshot_week: string;
+  nct_id: string;
+  sponsor_name: string;
+  asset_name: string;
+  modality: string;
+  therapeutic_area: string;
+  phase: string;
+  overall_status: string;
+  study_start_date: string | null;
+  primary_completion_date: string | null;
+  last_update_date: string | null;
+  source_url: string;
+  study_title: string;
+  conditions: string[];
+  interventions: string[];
+  source_query: string;
+  recorded_at: string;
+}
+
+export interface CgtMarketDemandObservation {
+  id: string;
+  observation_period: string;
+  source_name: string;
+  source_type: 'keyword' | 'prompt' | 'buyer_research' | 'trial_trend';
+  query_text: string;
+  modality: string;
+  therapeutic_area: string;
+  phase: string;
+  geography: string;
+  monthly_search_volume: number | null;
+  prior_period_volume: number | null;
+  trend_percent: number | null;
+  intent: string;
+  confidence_level: ConfidenceLevel;
+  source_url: string;
+  raw_data: Record<string, unknown>;
+  imported_at: string;
+  imported_by: string | null;
+}
+
 type Table<Row> = {
   Row: Row;
   Insert: Partial<Row>;
@@ -222,6 +277,9 @@ export type Database = {
       cgt_abm_weekly_engagement: Table<CgtAbmWeeklyEngagement>;
       cgt_abm_client_domains: Table<CgtAbmClientDomain>;
       cgt_abm_audience_members: Table<CgtAbmAudienceMember>;
+      cgt_market_snapshot_runs: Table<CgtMarketSnapshotRun>;
+      cgt_trial_market_snapshots: Table<CgtTrialMarketSnapshot>;
+      cgt_market_demand_observations: Table<CgtMarketDemandObservation>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

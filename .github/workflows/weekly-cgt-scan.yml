@@ -30,6 +30,13 @@ jobs:
           WEEK_LABEL="$(date --utc +'%G-W%V')"
           HEADERS=(-H "apikey: ${SUPABASE_ANON_KEY}" -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" -H 'Content-Type: application/json')
 
+          # Store source-level registry facts before downstream AI analysis.
+          # This measures pipeline activity only; it never infers buyer demand.
+          curl --fail-with-body --silent --show-error \
+            "${HEADERS[@]}" \
+            --data "{\"snapshot_week\":\"${WEEK_LABEL}\"}" \
+            "${SUPABASE_URL}/functions/v1/capture-trial-market-snapshot"
+
           curl --fail-with-body --silent --show-error \
             "${HEADERS[@]}" \
             --data "{\"p_function_name\":\"signal-detection\",\"p_label_field\":\"week_label\",\"p_label_value\":\"${WEEK_LABEL}\"}" \

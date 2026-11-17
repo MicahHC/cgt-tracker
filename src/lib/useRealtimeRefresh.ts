@@ -12,7 +12,10 @@ type TableName =
   | 'cgt_abm_weekly_engagement'
   | 'cgt_abm_audience_members'
   | 'cgt_abm_client_domains'
-  | 'research_jobs';
+  | 'research_jobs'
+  | 'cgt_market_snapshot_runs'
+  | 'cgt_trial_market_snapshots'
+  | 'cgt_market_demand_observations';
 
 interface Options {
   debounceMs?: number;
