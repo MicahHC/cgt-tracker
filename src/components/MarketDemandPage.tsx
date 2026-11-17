@@ -1,29 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
-import { BarChart3, Database, FlaskConical, Search, Sparkles, Target } from 'lucide-react';
 
 type AssetRow = {
   id: string;
-  asset_name: string;
   modality: string;
   lead_indication: string;
   target_indication: string;
   phase_regulatory_status: string;
   segment: string;
   commercial_priority_tier: string | null;
-  catalyst_date: string | null;
 };
 
-type Opportunity = {
-  label: string;
+type LandscapeRow = {
   modality: string;
   therapeuticArea: string;
   phase: string;
-  assets: number;
-  lateStage: number;
-  priority: number;
-  nextStep: string;
+  programs: number;
+  launchCandidates: number;
 };
 
 function modalityGroup(value: string): string {
@@ -56,13 +50,13 @@ function therapeuticArea(value: string): string {
 export function MarketDemandPage() {
   const [assets, setAssets] = useState<AssetRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPhase, setSelectedPhase] = useState('All phases');
+  const [phase, setPhase] = useState('All phases');
 
   async function load() {
     setLoading(true);
     const { data } = await supabase
       .from('cgt_assets')
-      .select('id, asset_name, modality, lead_indication, target_indication, phase_regulatory_status, segment, commercial_priority_tier, catalyst_date');
+      .select('id, modality, lead_indication, target_indication, phase_regulatory_status, segment, commercial_priority_tier');
     setAssets((data as AssetRow[] | null) || []);
     setLoading(false);
   }
@@ -70,120 +64,95 @@ export function MarketDemandPage() {
   useEffect(() => { load(); }, []);
   useRealtimeRefresh(['cgt_assets', 'cgt_companies'], load);
 
-  const opportunities = useMemo(() => {
-    const groups = new Map<string, Opportunity>();
+  const landscape = useMemo(() => {
+    const groups = new Map<string, LandscapeRow>();
     for (const asset of assets) {
+      const phaseLabel = phaseGroup(asset.phase_regulatory_status, asset.segment);
+      if (phase !== 'All phases' && phaseLabel !== phase) continue;
       const modality = modalityGroup(asset.modality);
       const area = therapeuticArea(asset.lead_indication || asset.target_indication);
-      const phase = phaseGroup(asset.phase_regulatory_status, asset.segment);
-      if (selectedPhase !== 'All phases' && phase !== selectedPhase) continue;
-      const key = `${modality}|${area}|${phase}`;
-      const current = groups.get(key) || {
-        label: `${modality} for ${area}`,
-        modality,
-        therapeuticArea: area,
-        phase,
-        assets: 0,
-        lateStage: 0,
-        priority: 0,
-        nextStep: '',
-      };
-      current.assets += 1;
-      if (phase === 'Late stage') current.lateStage += 1;
-      if (['Tier 1', 'Tier 2'].includes(asset.commercial_priority_tier || '')) current.priority += 1;
-      groups.set(key, current);
+      const key = `${modality}|${area}|${phaseLabel}`;
+      const row = groups.get(key) || { modality, therapeuticArea: area, phase: phaseLabel, programs: 0, launchCandidates: 0 };
+      row.programs += 1;
+      if (['Tier 1', 'Tier 2'].includes(asset.commercial_priority_tier || '')) row.launchCandidates += 1;
+      groups.set(key, row);
     }
     return [...groups.values()]
-      .map(item => ({
-        ...item,
-        nextStep: item.priority > 0
-          ? `Build an account-facing ${item.modality.toLowerCase()} package for ${item.therapeuticArea.toLowerCase()}.`
-          : `Validate buyer language before investing in a ${item.phase.toLowerCase()} content package.`,
-      }))
-      .sort((a, b) => (b.priority * 20 + b.lateStage * 10 + b.assets) - (a.priority * 20 + a.lateStage * 10 + a.assets))
-      .slice(0, 12);
-  }, [assets, selectedPhase]);
+      .sort((a, b) => b.launchCandidates - a.launchCandidates || b.programs - a.programs)
+      .slice(0, 15);
+  }, [assets, phase]);
 
-  const reviewedPriorities = assets.filter(asset => ['Tier 1', 'Tier 2'].includes(asset.commercial_priority_tier || '')).length;
   const lateStage = assets.filter(asset => phaseGroup(asset.phase_regulatory_status, asset.segment) === 'Late stage').length;
+  const launchCandidates = assets.filter(asset => ['Tier 1', 'Tier 2'].includes(asset.commercial_priority_tier || '')).length;
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600" /></div>;
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between border-b border-slate-200 pb-6">
-        <div>
-          <div className="text-xs font-semibold tracking-[0.18em] uppercase text-teal-700">Market Demand</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Content opportunity map</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Use pipeline concentration to focus research and package development. Search-volume validation is intentionally separated until a licensed demand-data source is connected.</p>
-        </div>
-        <label className="text-sm font-medium text-slate-700">
-          Phase focus
-          <select value={selectedPhase} onChange={(event) => setSelectedPhase(event.target.value)} className="ml-3 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-            {['All phases', 'Phase 1', 'Phase 2', 'Late stage', 'On-market'].map(phase => <option key={phase}>{phase}</option>)}
-          </select>
-        </label>
+    <div className="mx-auto max-w-6xl space-y-10 pb-10">
+      <header className="border-b-2 border-slate-950 pb-8">
+        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Research workspace</div>
+        <h1 className="mt-3 max-w-4xl text-3xl font-semibold tracking-tight text-slate-950">What should we build content around in 2027?</h1>
+        <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">This workspace separates what the CGT tracker can establish from the evidence still required to validate buyer demand.</p>
       </header>
 
-      <section className="grid gap-5 md:grid-cols-3">
-        <Metric icon={Database} label="Tracked programs" value={assets.length} detail="Current CGT asset universe" />
-        <Metric icon={FlaskConical} label="Late-stage programs" value={lateStage} detail="Pipeline signal, not a launch forecast" />
-        <Metric icon={Target} label="Reviewed launch priorities" value={reviewedPriorities} detail="Source-reviewed Priority 1 or 2" />
+      <section className="grid gap-8 border-b border-slate-200 pb-8 md:grid-cols-[1.6fr_1fr]">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">What we can answer now</div>
+          <p className="mt-3 text-xl leading-8 text-slate-900">Where the tracked U.S. CGT pipeline is concentrated by modality, therapeutic area, and clinical stage.</p>
+          <dl className="mt-7 grid grid-cols-3 divide-x divide-slate-200 border-y border-slate-200">
+            <Fact label="Programs tracked" value={assets.length} />
+            <Fact label="Late-stage programs" value={lateStage} />
+            <Fact label="Launch candidates" value={launchCandidates} />
+          </dl>
+        </div>
+        <div className="border-l-0 border-slate-200 pl-0 md:border-l md:pl-8">
+          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Not yet answerable</div>
+          <p className="mt-3 text-sm leading-6 text-slate-700">How buyers phrase their search, how often they search it, and which intersections have sufficient demand to justify content investment.</p>
+          <p className="mt-3 text-sm leading-6 text-slate-500">Those answers require a licensed keyword or search-demand dataset. Pipeline volume is not a substitute.</p>
+        </div>
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div>
-          <div className="mb-4 flex items-end justify-between">
-            <div>
-              <div className="text-xs font-semibold tracking-[0.16em] uppercase text-slate-500">Pipeline-led opportunities</div>
-              <h2 className="mt-1 text-xl font-semibold text-slate-950">Where the current universe is concentrated</h2>
-            </div>
-            <span className="text-xs text-slate-500">Ranked by validated priority and program concentration</span>
+      <section>
+        <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-end">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Pipeline landscape</div>
+            <h2 className="mt-1 text-xl font-semibold text-slate-950">Where trial and development activity is concentrated</h2>
           </div>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <table className="w-full text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                <tr><th className="px-5 py-3">Opportunity</th><th className="px-4 py-3">Phase</th><th className="px-4 py-3 text-center">Programs</th><th className="px-4 py-3 text-center">Priority</th><th className="px-5 py-3">Recommended next step</th></tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {opportunities.map(item => <tr key={`${item.modality}-${item.therapeuticArea}-${item.phase}`} className="align-top hover:bg-slate-50">
-                  <td className="px-5 py-4 font-medium text-slate-900">{item.label}<div className="mt-1 text-xs font-normal text-slate-500">{item.therapeuticArea}</div></td>
-                  <td className="px-4 py-4 text-slate-600">{item.phase}</td>
-                  <td className="px-4 py-4 text-center font-semibold text-slate-900">{item.assets}</td>
-                  <td className="px-4 py-4 text-center font-semibold text-teal-700">{item.priority || '—'}</td>
-                  <td className="px-5 py-4 text-slate-600">{item.nextStep}</td>
-                </tr>)}
-              </tbody>
-            </table>
-          </div>
+          <label className="text-sm font-medium text-slate-700">Phase
+            <select value={phase} onChange={(event) => setPhase(event.target.value)} className="ml-3 rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+              {['All phases', 'Phase 1', 'Phase 2', 'Late stage', 'On-market'].map(item => <option key={item}>{item}</option>)}
+            </select>
+          </label>
         </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-sm">
+            <thead className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <tr><th className="py-3 pr-6">Modality</th><th className="py-3 pr-6">Therapeutic area</th><th className="py-3 pr-6">Stage</th><th className="py-3 text-right">Programs</th><th className="py-3 pl-6 text-right">Validated launch candidates</th></tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {landscape.map(row => <tr key={`${row.modality}-${row.therapeuticArea}-${row.phase}`}>
+                <td className="py-4 pr-6 font-medium text-slate-900">{row.modality}</td>
+                <td className="py-4 pr-6 text-slate-700">{row.therapeuticArea}</td>
+                <td className="py-4 pr-6 text-slate-600">{row.phase}</td>
+                <td className="py-4 text-right font-semibold text-slate-900">{row.programs}</td>
+                <td className="py-4 pl-6 text-right font-semibold text-teal-700">{row.launchCandidates || '—'}</td>
+              </tr>)}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        <aside className="border-l border-slate-200 pl-0 lg:pl-8">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Search className="h-4 w-4 text-teal-600" /> Buyer-language validation</div>
-          <p className="mt-3 text-sm leading-6 text-slate-600">Not connected yet. This prevents the tracker from presenting pipeline activity as search demand.</p>
-          <div className="mt-5 space-y-4 text-sm">
-            <Step number="1" title="Import keyword demand" text="Connect a licensed Google Ads, DataForSEO, or Semrush export with volume, trend, and geography." />
-            <Step number="2" title="Map buyer phrases" text="Cluster phrases by modality, therapeutic area, phase, and service need." />
-            <Step number="3" title="Prioritize content" text="Rank only where buyer demand and pipeline momentum overlap." />
-          </div>
-          <div className="mt-7 border-t border-slate-200 pt-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" /> Current recommendation</div>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Use this page to choose which combinations warrant demand research first. Do not use it to claim query volume until a demand-data source is imported.</p>
-          </div>
-        </aside>
+      <section className="border-y border-slate-200 py-7">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div><div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Next data input</div><p className="mt-2 text-sm leading-6 text-slate-800">Keyword or search-demand export with phrase, U.S. volume, trend, and geography.</p></div>
+          <div><div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Then map</div><p className="mt-2 text-sm leading-6 text-slate-800">Modality, therapeutic area, phase, service need, and commercial intent.</p></div>
+          <div><div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Decision rule</div><p className="mt-2 text-sm leading-6 text-slate-800">Prioritize only when buyer demand and verified pipeline momentum overlap.</p></div>
+        </div>
       </section>
     </div>
   );
 }
 
-function Metric({ icon: Icon, label, value, detail }: { icon: typeof BarChart3; label: string; value: number; detail: string }) {
-  return <div className="border-b border-slate-200 pb-5">
-    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500"><Icon className="h-4 w-4 text-teal-600" /> {label}</div>
-    <div className="mt-3 text-4xl font-semibold tracking-tight text-slate-950">{value}</div>
-    <div className="mt-1 text-sm text-slate-500">{detail}</div>
-  </div>;
-}
-
-function Step({ number, title, text }: { number: string; title: string; text: string }) {
-  return <div className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-50 text-xs font-bold text-teal-700">{number}</span><div><div className="font-medium text-slate-900">{title}</div><p className="mt-1 leading-5 text-slate-600">{text}</p></div></div>;
+function Fact({ label, value }: { label: string; value: number }) {
+  return <div className="px-4 py-4 first:pl-0 last:pr-0"><dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt><dd className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</dd></div>;
 }
