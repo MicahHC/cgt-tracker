@@ -12,10 +12,11 @@ import { CatalystsPage } from './components/CatalystsPage';
 import { WeeklyBriefPage } from './components/WeeklyBriefPage';
 import { AbmAudiencePage } from './components/AbmAudiencePage';
 import { AdminPage } from './components/AdminPage';
+import { MarketDemandPage } from './components/MarketDemandPage';
 
 function initialPage(): PageKey {
   const requested = new URLSearchParams(window.location.search).get('view');
-  const pages: PageKey[] = ['dashboard', 'assets', 'companies', 'scoring', 'changelog', 'scorehistory', 'catalysts', 'weeklybrief', 'abmaudience', 'admin'];
+  const pages: PageKey[] = ['dashboard', 'assets', 'companies', 'scoring', 'changelog', 'scorehistory', 'catalysts', 'weeklybrief', 'abmaudience', 'marketdemand', 'admin'];
   return pages.includes(requested as PageKey) ? requested as PageKey : 'dashboard';
 }
 
@@ -68,6 +69,7 @@ function App() {
       case 'catalysts': return <CatalystsPage onOpenAsset={openAsset} />;
       case 'weeklybrief': return <WeeklyBriefPage onOpenAsset={openAsset} />;
       case 'abmaudience': return <AbmAudiencePage />;
+      case 'marketdemand': return <MarketDemandPage />;
       case 'admin': return <AdminPage />;
       default: return <Dashboard onNavigate={navigate} onOpenAsset={openAsset} />;
     }
