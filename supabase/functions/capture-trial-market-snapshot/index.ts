@@ -104,10 +104,17 @@ function normalizeStudy(study: Study, snapshotWeek: string, sourceQuery: string)
     snapshot_week: snapshotWeek, nct_id: id.nctId, sponsor_name: sponsor.name ?? "", asset_name: interventions[0] ?? "",
     modality: classifyModality(`${title} ${interventions.join(" ")}`), therapeutic_area: conditions[0] ?? "",
     phase: (design.phases ?? []).join(", "), overall_status: status.overallStatus ?? "",
-    study_start_date: status.startDateStruct?.date ?? null, primary_completion_date: status.primaryCompletionDateStruct?.date ?? null,
-    last_update_date: status.lastUpdatePostDateStruct?.date ?? null, source_url: `https://clinicaltrials.gov/study/${id.nctId}`,
+    // ClinicalTrials.gov may publish only a month or year. Preserve the study,
+    // but do not invent a day for date-typed fields.
+    study_start_date: fullDateOrNull(status.startDateStruct?.date),
+    primary_completion_date: fullDateOrNull(status.primaryCompletionDateStruct?.date),
+    last_update_date: fullDateOrNull(status.lastUpdatePostDateStruct?.date), source_url: `https://clinicaltrials.gov/study/${id.nctId}`,
     study_title: title, conditions, interventions, source_query: sourceQuery,
   };
+}
+
+function fullDateOrNull(value: unknown): string | null {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
 }
 
 function classifyModality(value: string): string {

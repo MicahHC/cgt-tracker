@@ -18,10 +18,9 @@ jobs:
   enqueue:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_URL: https://dbnmnorholzehkppwvap.supabase.co
-      # This is the existing public browser anon key. Database RLS restricts
-      # access; the RPCs themselves only enqueue idempotent weekly work.
-      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibm1ub3Job2x6ZWhrcHB3dmFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NzYyNzAsImV4cCI6MjA4NTM1MjI3MH0.R6i7hjo5AwklCSsxlIKT7o5tt7BVyV9i2qGG06LeBkw
+      SUPABASE_URL: ${{ secrets.CGT_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.CGT_SUPABASE_ANON_KEY }}
+      CGT_RESEARCH_ENABLED: ${{ secrets.CGT_RESEARCH_ENABLED }}
     steps:
       - name: Enqueue current reporting week
         shell: bash
@@ -36,6 +35,13 @@ jobs:
             "${HEADERS[@]}" \
             --data "{\"snapshot_week\":\"${WEEK_LABEL}\"}" \
             "${SUPABASE_URL}/functions/v1/capture-trial-market-snapshot"
+
+          # Keep the deterministic registry snapshot active while model-backed
+          # research is intentionally paused for credential configuration.
+          if [[ "${CGT_RESEARCH_ENABLED}" != "true" ]]; then
+            echo "Model-backed research is disabled; registry snapshot completed."
+            exit 0
+          fi
 
           curl --fail-with-body --silent --show-error \
             "${HEADERS[@]}" \
