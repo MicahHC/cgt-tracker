@@ -62,8 +62,8 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
+    <div className="min-h-screen bg-slate-50 lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="px-5 py-5 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-teal-600 flex items-center justify-center">
@@ -127,8 +127,22 @@ export function Layout({ currentPage, onNavigate, children }: LayoutProps) {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-[1600px] mx-auto px-8 py-8">
+      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-teal-700"><Dna className="h-4 w-4 text-white" /></div>
+          <span className="text-sm font-semibold text-slate-900">CGT Intelligence</span>
+        </div>
+        <select
+          value={currentPage}
+          onChange={(event) => onNavigate(event.target.value as PageKey)}
+          aria-label="Navigate CGT Intelligence"
+          className="max-w-[168px] rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800"
+        >
+          {NAV.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+        </select>
+      </div>
+      <main className="min-w-0 flex-1 overflow-auto">
+        <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </div>
       </main>

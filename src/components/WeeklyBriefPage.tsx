@@ -629,7 +629,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
   const hasCurrentWeekResults = changes.length > 0 || scores.length > 0;
 
   return (
-    <div ref={rootRef} className="prestige space-y-10" id="weekly-brief-printable">
+    <div ref={rootRef} className="prestige space-y-12" id="weekly-brief-printable">
       {/* Controls bar — excluded from print */}
       <div className="no-print flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2">
@@ -701,20 +701,20 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
       )}
 
       {/* Hero */}
-      <section className="reveal prestige-hero px-8 md:px-14 py-14 md:py-20">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="reveal prestige-hero px-8 md:px-12 py-10 md:py-14">
+        <div className="max-w-5xl">
           <span className="prestige-eyebrow">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 prestige-dot" />
             {isCurrentWeek ? 'Current week · ' : 'Archive · '}{weekDisplay}
           </span>
-          <h1 className="prestige-headline mt-6">
-            The week in <span className="prestige-gradient-text">cell &amp; gene therapy</span>
+          <h1 className="prestige-headline mt-5">
+            Evidence brief for <span className="prestige-gradient-text">cell &amp; gene therapy</span>
           </h1>
-          <p className="text-base md:text-lg text-white/70 mt-5 max-w-2xl mx-auto leading-relaxed">
-            Market movement and commercial-readiness changes across ATCs, Late Stage, and On-Market therapies. Open each cited source before acting.
+          <p className="text-base text-white/70 mt-4 max-w-2xl leading-relaxed">
+            Source-linked changes across ATCs, Late Stage, and On-Market therapies. Review the original document before acting.
           </p>
 
-          <div className="mt-10 flex items-center justify-center gap-6 md:gap-10 flex-wrap">
+          <div className="mt-9 flex items-center gap-6 md:gap-10 flex-wrap">
             {focusedChanges.length > 0 && (
               <>
                 <HeroMetric value={focusedChanges.length} label="Relevant changes" />
@@ -738,7 +738,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
             )}
           </div>
 
-          <div className="mt-8 text-xs text-white/50 tracking-wider uppercase">
+          <div className="mt-8 font-mono text-[11px] text-white/50">
             Latest data update: {generatedLabel} · Reporting week {week}
           </div>
         </div>
@@ -834,11 +834,11 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           </div>
         </header>
 
-          <div className="prestige-card overflow-hidden">
+          <div className="prestige-card brief-ledger overflow-hidden">
             <div className="divide-y divide-slate-100">
               {priorityChanges.slice(0, 20).map(c => (
-                <div key={c.id} className="px-6 py-4 hover:bg-slate-50/60 transition-colors">
-                  <div className="flex items-start justify-between gap-6">
+                <div key={c.id} className="brief-ledger-row px-6 py-4 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-6">
                     <div className="flex-1 min-w-0">
                       <button onClick={() => onOpenAsset(c.asset_id)} className="text-[15px] font-semibold text-slate-900 hover:text-teal-700 transition-colors">
                         {c.asset_name || 'Asset'}
@@ -857,7 +857,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                           : 'The tracker logged this change, but the explanation has no direct source attached. Verify it before sharing or acting.'}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-slate-500">
+                    <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-1.5 flex-shrink-0 text-xs text-slate-500">
                       <div>{new Date(c.created_at).toLocaleDateString()}</div>
                       <div className="flex items-center gap-2">
                         {directEvidenceUrl(c.source_url) && <ConfidenceBadge level={c.confidence_level} />}
@@ -1053,7 +1053,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
           <div className="prestige-card overflow-hidden">
             <div className="divide-y divide-slate-100">
               {topMovers.map(s => (
-                <div key={s.id} className="px-6 py-4 hover:bg-slate-50/60 flex items-center gap-4 transition-colors">
+                <div key={s.id} className="flex flex-col gap-3 px-6 py-4 transition-colors hover:bg-slate-50/60 sm:flex-row sm:items-center sm:gap-4">
                   <div className="flex-1 min-w-0">
                     <button
                       onClick={() => onOpenAsset(s.asset_id)}
@@ -1063,7 +1063,7 @@ export function WeeklyBriefPage({ onOpenAsset }: Props) {
                     </button>
                     <div className="text-xs text-slate-500 truncate">{s.company_name}</div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center justify-between gap-4 text-sm sm:ml-auto sm:justify-start">
                     <div className="text-right">
                       <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Commercial</div>
                       <div className="font-mono text-slate-700 mt-0.5">
@@ -1339,7 +1339,7 @@ function Stat({ label, value, icon: Icon, color, sub }: StatProps) {
     slate: 'bg-slate-100 text-slate-700',
   };
   return (
-    <div className="prestige-card p-5">
+    <div className="brief-stat">
       <div className="flex items-center justify-between">
         <div className="prestige-metric-label">{label}</div>
         <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${colorMap[color]}`}>

@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRealtimeRefresh } from '../lib/useRealtimeRefresh';
 import { CgtAsset, CgtCompany } from '../types/database';
-import {
-  Package, Target, FlaskConical, ShoppingBag, ShieldAlert,
-  CalendarClock, ArrowUpRight
-} from 'lucide-react';
+import { CalendarClock, ArrowUpRight } from 'lucide-react';
 import { TierBadge, SegmentBadge } from './ui/Badge';
 import { PageKey } from './Layout';
 import { audienceCounts } from '../lib/audienceCounts';
@@ -118,23 +115,35 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Kpi label="Total companies" value={companyCount} icon={Package} color="slate" onClick={() => onNavigate('companies')} />
-        <Kpi label="Clinical late-stage companies" value={lateStageCompanies} icon={Target} color="teal" onClick={() => onNavigate('companies')} sub={`${lateStage.length} assets; clinical phase only`} />
-        <Kpi label="Early Stage" value={earlyStageCompanies} icon={FlaskConical} color="sky" onClick={() => onNavigate('companies')} sub={`${earlyStage.length} assets`} />
-        <Kpi label="On-Market" value={onMarketCompanies} icon={ShoppingBag} color="emerald" onClick={() => onNavigate('companies')} sub={`${onMarket.length} assets`} />
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {!audienceError && priorityCounts && <>
-          <Kpi label="Late Stage audience" value={priorityCounts['Late Stage'] || 0} icon={Target} color="teal" onClick={() => onNavigate('abmaudience')} sub="Expected launch within 24 months" />
-          <Kpi label="Priority 1 accounts" value={priorityCounts['Priority 1'] || 0} icon={Target} color="emerald" onClick={() => onNavigate('abmaudience')} sub="Within 18 months; closed won excluded" />
-          <Kpi label="Priority 2 accounts" value={priorityCounts['Priority 2'] || 0} icon={Target} color="blue" onClick={() => onNavigate('abmaudience')} sub="Beyond 18, within 24 months; closed won excluded" />
-        </>}
-        {audienceError && <div role="alert" className="text-sm text-red-700">Audience counts unavailable. <button className="underline" onClick={refreshAudiences}>Retry</button></div>}
-        {!audienceError && !priorityCounts && <p className="text-sm text-slate-500">Loading audience counts...</p>}
-        <Kpi label="Risk flags" value={clinicalHolds + noMfg} icon={ShieldAlert} color="red" sub={`${clinicalHolds} hold / ${noMfg} no mfg`} />
-      </div>
+      <section className="rounded-xl border border-slate-200 bg-white p-6">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div>
+            <div className="flex items-baseline justify-between gap-4 border-b border-slate-200 pb-4">
+              <div>
+                <div className="font-mono text-[11px] text-teal-700">Portfolio coverage</div>
+                <h2 className="mt-1 text-xl font-medium text-slate-900">Tracked therapy mix</h2>
+              </div>
+              <button onClick={() => onNavigate('assets')} className="font-mono text-xs text-slate-500 hover:text-teal-700">{assets.length.toLocaleString()} assets · {companyCount.toLocaleString()} companies →</button>
+            </div>
+            <div className="mt-6 space-y-5">
+              <PortfolioBar label="Late Stage" assets={lateStage.length} companies={lateStageCompanies} max={Math.max(lateStage.length, earlyStage.length, onMarket.length, 1)} tone="teal" />
+              <PortfolioBar label="Early Stage" assets={earlyStage.length} companies={earlyStageCompanies} max={Math.max(lateStage.length, earlyStage.length, onMarket.length, 1)} tone="slate" />
+              <PortfolioBar label="On-Market" assets={onMarket.length} companies={onMarketCompanies} max={Math.max(lateStage.length, earlyStage.length, onMarket.length, 1)} tone="slate" />
+            </div>
+          </div>
+          <aside className="border-t border-slate-200 pt-5 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0">
+            <div className="font-mono text-[11px] text-slate-500">Audience readiness</div>
+            {audienceError && <p role="alert" className="mt-3 text-sm text-rose-700">Audience counts unavailable. <button className="underline" onClick={refreshAudiences}>Retry</button></p>}
+            {!audienceError && !priorityCounts && <p className="mt-3 text-sm text-slate-500">Loading audience counts</p>}
+            {!audienceError && priorityCounts && <dl className="mt-4 divide-y divide-slate-100 border-y border-slate-100">
+              <AudienceMetric label="Late Stage" value={priorityCounts['Late Stage'] || 0} detail="Expected launch within 24 months" onClick={() => onNavigate('abmaudience')} />
+              <AudienceMetric label="Priority 1" value={priorityCounts['Priority 1'] || 0} detail="Within 18 months" onClick={() => onNavigate('abmaudience')} />
+              <AudienceMetric label="Priority 2" value={priorityCounts['Priority 2'] || 0} detail="19 to 24 months" onClick={() => onNavigate('abmaudience')} />
+            </dl>}
+            <div className="mt-5 border-t border-slate-200 pt-4 text-sm text-slate-600"><span className="font-mono text-lg text-rose-700">{clinicalHolds + noMfg}</span> risk flags <span className="text-slate-400">· {clinicalHolds} hold / {noMfg} manufacturing</span></div>
+          </aside>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -231,38 +240,11 @@ export function Dashboard({ onNavigate, onOpenAsset }: DashboardProps) {
   );
 }
 
-function Kpi({ label, value, icon: Icon, color, sub, onClick }: {
-  label: string;
-  value: number;
-  icon: typeof Package;
-  color: 'slate' | 'teal' | 'sky' | 'emerald' | 'blue' | 'red';
-  sub?: string;
-  onClick?: () => void;
-}) {
-  const map = {
-    slate: { bg: 'bg-slate-100', text: 'text-slate-700' },
-    teal: { bg: 'bg-teal-100', text: 'text-teal-700' },
-    sky: { bg: 'bg-sky-100', text: 'text-sky-700' },
-    emerald: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-    blue: { bg: 'bg-blue-100', text: 'text-blue-700' },
-    red: { bg: 'bg-red-100', text: 'text-red-700' },
-  }[color];
-  const Wrapper = onClick ? 'button' : 'div';
-  return (
-    <Wrapper
-      {...(onClick ? { onClick } : {})}
-      className={`bg-white rounded-xl border border-slate-200 p-4 text-left ${onClick ? 'hover:border-teal-200 transition-colors' : ''}`}
-    >
-      <div className="flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-lg ${map.bg} flex items-center justify-center`}>
-          <Icon className={`w-4 h-4 ${map.text}`} />
-        </div>
-        <div className="min-w-0">
-          <div className="text-xs text-slate-500 font-medium">{label}</div>
-          <div className="text-2xl font-bold text-slate-900 leading-tight">{value}</div>
-        </div>
-      </div>
-      {sub && <div className="mt-2 text-[11px] text-slate-400">{sub}</div>}
-    </Wrapper>
-  );
+function PortfolioBar({ label, assets, companies, max, tone }: { label: string; assets: number; companies: number; max: number; tone: 'teal' | 'slate' }) {
+  const width = `${Math.max((assets / max) * 100, assets ? 3 : 0)}%`;
+  return <div className="grid grid-cols-[112px_minmax(0,1fr)_90px] items-center gap-4"><div><div className="text-sm font-medium text-slate-800">{label}</div><div className="text-xs text-slate-500">{companies} companies</div></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${tone === 'teal' ? 'bg-teal-600' : 'bg-slate-400'}`} style={{ width }} /></div><div className="font-mono text-right text-sm text-slate-800">{assets}</div></div>;
+}
+
+function AudienceMetric({ label, value, detail, onClick }: { label: string; value: number; detail: string; onClick: () => void }) {
+  return <button onClick={onClick} className="flex w-full items-baseline justify-between gap-4 py-3 text-left hover:text-teal-700"><span><span className="block text-sm font-medium text-slate-800">{label}</span><span className="block text-xs text-slate-500">{detail}</span></span><span className="font-mono text-lg text-slate-900">{value}</span></button>;
 }
